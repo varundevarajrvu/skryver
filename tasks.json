@@ -1,0 +1,52 @@
+{
+  "project": "whispr",
+  "updated": "2026-07-03",
+  "phases": [
+    {
+      "id": "phase1-research",
+      "status": "in_progress",
+      "tasks": [
+        { "id": "r1", "title": "Research Wispr Flow architecture", "status": "in_progress", "owner": "sonnet-subagent" },
+        { "id": "r2", "title": "Research complaints + competitor landscape", "status": "in_progress", "owner": "sonnet-subagent" },
+        { "id": "r3", "title": "Research local ASR stacks (whisper.cpp, faster-whisper, Moonshine, sherpa-onnx, VAD)", "status": "in_progress", "owner": "sonnet-subagent" },
+        { "id": "r4", "title": "Opus synthesis of r1-r3 into findings.md", "status": "pending", "owner": "opus-subagent" }
+      ]
+    },
+    {
+      "id": "phase2-planning",
+      "status": "pending",
+      "tasks": [
+        { "id": "p1", "title": "Write implementation_plan.md (model selection, quantization, architecture, task breakdown)", "status": "pending" },
+        { "id": "p2", "title": "USER GATE: plan approval before any implementation", "status": "pending" }
+      ]
+    },
+    {
+      "id": "phase3-implementation",
+      "status": "pending",
+      "tasks": [
+        { "id": "i0", "title": "Task breakdown TBD from approved plan", "status": "pending" }
+      ]
+    },
+    {
+      "id": "phase4-landing-page",
+      "status": "pending",
+      "tasks": [
+        { "id": "l1", "title": "3D animated paperback-theme landing page (own directory/branch)", "status": "pending" }
+      ]
+    },
+    {
+      "id": "final-deliverables",
+      "status": "pending",
+      "tasks": [
+        { "id": "d1", "title": "whispr product functional + pushed to GitHub", "status": "pending" },
+        { "id": "d2", "title": "Landing page", "status": "pending" },
+        { "id": "d3", "title": "Demo video", "status": "pending" },
+        { "id": "d4", "title": "LinkedIn announcement post", "status": "pending" }
+      ]
+    }
+  ],
+  "open_questions": [
+    "CONFIRM: Windows-first + portable core (chosen as default while user AFK; spec said MacBook M1 Pro)",
+    "CONFIRM: repo renamed Wishpr -> whispr"
+  ]
+}
