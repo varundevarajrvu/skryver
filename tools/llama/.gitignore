@@ -1,0 +1,3 @@
+tools/
+takes/
+bench/models/*.gguf

@@ -9,6 +9,8 @@ sherpa-rs = { version = "0.6.8", default-features = false, features = ["download
 cpal = "0.18"
 arboard = "3"
 anyhow = "1"
+ureq = { version = "2", features = ["json"] }
+serde_json = "1"
 
 [target.'cfg(windows)'.dependencies]
 winapi = { version = "0.3", features = ["winuser"] }

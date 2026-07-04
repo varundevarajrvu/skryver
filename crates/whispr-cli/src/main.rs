@@ -10,7 +10,7 @@ use std::sync::mpsc;
 use std::time::Instant;
 
 use anyhow::{Context, Result};
-use whispr_core::{asr, audio, hotkey, inject, postproc};
+use whispr_core::{asr, audio, hotkey, inject, llm, postproc};
 
 fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -20,6 +20,7 @@ fn main() -> Result<()> {
     let mut threads: i32 = 4; // M0: 4 threads beats 8 on the 1334U (E-core contention)
     let mut dict_path: Option<PathBuf> = None;
     let mut save_takes: Option<PathBuf> = None;
+    let mut use_llm = false;
     let mut it = args.iter();
     while let Some(a) = it.next() {
         match a.as_str() {
@@ -31,10 +32,11 @@ fn main() -> Result<()> {
             "--threads" => threads = it.next().and_then(|s| s.parse().ok()).unwrap_or(4),
             "--dict" => dict_path = it.next().map(PathBuf::from),
             "--save-takes" => save_takes = it.next().map(PathBuf::from),
+            "--llm" => use_llm = true,
             "--help" | "-h" => {
                 println!(
                     "whispr-cli [--engine moonshine|parakeet] [--models DIR] [--threads N] \
-                     [--dict FILE] [--save-takes DIR] [--wav FILE]"
+                     [--dict FILE] [--save-takes DIR] [--llm] [--wav FILE]"
                 );
                 return Ok(());
             }
@@ -67,8 +69,21 @@ fn main() -> Result<()> {
     };
     let mut engine = asr::Engine::load(engine_kind, &root, threads)?;
 
+    let formatter = if use_llm {
+        let server = root
+            .ancestors()
+            .map(|a| a.join("tools/llama/llama-server.exe"))
+            .find(|p| p.exists())
+            .context("llama-server.exe not found (expected tools/llama/ near models root)")?;
+        let gguf = root.join("qwen2.5-1.5b-instruct-q4_k_m.gguf");
+        anyhow::ensure!(gguf.exists(), "LLM model missing: {}", gguf.display());
+        Some(llm::Formatter::spawn(&server, &gguf, threads as usize)?)
+    } else {
+        None
+    };
+
     if let Some(path) = wav {
-        return transcribe_wav(&mut engine, &path);
+        return transcribe_wav(&mut engine, &dict, formatter.as_ref(), &path);
     }
 
     let rec = audio::Recorder::open()?;
@@ -83,6 +98,10 @@ fn main() -> Result<()> {
             let audio_s = samples.len() as f32 / asr::SAMPLE_RATE as f32;
             let text = dict.apply(&engine.transcribe(&samples));
             let asr_ms = t_release.elapsed().as_millis();
+            let text = match &formatter {
+                Some(f) if !text.is_empty() => f.format(&text),
+                _ => postproc::bulletize(&text),
+            };
             if let Some(dir) = &save_takes {
                 take_no += 1;
                 let path = dir.join(format!("take{take_no:03}.wav"));
@@ -144,7 +163,12 @@ fn write_wav(path: &std::path::Path, samples: &[f32]) -> Result<()> {
     Ok(())
 }
 
-fn transcribe_wav(engine: &mut asr::Engine, path: &PathBuf) -> Result<()> {
+fn transcribe_wav(
+    engine: &mut asr::Engine,
+    dict: &postproc::Dictionary,
+    formatter: Option<&llm::Formatter>,
+    path: &PathBuf,
+) -> Result<()> {
     let mut reader = hound::WavReader::open(path).context("open wav")?;
     let spec = reader.spec();
     anyhow::ensure!(
@@ -161,7 +185,11 @@ fn transcribe_wav(engine: &mut asr::Engine, path: &PathBuf) -> Result<()> {
         hound::SampleFormat::Float => reader.samples::<f32>().collect::<Result<_, _>>()?,
     };
     let t0 = Instant::now();
-    let text = engine.transcribe(&samples);
+    let mut text = dict.apply(&engine.transcribe(&samples));
+    text = match formatter {
+        Some(f) => f.format(&text),
+        None => postproc::bulletize(&text),
+    };
     println!("{text}");
     eprintln!(
         "[wav] {:.1}s audio in {} ms",
