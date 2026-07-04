@@ -63,6 +63,54 @@ impl Dictionary {
     }
 }
 
+/// Decide whether a transcript would benefit from the (slow) LLM rephrase pass.
+/// Conservative: clean speech goes down the instant path; only visible mess
+/// (fillers, stutters, a list the rule-based splitter can't segment) pays the
+/// LLM latency. Plain questions stay on the fast path on purpose — the small
+/// LLM sometimes answers them instead of transcribing.
+pub fn needs_rephrase(text: &str) -> bool {
+    let lower = text.to_lowercase();
+    let words: Vec<&str> = lower
+        .split(|c: char| !c.is_alphanumeric() && c != '\'')
+        .filter(|w| !w.is_empty())
+        .collect();
+
+    // Filler words / verbal tics.
+    const FILLERS: &[&str] = &["um", "uh", "uhm", "hmm", "basically", "actually", "literally"];
+    let filler_hits = words.iter().filter(|w| FILLERS.contains(*w)).count();
+    if filler_hits >= 1 && words.len() >= 6 {
+        return true;
+    }
+    if lower.contains("you know") || lower.contains("i mean") || lower.contains("kind of like") {
+        return true;
+    }
+
+    // Stutters: the same word twice in a row ("the the report").
+    if words.windows(2).any(|p| p[0] == p[1] && p[0].len() > 1) {
+        return true;
+    }
+
+    // List intent that the rule-based splitter couldn't segment (run-on list).
+    if has_list_intent(&lower) && bulletize(text) == text {
+        return true;
+    }
+
+    false
+}
+
+fn has_list_intent(lower: &str) -> bool {
+    let Some(pos) = lower.find("list") else { return false };
+    let after = pos + "list".len();
+    if lower[after..].chars().next().is_some_and(|c| c.is_alphanumeric()) {
+        return false;
+    }
+    let intro_words = lower[..pos].split_whitespace().count();
+    let has_verb = ["make", "create", "write", "give", "note", "add", "start"]
+        .iter()
+        .any(|v| lower[..pos].contains(v));
+    intro_words <= 8 && (has_verb || lower[pos..].starts_with("list of"))
+}
+
 /// Deterministic list formatting: if the transcript opens with a list intent
 /// ("make me a shopping list ...", "create a to-do list ...", "list of ..."),
 /// split the items on commas/semicolons/" and " and emit them as `- ` bullet
@@ -252,5 +300,27 @@ mod tests {
     fn bulletize_and_only() {
         let out = bulletize("Create a to-do list, finish the report and call mom.");
         assert_eq!(out, "Create a to-do list:\n- Finish the report\n- Call mom");
+    }
+
+    #[test]
+    fn rephrase_on_fillers_and_stutters() {
+        assert!(needs_rephrase("Um so the meeting I think we should move it to Monday."));
+        assert!(needs_rephrase("Send the the report to the professor today."));
+        assert!(needs_rephrase("So basically the project needs more time for testing."));
+    }
+
+    #[test]
+    fn rephrase_on_runon_list_only() {
+        // No pauses/commas -> bulletizer can't split -> LLM should handle it.
+        assert!(needs_rephrase("Make me a shopping list of apple mango breads"));
+        // Pause-separated list is handled instantly by the bulletizer.
+        assert!(!needs_rephrase("Make me a shopping list, apples, mangoes and bread."));
+    }
+
+    #[test]
+    fn clean_speech_stays_fast() {
+        assert!(!needs_rephrase("Send a message to the team that the demo is ready."));
+        assert!(!needs_rephrase("Can you write me a funny joke?"));
+        assert!(!needs_rephrase("The waiting list is long."));
     }
 }

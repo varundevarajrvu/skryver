@@ -19,7 +19,9 @@
 
 - **Phase 1 — Research: DONE** (3 raw reports in `research/`, synthesized into `findings.md`)
 - **Phase 2 — Planning: DONE** (plan approved by user 2026-07-04)
-- **Phase 3 — Implementation: IN PROGRESS** — M0 done (see `bench/results.md`); next: M1 headless pipeline
+- **Phase 3 — Implementation: IN PROGRESS** — M0 done (`bench/results.md`); M1 done + live-tested
+  by user (plus pulled-forward M3 pieces: dictionary, bulletizer, opt-in LLM rephrase on F10);
+  next: M2 tray app + paperback UI
 - **Phase 4 — Landing page: not started**
 - **Final deliverables:** product pushed to GitHub · landing page · demo video · LinkedIn post
 
@@ -30,11 +32,23 @@
 
 ## Handoff notes / what remains
 
-**Next: M1 — headless core pipeline** (Rust workspace: `whispr-core` crate + thin CLI;
-hotkey → cpal capture → Silero VAD → sherpa-onnx (Moonshine) → clipboard-paste injection with
-snapshot/restore). Key crates to evaluate: `sherpa-rs` (or FFI to sherpa-onnx C API directly),
-`cpal`, `enigo`/Win32 SendInput, `global-hotkey`. M1 exit: dictate into Notepad/VS Code with
-logged latency; real-microphone accuracy sanity check (M0 used TTS audio — no WER signal yet).
-Environment: Rust 1.96.1 + MSVC ready; `gh auth login` still pending (needed by M5).
+**M1 shipped and user-tested.** Live findings (2026-07-04 sessions):
+- Parakeet TDT int8 live: asr 130–330 ms, total ~350–700 ms on real mic — engine flipped to
+  Parakeet-by-default (Moonshine's accent accuracy was the user's #1 complaint; Parakeet fixed
+  most of it at nearly the same live latency). Moonshine stays via `--engine moonshine`.
+- Personal dictionary (`whispr.dict.txt`) carries proper nouns (Varun, whispr).
+- Bulletizer handles pause-separated lists; F10 LLM mode (Qwen2.5-1.5B via llama-server
+  sidecar) handles run-on lists + grammar rephrase at 3–10 s/take. LLM known quirks: may
+  answer dictated questions (1.5B, delimiter prompt reduces but doesn't eliminate), 0.5B
+  drops list items — documented, opt-in only.
+- **Perf gotchas found live:** Wispr Flow app running in background = top CPU hog (closed);
+  Balanced power plan capped clocks (switched to High Performance). ASR was 10–50x degraded
+  until fixed. Also: sherpa-rs 0.6.8 bundles sherpa-onnx 1.12.9 (~1.7x slower than 1.13.3
+  python wheel; DLL swap segfaults — ABI mismatch). Revisit on sherpa-rs bump.
+- Launch pattern: detached process (`Start-Process`), logs to `logs/`, takes to `takes/`.
+
+**Next: M2 — Tauri v2 tray app + paperback settings UI** (tray toggle, hotkey config, engine
+picker, dictionary editor, history view). Then M4 robustness, M5 ship (`gh auth login` still
+pending, needed by M5).
 
 Known environment gaps: `gh auth login` not yet done (needed to push to GitHub in Phase 3+), Docker first-launch pending (likely not needed).

@@ -87,21 +87,25 @@ fn main() -> Result<()> {
     }
 
     let rec = audio::Recorder::open()?;
-    let key_fast = hotkey::HoldKey::new(hotkey::VK_F9);
-    let key_llm = hotkey::HoldKey::new(hotkey::VK_F10);
+    let key = hotkey::HoldKey::new(hotkey::VK_F9);
     let stop = AtomicBool::new(false);
 
     // Worker: transcribe + paste off the hotkey loop, in take order.
+    // One hotkey, automatic routing: clean speech pastes instantly; messy takes
+    // (fillers, stutters, run-on lists) go through the LLM when it's available.
     let has_llm = formatter.is_some();
-    let (tx, rx) = mpsc::channel::<(Vec<f32>, Instant, bool)>();
+    let (tx, rx) = mpsc::channel::<(Vec<f32>, Instant)>();
     let worker = std::thread::spawn(move || {
         let mut take_no = 0u32;
-        for (samples, t_release, want_llm) in rx {
+        for (samples, t_release) in rx {
             let audio_s = samples.len() as f32 / asr::SAMPLE_RATE as f32;
             let text = dict.apply(&engine.transcribe(&samples));
             let asr_ms = t_release.elapsed().as_millis();
             let text = match &formatter {
-                Some(f) if want_llm && !text.is_empty() => f.format(&text),
+                Some(f) if !text.is_empty() && postproc::needs_rephrase(&text) => {
+                    eprintln!("[llm] rephrasing…");
+                    f.format(&text)
+                }
                 _ => postproc::bulletize(&text),
             };
             if let Some(dir) = &save_takes {
@@ -128,26 +132,15 @@ fn main() -> Result<()> {
     });
 
     println!(
-        "whispr ready ({engine_kind:?}) — hold F9 to dictate (fast){}. Ctrl+C to quit.",
-        if has_llm { ", F10 for AI rephrase" } else { "" }
+        "whispr ready ({engine_kind:?}) — hold F9 to dictate{}. Ctrl+C to quit.",
+        if has_llm { " (auto AI cleanup on messy takes)" } else { "" }
     );
-    'outer: loop {
-        // Wait for either hotkey.
-        let want_llm = loop {
-            if stop.load(std::sync::atomic::Ordering::Relaxed) {
-                break 'outer;
-            }
-            if key_fast.is_down() {
-                break false;
-            }
-            if key_llm.is_down() {
-                break true;
-            }
-            std::thread::sleep(std::time::Duration::from_millis(8));
-        };
-        let key = if want_llm { &key_llm } else { &key_fast };
+    loop {
+        if !key.wait_down(&stop) {
+            break;
+        }
         rec.start();
-        eprintln!("[rec] ● recording… ({})", if want_llm { "rephrase" } else { "fast" });
+        eprintln!("[rec] ● recording…");
         key.wait_up();
         let t_release = Instant::now();
         let samples = rec.stop();
@@ -155,7 +148,7 @@ fn main() -> Result<()> {
             eprintln!("[rec] too short, ignored");
             continue;
         }
-        if tx.send((samples, t_release, want_llm)).is_err() {
+        if tx.send((samples, t_release)).is_err() {
             break;
         }
     }
