@@ -14,17 +14,17 @@
     },
     {
       "id": "phase2-planning",
-      "status": "in_progress",
+      "status": "done",
       "tasks": [
         { "id": "p1", "title": "Write implementation_plan.md (model selection, quantization, architecture, task breakdown)", "status": "done" },
-        { "id": "p2", "title": "USER GATE: plan approval before any implementation", "status": "awaiting_user" }
+        { "id": "p2", "title": "USER GATE: plan approval before any implementation", "status": "done", "note": "approved 2026-07-04" }
       ]
     },
     {
       "id": "phase3-implementation",
-      "status": "pending",
+      "status": "in_progress",
       "tasks": [
-        { "id": "i0", "title": "M0 benchmark spike: measure RTF of Parakeet int8 / whisper base-small Q5 / Moonshine on i5-1334U; finalize engine; prove toolchain", "status": "pending" },
+        { "id": "i0", "title": "M0 benchmark spike: measure RTF of Parakeet int8 / whisper base-small Q5 / Moonshine on i5-1334U; finalize engine; prove toolchain", "status": "done", "note": "see bench/results.md — default engine Moonshine base int8 @4t (568ms/5s utt), accuracy option Parakeet TDT 0.6B int8; whisper disqualified as primary (fixed 30s window); Rust 1.96.1 + MSVC proven" },
         { "id": "i1", "title": "M1 headless core pipeline: hotkey -> capture -> VAD -> ASR -> paste injection", "status": "pending" },
         { "id": "i2", "title": "M2 Tauri tray app + paperback settings UI (hotkey config, model manager, history)", "status": "pending" },
         { "id": "i3", "title": "M3 polish layer: rule-based cleanup, custom dictionary, terminal-aware mode, hands-free VAD auto-stop", "status": "pending" },
