@@ -7,3 +7,4 @@ pub mod asr;
 pub mod audio;
 pub mod hotkey;
 pub mod inject;
+pub mod postproc;

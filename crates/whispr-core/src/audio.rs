@@ -73,12 +73,34 @@ impl Recorder {
         self.recording.store(true, Ordering::Relaxed);
     }
 
-    /// Stop capturing and return the take as 16 kHz mono samples.
+    /// Stop capturing and return the take as normalized 16 kHz mono samples.
     pub fn stop(&self) -> Vec<f32> {
         self.recording.store(false, Ordering::Relaxed);
         let raw = std::mem::take(&mut *self.buf.lock().unwrap());
         let mono = downmix(&raw, self.channels as usize);
-        resample_linear(&mono, self.device_rate, SAMPLE_RATE)
+        let mut out = resample(&mono, self.device_rate, SAMPLE_RATE);
+        normalize(&mut out);
+        out
+    }
+}
+
+/// Remove DC offset and peak-normalize to 0.9 (skipped for near-silence so we
+/// don't amplify noise floors into phantom speech).
+fn normalize(samples: &mut [f32]) {
+    if samples.is_empty() {
+        return;
+    }
+    let mean = samples.iter().sum::<f32>() / samples.len() as f32;
+    let mut peak = 0f32;
+    for s in samples.iter_mut() {
+        *s -= mean;
+        peak = peak.max(s.abs());
+    }
+    if peak > 0.01 {
+        let gain = 0.9 / peak;
+        for s in samples.iter_mut() {
+            *s *= gain;
+        }
     }
 }
 
@@ -92,21 +114,61 @@ fn downmix(interleaved: &[f32], channels: usize) -> Vec<f32> {
         .collect()
 }
 
-/// Linear-interpolation resampler — adequate for speech-to-ASR use.
-fn resample_linear(input: &[f32], from: u32, to: u32) -> Vec<f32> {
+/// Downsample with an anti-aliasing low-pass. Without the filter, energy above
+/// the target Nyquist (8 kHz) folds back into the speech band and audibly hurts
+/// ASR on consonants — measured as real-world misrecognitions in M1 testing.
+fn resample(input: &[f32], from: u32, to: u32) -> Vec<f32> {
     if from == to || input.is_empty() {
         return input.to_vec();
     }
+    let filtered = if from > to { lowpass(input, from, to) } else { input.to_vec() };
     let ratio = from as f64 / to as f64;
-    let out_len = (input.len() as f64 / ratio) as usize;
+    let out_len = (filtered.len() as f64 / ratio) as usize;
     (0..out_len)
         .map(|i| {
             let pos = i as f64 * ratio;
             let idx = pos as usize;
             let frac = (pos - idx as f64) as f32;
-            let a = input[idx.min(input.len() - 1)];
-            let b = input[(idx + 1).min(input.len() - 1)];
+            let a = filtered[idx.min(filtered.len() - 1)];
+            let b = filtered[(idx + 1).min(filtered.len() - 1)];
             a + (b - a) * frac
+        })
+        .collect()
+}
+
+/// 63-tap windowed-sinc FIR low-pass at 0.9x the target Nyquist.
+fn lowpass(input: &[f32], from: u32, to: u32) -> Vec<f32> {
+    const TAPS: usize = 63;
+    let cutoff = 0.9 * (to as f32 / 2.0) / from as f32; // normalized (0..0.5)
+    let mid = (TAPS / 2) as isize;
+    let mut kernel = [0f32; TAPS];
+    let mut sum = 0f32;
+    for (i, k) in kernel.iter_mut().enumerate() {
+        let n = i as isize - mid;
+        let sinc = if n == 0 {
+            2.0 * cutoff
+        } else {
+            (2.0 * std::f32::consts::PI * cutoff * n as f32).sin() / (std::f32::consts::PI * n as f32)
+        };
+        // Hamming window
+        let w = 0.54 - 0.46 * (2.0 * std::f32::consts::PI * i as f32 / (TAPS - 1) as f32).cos();
+        *k = sinc * w;
+        sum += *k;
+    }
+    for k in kernel.iter_mut() {
+        *k /= sum;
+    }
+    let n = input.len();
+    (0..n)
+        .map(|i| {
+            let mut acc = 0f32;
+            for (j, k) in kernel.iter().enumerate() {
+                let idx = i as isize + (j as isize - mid);
+                if idx >= 0 && (idx as usize) < n {
+                    acc += input[idx as usize] * k;
+                }
+            }
+            acc
         })
         .collect()
 }

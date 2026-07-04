@@ -1,0 +1,13 @@
+# whispr personal dictionary
+# Format: misheard => correction   (case-insensitive whole-word match)
+# Add a line whenever whispr repeatedly misspells a word you use.
+
+varum => Varun
+varoon => Varun
+baro => Varun
+barun => Varun
+vespoy => whispr
+vizpar => whispr
+vspar => whispr
+java script => JavaScript
+git hub => GitHub

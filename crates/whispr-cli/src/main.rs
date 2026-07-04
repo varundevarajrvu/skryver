@@ -10,7 +10,7 @@ use std::sync::mpsc;
 use std::time::Instant;
 
 use anyhow::{Context, Result};
-use whispr_core::{asr, audio, hotkey, inject};
+use whispr_core::{asr, audio, hotkey, inject, postproc};
 
 fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -18,6 +18,8 @@ fn main() -> Result<()> {
     let mut wav: Option<PathBuf> = None;
     let mut engine_kind = asr::EngineKind::Moonshine;
     let mut threads: i32 = 4; // M0: 4 threads beats 8 on the 1334U (E-core contention)
+    let mut dict_path: Option<PathBuf> = None;
+    let mut save_takes: Option<PathBuf> = None;
     let mut it = args.iter();
     while let Some(a) = it.next() {
         match a.as_str() {
@@ -27,12 +29,36 @@ fn main() -> Result<()> {
             }
             "--wav" => wav = it.next().map(PathBuf::from),
             "--threads" => threads = it.next().and_then(|s| s.parse().ok()).unwrap_or(4),
+            "--dict" => dict_path = it.next().map(PathBuf::from),
+            "--save-takes" => save_takes = it.next().map(PathBuf::from),
             "--help" | "-h" => {
-                println!("whispr-cli [--engine moonshine|parakeet] [--models DIR] [--threads N] [--wav FILE]");
+                println!(
+                    "whispr-cli [--engine moonshine|parakeet] [--models DIR] [--threads N] \
+                     [--dict FILE] [--save-takes DIR] [--wav FILE]"
+                );
                 return Ok(());
             }
             other => eprintln!("ignoring unknown arg: {other}"),
         }
+    }
+
+    // Dictionary: --dict, else whispr.dict.txt next to cwd if present.
+    let dict = match &dict_path {
+        Some(p) => postproc::Dictionary::load(p)?,
+        None => {
+            let default = PathBuf::from("whispr.dict.txt");
+            if default.exists() {
+                postproc::Dictionary::load(&default)?
+            } else {
+                postproc::Dictionary::empty()
+            }
+        }
+    };
+    if !dict.is_empty() {
+        eprintln!("[dict] {} rule(s) loaded", dict.len());
+    }
+    if let Some(dir) = &save_takes {
+        std::fs::create_dir_all(dir).context("create takes dir")?;
     }
 
     let root = match models_root {
@@ -52,10 +78,20 @@ fn main() -> Result<()> {
     // Worker: transcribe + paste off the hotkey loop, in take order.
     let (tx, rx) = mpsc::channel::<(Vec<f32>, Instant)>();
     let worker = std::thread::spawn(move || {
+        let mut take_no = 0u32;
         for (samples, t_release) in rx {
             let audio_s = samples.len() as f32 / asr::SAMPLE_RATE as f32;
-            let text = engine.transcribe(&samples);
+            let text = dict.apply(&engine.transcribe(&samples));
             let asr_ms = t_release.elapsed().as_millis();
+            if let Some(dir) = &save_takes {
+                take_no += 1;
+                let path = dir.join(format!("take{take_no:03}.wav"));
+                if let Err(e) = write_wav(&path, &samples) {
+                    eprintln!("[takes] save failed: {e}");
+                } else {
+                    eprintln!("[takes] {} — \"{text}\"", path.display());
+                }
+            }
             if text.is_empty() {
                 eprintln!("[asr] (no speech detected) — {asr_ms} ms");
                 continue;
@@ -90,6 +126,21 @@ fn main() -> Result<()> {
     }
     drop(tx);
     let _ = worker.join();
+    Ok(())
+}
+
+fn write_wav(path: &std::path::Path, samples: &[f32]) -> Result<()> {
+    let spec = hound::WavSpec {
+        channels: 1,
+        sample_rate: asr::SAMPLE_RATE,
+        bits_per_sample: 16,
+        sample_format: hound::SampleFormat::Int,
+    };
+    let mut w = hound::WavWriter::create(path, spec)?;
+    for &s in samples {
+        w.write_sample((s.clamp(-1.0, 1.0) * 32767.0) as i16)?;
+    }
+    w.finalize()?;
     Ok(())
 }
 
