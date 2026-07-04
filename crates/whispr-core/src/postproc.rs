@@ -90,6 +90,26 @@ pub fn needs_rephrase(text: &str) -> bool {
         return true;
     }
 
+    // Subject-verb agreement slips ("i is", "they was", "he don't", ...).
+    // Word pairs that are wrong in (nearly) any context; false positives just
+    // cost one LLM pass, false negatives paste bad grammar - so lean inclusive.
+    const BAD_BIGRAMS: &[(&str, &str)] = &[
+        ("i", "is"), ("i", "are"), ("i", "has"), ("i", "does"), ("i", "be"),
+        ("he", "are"), ("he", "have"), ("he", "do"), ("he", "don't"), ("he", "were"),
+        ("she", "are"), ("she", "have"), ("she", "do"), ("she", "don't"), ("she", "were"),
+        ("it", "are"), ("it", "have"), ("it", "don't"), ("it", "were"),
+        ("we", "is"), ("we", "was"), ("we", "has"), ("we", "does"),
+        ("they", "is"), ("they", "was"), ("they", "has"), ("they", "does"),
+        ("you", "is"), ("you", "was"), ("you", "has"), ("you", "does"),
+        ("there", "be"), ("them", "is"), ("them", "was"),
+    ];
+    if words
+        .windows(2)
+        .any(|p| BAD_BIGRAMS.iter().any(|(a, b)| p[0] == *a && p[1] == *b))
+    {
+        return true;
+    }
+
     // List intent that the rule-based splitter couldn't segment (run-on list).
     if has_list_intent(&lower) && bulletize(text) == text {
         return true;
@@ -377,6 +397,19 @@ mod tests {
         assert!(needs_rephrase("Make me a shopping list of apple mango breads"));
         // Pause-separated list is handled instantly by the bulletizer.
         assert!(!needs_rephrase("Make me a shopping list, apples, mangoes and bread."));
+    }
+
+    #[test]
+    fn rephrase_on_agreement_errors() {
+        assert!(needs_rephrase("I is going home today."));
+        assert!(needs_rephrase("They was late for the meeting."));
+        assert!(needs_rephrase("He don't know the answer."));
+        assert!(needs_rephrase("We was thinking about the project."));
+        // Correct grammar must NOT trigger the slow path.
+        assert!(!needs_rephrase("I am going home today."));
+        assert!(!needs_rephrase("They were late for the meeting."));
+        assert!(!needs_rephrase("He doesn't know the answer."));
+        assert!(!needs_rephrase("I was at home yesterday."));
     }
 
     #[test]
