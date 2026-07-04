@@ -1,30 +1,35 @@
 {
   "project": "whispr",
-  "updated": "2026-07-03",
+  "updated": "2026-07-04",
   "phases": [
     {
       "id": "phase1-research",
-      "status": "in_progress",
+      "status": "done",
       "tasks": [
-        { "id": "r1", "title": "Research Wispr Flow architecture", "status": "in_progress", "owner": "sonnet-subagent" },
-        { "id": "r2", "title": "Research complaints + competitor landscape", "status": "in_progress", "owner": "sonnet-subagent" },
-        { "id": "r3", "title": "Research local ASR stacks (whisper.cpp, faster-whisper, Moonshine, sherpa-onnx, VAD)", "status": "in_progress", "owner": "sonnet-subagent" },
-        { "id": "r4", "title": "Opus synthesis of r1-r3 into findings.md", "status": "pending", "owner": "opus-subagent" }
+        { "id": "r1", "title": "Research Wispr Flow architecture", "status": "done", "owner": "sonnet-subagent" },
+        { "id": "r2", "title": "Research complaints + competitor landscape", "status": "done", "owner": "sonnet-subagent" },
+        { "id": "r3", "title": "Research local ASR stacks (whisper.cpp, faster-whisper, Moonshine, sherpa-onnx, VAD)", "status": "done", "owner": "sonnet-subagent" },
+        { "id": "r4", "title": "Synthesis of r1-r3 into findings.md", "status": "done", "owner": "orchestrator (done inline, subagent unnecessary)" }
       ]
     },
     {
       "id": "phase2-planning",
-      "status": "pending",
+      "status": "in_progress",
       "tasks": [
-        { "id": "p1", "title": "Write implementation_plan.md (model selection, quantization, architecture, task breakdown)", "status": "pending" },
-        { "id": "p2", "title": "USER GATE: plan approval before any implementation", "status": "pending" }
+        { "id": "p1", "title": "Write implementation_plan.md (model selection, quantization, architecture, task breakdown)", "status": "done" },
+        { "id": "p2", "title": "USER GATE: plan approval before any implementation", "status": "awaiting_user" }
       ]
     },
     {
       "id": "phase3-implementation",
       "status": "pending",
       "tasks": [
-        { "id": "i0", "title": "Task breakdown TBD from approved plan", "status": "pending" }
+        { "id": "i0", "title": "M0 benchmark spike: measure RTF of Parakeet int8 / whisper base-small Q5 / Moonshine on i5-1334U; finalize engine; prove toolchain", "status": "pending" },
+        { "id": "i1", "title": "M1 headless core pipeline: hotkey -> capture -> VAD -> ASR -> paste injection", "status": "pending" },
+        { "id": "i2", "title": "M2 Tauri tray app + paperback settings UI (hotkey config, model manager, history)", "status": "pending" },
+        { "id": "i3", "title": "M3 polish layer: rule-based cleanup, custom dictionary, terminal-aware mode, hands-free VAD auto-stop", "status": "pending" },
+        { "id": "i4", "title": "M4 robustness: injection dead-zone testing, fallbacks, footprint check, error states", "status": "pending" },
+        { "id": "i5", "title": "M5 ship: README, MIT license, CI, installer, GitHub push (needs gh auth login)", "status": "pending" }
       ]
     },
     {
@@ -45,8 +50,5 @@
       ]
     }
   ],
-  "open_questions": [
-    "CONFIRM: Windows-first + portable core (chosen as default while user AFK; spec said MacBook M1 Pro)",
-    "CONFIRM: repo renamed Wishpr -> whispr"
-  ]
+  "open_questions": []
 }
