@@ -27,23 +27,22 @@ impl Dictionary {
     pub fn load(path: &Path) -> Result<Self> {
         let text = std::fs::read_to_string(path)
             .with_context(|| format!("read dictionary {}", path.display()))?;
-        let mut rules = Vec::new();
-        for line in text.lines() {
-            let line = line.trim();
-            if line.is_empty() || line.starts_with('#') {
-                continue;
-            }
-            if let Some((from, to)) = line.split_once("=>") {
-                let from = from.trim().to_lowercase();
-                let to = to.trim().to_string();
-                if !from.is_empty() && !to.is_empty() {
-                    rules.push((from, to));
-                }
-            }
-        }
+        Ok(Self::from_rules(parse_dict_str(&text)))
+    }
+
+    pub fn from_rules(rules: Vec<(String, String)>) -> Self {
+        let mut rules: Vec<(String, String)> = rules
+            .into_iter()
+            .map(|(f, t)| (f.trim().to_lowercase(), t.trim().to_string()))
+            .filter(|(f, t)| !f.is_empty() && !t.is_empty())
+            .collect();
         // Longest needle first so "java script" wins over a hypothetical "java".
         rules.sort_by_key(|(from, _)| std::cmp::Reverse(from.len()));
-        Ok(Self { rules })
+        Self { rules }
+    }
+
+    pub fn rules(&self) -> &[(String, String)] {
+        &self.rules
     }
 
     pub fn len(&self) -> usize {
@@ -61,6 +60,17 @@ impl Dictionary {
         }
         out
     }
+}
+
+/// Parse `wrong => right` dictionary lines (comments/# and blanks skipped).
+pub fn parse_dict_str(text: &str) -> Vec<(String, String)> {
+    text.lines()
+        .map(str::trim)
+        .filter(|l| !l.is_empty() && !l.starts_with('#'))
+        .filter_map(|l| l.split_once("=>"))
+        .map(|(f, t)| (f.trim().to_string(), t.trim().to_string()))
+        .filter(|(f, t)| !f.is_empty() && !t.is_empty())
+        .collect()
 }
 
 /// Decide whether a transcript would benefit from the (slow) LLM rephrase pass.

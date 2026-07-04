@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>whispr</title>
+<style>
+  :root {
+    --paper: #f4ecd8;
+    --paper-2: #efe6cf;
+    --ink: #3c2d23;
+    --ink-soft: #6b5744;
+    --ink-faint: #8c795f;
+    --rule: rgba(60, 45, 35, 0.10);
+    --accent: #8a5a34;
+    --accent-2: #b3492f;
+    --card: #fbf6ea;
+    --card-border: rgba(60, 45, 35, 0.16);
+    --shadow: rgba(60, 45, 35, 0.12);
+    --danger: #8a3324;
+    --good: #4c6b3f;
+  }
+  :root[data-theme="dark"] {
+    --paper: #211c17;
+    --paper-2: #2a241d;
+    --ink: #e8dcc6;
+    --ink-soft: #c3b393;
+    --ink-faint: #8f8168;
+    --rule: rgba(232, 220, 198, 0.08);
+    --accent: #d0a672;
+    --accent-2: #dd8266;
+    --card: #2a251e;
+    --card-border: rgba(232, 220, 198, 0.14);
+    --shadow: rgba(0, 0, 0, 0.35);
+    --good: #9ac488;
+    --danger: #e3a08f;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root[data-theme="auto"] {
+      --paper: #211c17;
+      --paper-2: #2a241d;
+      --ink: #e8dcc6;
+      --ink-soft: #c3b393;
+      --ink-faint: #8f8168;
+      --rule: rgba(232, 220, 198, 0.08);
+      --accent: #d0a672;
+      --accent-2: #dd8266;
+      --card: #2a251e;
+      --card-border: rgba(232, 220, 198, 0.14);
+      --shadow: rgba(0, 0, 0, 0.35);
+      --good: #9ac488;
+      --danger: #e3a08f;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
+  }
+
+  body {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 27px,
+      var(--rule) 27px,
+      var(--rule) 28px
+    );
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+
+  .page {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 28px 32px 56px;
+  }
+
+  header.masthead {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--ink);
+    padding-bottom: 10px;
+    margin-bottom: 22px;
+  }
+
+  header.masthead h1 {
+    font-size: 30px;
+    font-weight: normal;
+    letter-spacing: 0.02em;
+    margin: 0;
+    font-variant: small-caps;
+  }
+
+  header.masthead .tagline {
+    font-size: 12px;
+    color: var(--ink-faint);
+    font-style: italic;
+  }
+
+  .status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding: 14px 18px;
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 3px;
+    box-shadow: 0 1px 3px var(--shadow);
+  }
+
+  .status-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--ink-faint);
+    flex: none;
+    transition: background 0.2s ease;
+  }
+  .status-dot.ready { background: var(--good); }
+  .status-dot.busy { background: var(--accent-2); animation: pulse 1.2s ease-in-out infinite; }
+  .status-dot.error { background: var(--danger); }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+  }
+
+  .status-text {
+    font-size: 15px;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+
+  .toggle-btn {
+    font-family: inherit;
+    font-size: 14px;
+    padding: 8px 18px;
+    border-radius: 3px;
+    border: 1.5px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    cursor: pointer;
+    letter-spacing: 0.03em;
+  }
+  .toggle-btn.paused {
+    background: transparent;
+    color: var(--ink);
+  }
+  .toggle-btn:active { transform: translateY(1px); }
+
+  section.card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 3px;
+    padding: 18px 22px;
+    margin-bottom: 18px;
+    box-shadow: 0 1px 3px var(--shadow);
+  }
+
+  section.card h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-variant: small-caps;
+    color: var(--ink-faint);
+    margin: 0 0 14px;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 8px;
+  }
+
+  .field-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+  .field-row:last-child { margin-bottom: 0; }
+
+  .field-label {
+    font-size: 15px;
+    color: var(--ink);
+    flex: none;
+    min-width: 130px;
+  }
+
+  select, input[type="text"] {
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--ink);
+    background: var(--paper-2);
+    border: 1px solid var(--card-border);
+    border-radius: 3px;
+    padding: 6px 10px;
+  }
+
+  select { min-width: 200px; cursor: pointer; }
+
+  .radio-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .radio-group label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .radio-group input { accent-color: var(--accent); cursor: pointer; }
+
+  .helper {
+    font-size: 12.5px;
+    font-style: italic;
+    color: var(--ink-faint);
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+
+  table.dict-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 10px;
+  }
+  table.dict-table th {
+    text-align: left;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--ink-faint);
+    font-weight: normal;
+    padding: 4px 6px;
+    border-bottom: 1px solid var(--rule);
+  }
+  table.dict-table td {
+    padding: 4px 6px;
+    border-bottom: 1px solid var(--rule);
+  }
+  table.dict-table input[type="text"] {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 4px 2px;
+  }
+  table.dict-table input[type="text"]:focus {
+    outline: none;
+    background: var(--paper-2);
+    border-radius: 2px;
+  }
+  .arrow-col { width: 24px; text-align: center; color: var(--ink-faint); }
+  .del-col { width: 30px; text-align: center; }
+
+  .icon-btn {
+    background: none;
+    border: none;
+    color: var(--ink-faint);
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 2px 6px;
+  }
+  .icon-btn:hover { color: var(--danger); }
+
+  .link-btn {
+    background: none;
+    border: none;
+    color: var(--accent);
+    font-family: inherit;
+    font-size: 13.5px;
+    cursor: pointer;
+    padding: 4px 0;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .save-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 4px;
+  }
+
+  .save-btn {
+    font-family: inherit;
+    font-size: 15px;
+    padding: 9px 24px;
+    border-radius: 3px;
+    border: 1.5px solid var(--accent);
+    background: var(--accent);
+    color: var(--paper);
+    cursor: pointer;
+    letter-spacing: 0.02em;
+  }
+  .save-btn:active { transform: translateY(1px); }
+  .save-btn:disabled { opacity: 0.5; cursor: default; }
+
+  .save-note {
+    font-size: 12.5px;
+    color: var(--ink-faint);
+    font-style: italic;
+  }
+
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .history-item {
+    padding: 12px 14px;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+  }
+
+  .history-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+
+  .badge {
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 7px;
+    border-radius: 10px;
+    border: 1px solid var(--card-border);
+  }
+  .badge.fast { color: var(--good); border-color: var(--good); }
+  .badge.ai { color: var(--accent-2); border-color: var(--accent-2); }
+
+  .history-text {
+    font-size: 15px;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    color: var(--ink);
+  }
+
+  .empty-note {
+    font-size: 14px;
+    font-style: italic;
+    color: var(--ink-faint);
+    text-align: center;
+    padding: 18px 0;
+  }
+
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="masthead">
+    <h1>whispr</h1>
+    <span class="tagline">a quiet dictation companion</span>
+  </header>
+
+  <div class="status-row">
+    <div class="status-left">
+      <span class="status-dot" id="statusDot"></span>
+      <span class="status-text" id="statusText">connecting…</span>
+    </div>
+    <button class="toggle-btn" id="toggleBtn" type="button">Pause</button>
+  </div>
+
+  <section class="card">
+    <h2>Engine</h2>
+    <div class="field-row">
+      <span class="field-label">Recognition model</span>
+      <div class="radio-group">
+        <label><input type="radio" name="engine" value="parakeet" /> Parakeet — High accuracy</label>
+        <label><input type="radio" name="engine" value="moonshine" /> Moonshine — Fastest</label>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Hotkey</h2>
+    <div class="field-row">
+      <span class="field-label">Hold-to-dictate key</span>
+      <select id="hotkeySelect"></select>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>AI cleanup</h2>
+    <div class="field-row">
+      <span class="field-label">Polish mode</span>
+      <div class="radio-group">
+        <label><input type="radio" name="llmMode" value="off" /> Off</label>
+        <label><input type="radio" name="llmMode" value="auto" /> Auto</label>
+        <label><input type="radio" name="llmMode" value="always" /> Always</label>
+      </div>
+    </div>
+    <p class="helper">
+      Auto (recommended) only sends messy takes — fillers, stutters, run-on lists — through the
+      local language model; clean speech stays on the instant path. Always polishes every take,
+      which adds roughly 3–10 seconds of latency per take with no GPU.
+    </p>
+  </section>
+
+  <section class="card">
+    <h2>Appearance</h2>
+    <div class="field-row">
+      <span class="field-label">Theme</span>
+      <div class="radio-group">
+        <label><input type="radio" name="theme" value="auto" /> Auto</label>
+        <label><input type="radio" name="theme" value="light" /> Light</label>
+        <label><input type="radio" name="theme" value="dark" /> Dark</label>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Personal dictionary</h2>
+    <table class="dict-table">
+      <thead>
+        <tr><th>Whispr hears…</th><th></th><th>…and writes</th><th></th></tr>
+      </thead>
+      <tbody id="dictBody"></tbody>
+    </table>
+    <button class="link-btn" id="addRowBtn" type="button">+ add a rule</button>
+    <p class="helper">
+      Add a rule when whispr repeatedly misspells a word you use (e.g. a name). Matching is
+      case-insensitive and whole-word.
+    </p>
+  </section>
+
+  <div class="save-row">
+    <button class="save-btn" id="saveBtn" type="button">Save settings</button>
+    <span class="save-note" id="saveNote"></span>
+  </div>
+
+  <section class="card" style="margin-top: 26px;">
+    <h2>Recent takes</h2>
+    <div class="history-list" id="historyList">
+      <div class="empty-note">Nothing dictated yet.</div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  var HOTKEYS = [
+    ["F1", 0x70], ["F2", 0x71], ["F3", 0x72], ["F4", 0x73],
+    ["F5", 0x74], ["F6", 0x75], ["F7", 0x76], ["F8", 0x77],
+    ["F9", 0x78], ["F10", 0x79], ["F11", 0x7A], ["F12", 0x7B]
+  ];
+
+  var state = {
+    settings: {
+      engine: "parakeet",
+      hotkey_vk: 0x78,
+      llm_mode: "auto",
+      theme: "auto",
+      dict: []
+    },
+    enabled: true,
+    status: "starting…"
+  };
+
+  var els = {};
+
+  function q(id) { return document.getElementById(id); }
+
+  function applyTheme() {
+    document.documentElement.setAttribute("data-theme", state.settings.theme || "auto");
+  }
+
+  function renderHotkeySelect() {
+    els.hotkeySelect.innerHTML = "";
+    HOTKEYS.forEach(function (pair) {
+      var opt = document.createElement("option");
+      opt.value = pair[1];
+      opt.textContent = pair[0];
+      if (pair[1] === state.settings.hotkey_vk) opt.selected = true;
+      els.hotkeySelect.appendChild(opt);
+    });
+  }
+
+  function renderRadios() {
+    setRadioValue("engine", state.settings.engine);
+    setRadioValue("llmMode", state.settings.llm_mode);
+    setRadioValue("theme", state.settings.theme);
+  }
+
+  function setRadioValue(name, value) {
+    var nodes = document.getElementsByName(name);
+    for (var i = 0; i < nodes.length; i++) {
+      nodes[i].checked = nodes[i].value === value;
+    }
+  }
+
+  function getRadioValue(name) {
+    var nodes = document.getElementsByName(name);
+    for (var i = 0; i < nodes.length; i++) {
+      if (nodes[i].checked) return nodes[i].value;
+    }
+    return null;
+  }
+
+  function renderDictTable() {
+    els.dictBody.innerHTML = "";
+    state.settings.dict.forEach(function (pair, idx) {
+      els.dictBody.appendChild(dictRow(pair[0], pair[1], idx));
+    });
+  }
+
+  function dictRow(from, to, idx) {
+    var tr = document.createElement("tr");
+
+    var tdFrom = document.createElement("td");
+    var inFrom = document.createElement("input");
+    inFrom.type = "text";
+    inFrom.value = from;
+    inFrom.placeholder = "wrong word";
+    inFrom.addEventListener("input", function () {
+      state.settings.dict[idx][0] = inFrom.value;
+    });
+    tdFrom.appendChild(inFrom);
+
+    var tdArrow = document.createElement("td");
+    tdArrow.className = "arrow-col";
+    tdArrow.textContent = "→";
+
+    var tdTo = document.createElement("td");
+    var inTo = document.createElement("input");
+    inTo.type = "text";
+    inTo.value = to;
+    inTo.placeholder = "correct word";
+    inTo.addEventListener("input", function () {
+      state.settings.dict[idx][1] = inTo.value;
+    });
+    tdTo.appendChild(inTo);
+
+    var tdDel = document.createElement("td");
+    tdDel.className = "del-col";
+    var delBtn = document.createElement("button");
+    delBtn.className = "icon-btn";
+    delBtn.type = "button";
+    delBtn.textContent = "✕";
+    delBtn.title = "Remove rule";
+    delBtn.addEventListener("click", function () {
+      state.settings.dict.splice(idx, 1);
+      renderDictTable();
+    });
+    tdDel.appendChild(delBtn);
+
+    tr.appendChild(tdFrom);
+    tr.appendChild(tdArrow);
+    tr.appendChild(tdTo);
+    tr.appendChild(tdDel);
+    return tr;
+  }
+
+  function collectDictFromTable() {
+    // Table inputs mutate state.settings.dict directly via listeners,
+    // so this just filters out fully-empty rows before a save.
+    return state.settings.dict.filter(function (pair) {
+      return (pair[0] || "").trim() !== "" && (pair[1] || "").trim() !== "";
+    });
+  }
+
+  function statusClass(status) {
+    var s = (status || "").toLowerCase();
+    if (s.indexOf("error") !== -1 || s.indexOf("failed") !== -1 || s.indexOf("unavailable") !== -1) return "error";
+    if (s === "ready") return "ready";
+    if (s === "starting…" || s === "") return "";
+    return "busy";
+  }
+
+  function renderStatus() {
+    els.statusText.textContent = state.status;
+    els.statusDot.className = "status-dot " + statusClass(state.status);
+  }
+
+  function renderToggle() {
+    if (state.enabled) {
+      els.toggleBtn.textContent = "Pause";
+      els.toggleBtn.classList.remove("paused");
+    } else {
+      els.toggleBtn.textContent = "Resume";
+      els.toggleBtn.classList.add("paused");
+    }
+  }
+
+  function historyItemNode(entry) {
+    var div = document.createElement("div");
+    div.className = "history-item";
+
+    var meta = document.createElement("div");
+    meta.className = "history-meta";
+
+    var time = document.createElement("span");
+    time.textContent = entry.time;
+    meta.appendChild(time);
+
+    var badge = document.createElement("span");
+    badge.className = "badge " + (entry.path === "ai" ? "ai" : "fast");
+    badge.textContent = entry.path === "ai" ? "ai" : "fast";
+    meta.appendChild(badge);
+
+    var ms = document.createElement("span");
+    ms.textContent = entry.ms + " ms";
+    meta.appendChild(ms);
+
+    var text = document.createElement("div");
+    text.className = "history-text";
+    text.textContent = entry.text;
+
+    div.appendChild(meta);
+    div.appendChild(text);
+    return div;
+  }
+
+  function renderHistory(entries) {
+    els.historyList.innerHTML = "";
+    if (!entries || entries.length === 0) {
+      var empty = document.createElement("div");
+      empty.className = "empty-note";
+      empty.textContent = "Nothing dictated yet.";
+      els.historyList.appendChild(empty);
+      return;
+    }
+    entries.forEach(function (entry) {
+      els.historyList.appendChild(historyItemNode(entry));
+    });
+  }
+
+  function prependHistory(entry) {
+    var empty = els.historyList.querySelector(".empty-note");
+    if (empty) empty.remove();
+    els.historyList.insertBefore(historyItemNode(entry), els.historyList.firstChild);
+  }
+
+  function waitForTauri(cb) {
+    var tries = 0;
+    (function poll() {
+      if (window.__TAURI__ && window.__TAURI__.core && window.__TAURI__.event) {
+        cb();
+        return;
+      }
+      tries++;
+      if (tries > 200) {
+        els.statusText.textContent = "whispr backend unavailable";
+        return;
+      }
+      setTimeout(poll, 25);
+    })();
+  }
+
+  function init() {
+    els.statusDot = q("statusDot");
+    els.statusText = q("statusText");
+    els.toggleBtn = q("toggleBtn");
+    els.hotkeySelect = q("hotkeySelect");
+    els.dictBody = q("dictBody");
+    els.addRowBtn = q("addRowBtn");
+    els.saveBtn = q("saveBtn");
+    els.saveNote = q("saveNote");
+    els.historyList = q("historyList");
+
+    els.toggleBtn.addEventListener("click", function () {
+      state.enabled = !state.enabled;
+      renderToggle();
+      invoke("set_enabled", { enabled: state.enabled });
+    });
+
+    els.addRowBtn.addEventListener("click", function () {
+      state.settings.dict.push(["", ""]);
+      renderDictTable();
+      var inputs = els.dictBody.querySelectorAll("input[type=text]");
+      if (inputs.length) inputs[inputs.length - 2].focus();
+    });
+
+    els.hotkeySelect.addEventListener("change", function () {
+      state.settings.hotkey_vk = parseInt(els.hotkeySelect.value, 10);
+    });
+
+    ["engine", "llmMode", "theme"].forEach(function (name) {
+      var nodes = document.getElementsByName(name);
+      for (var i = 0; i < nodes.length; i++) {
+        nodes[i].addEventListener("change", function () {
+          state.settings.engine = getRadioValue("engine");
+          state.settings.llm_mode = getRadioValue("llmMode");
+          state.settings.theme = getRadioValue("theme");
+          applyTheme();
+        });
+      }
+    });
+
+    els.saveBtn.addEventListener("click", function () {
+      state.settings.dict = collectDictFromTable();
+      var payload = {
+        engine: state.settings.engine,
+        hotkey_vk: state.settings.hotkey_vk,
+        llm_mode: state.settings.llm_mode,
+        theme: state.settings.theme,
+        dict: state.settings.dict
+      };
+      els.saveBtn.disabled = true;
+      els.saveNote.textContent = "Saving…";
+      invoke("set_settings", { settings: payload })
+        .then(function () {
+          els.saveNote.textContent = "Saved. Engine/AI-cleanup changes may take a few seconds to re-apply.";
+          renderDictTable();
+        })
+        .catch(function (err) {
+          els.saveNote.textContent = "Save failed: " + err;
+        })
+        .finally(function () {
+          els.saveBtn.disabled = false;
+          setTimeout(function () { els.saveNote.textContent = ""; }, 6000);
+        });
+    });
+
+    waitForTauri(function () {
+      invoke("get_state").then(function (s) {
+        state.settings = s.settings;
+        state.enabled = s.enabled;
+        state.status = s.status;
+        applyTheme();
+        renderHotkeySelect();
+        renderRadios();
+        renderDictTable();
+        renderToggle();
+        renderStatus();
+      }).catch(function (err) {
+        els.statusText.textContent = "error: " + err;
+      });
+
+      invoke("get_history").then(function (h) {
+        renderHistory(h);
+      }).catch(function () {});
+
+      listen("take", function (event) {
+        prependHistory(event.payload);
+      });
+
+      listen("status", function (event) {
+        state.status = event.payload;
+        renderStatus();
+      });
+    });
+  }
+
+  function invoke(cmd, args) {
+    return window.__TAURI__.core.invoke(cmd, args);
+  }
+
+  function listen(name, cb) {
+    return window.__TAURI__.event.listen(name, cb);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>

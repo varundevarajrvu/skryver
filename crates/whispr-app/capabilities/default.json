@@ -1,0 +1,6 @@
+{
+  "identifier": "default",
+  "description": "whispr settings window",
+  "windows": ["main"],
+  "permissions": ["core:default"]
+}
