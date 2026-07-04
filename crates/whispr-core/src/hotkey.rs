@@ -28,14 +28,14 @@ impl HoldKey {
             if self.is_down() {
                 return true;
             }
-            std::thread::sleep(std::time::Duration::from_millis(15));
+            std::thread::sleep(std::time::Duration::from_millis(8));
         }
     }
 
     /// Block until the key is released.
     pub fn wait_up(&self) {
         while self.is_down() {
-            std::thread::sleep(std::time::Duration::from_millis(15));
+            std::thread::sleep(std::time::Duration::from_millis(8));
         }
     }
 }
