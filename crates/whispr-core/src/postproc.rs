@@ -99,68 +99,100 @@ pub fn needs_rephrase(text: &str) -> bool {
 }
 
 fn has_list_intent(lower: &str) -> bool {
-    let Some(pos) = lower.find("list") else { return false };
-    let after = pos + "list".len();
-    if lower[after..].chars().next().is_some_and(|c| c.is_alphanumeric()) {
+    if !contains_word(lower, "list") {
         return false;
     }
-    let intro_words = lower[..pos].split_whitespace().count();
-    let has_verb = ["make", "create", "write", "give", "note", "add", "start"]
-        .iter()
-        .any(|v| lower[..pos].contains(v));
-    intro_words <= 8 && (has_verb || lower[pos..].starts_with("list of"))
+    lower.contains("list of")
+        || ["make", "create", "write", "give", "note", "add", "start", "want", "need"]
+            .iter()
+            .any(|v| contains_word(lower, v))
 }
 
-/// Deterministic list formatting: if the transcript opens with a list intent
-/// ("make me a shopping list ...", "create a to-do list ...", "list of ..."),
-/// split the items on commas/semicolons/" and " and emit them as `- ` bullet
-/// lines. Conservative by design — needs >= 2 items, otherwise the text passes
-/// through untouched. Never adds or drops words (unlike a small LLM, measured).
+fn contains_word(lower: &str, word: &str) -> bool {
+    let mut search = 0;
+    while let Some(rel) = lower[search..].find(word) {
+        let start = search + rel;
+        let end = start + word.len();
+        let before = start == 0
+            || !lower[..start].chars().next_back().is_some_and(|c| c.is_alphanumeric());
+        let after =
+            end >= lower.len() || !lower[end..].chars().next().is_some_and(|c| c.is_alphanumeric());
+        if before && after {
+            return true;
+        }
+        search = end;
+        if search >= lower.len() {
+            break;
+        }
+    }
+    false
+}
+
+/// Deterministic list formatting. Finds an enumeration anywhere in the
+/// transcript — the text after the last colon, or after the last "anchor" word
+/// people use when dictating lists ("...list,", "should have", "add",
+/// "the following", "need", "buy") — and, if it splits into short
+/// comma/"and"-separated items, keeps the spoken preamble and bullets the
+/// items. Conservative: >= 2 items, every item <= 5 words, otherwise the text
+/// passes through untouched. Never adds or drops words (unlike a small LLM,
+/// measured).
 pub fn bulletize(text: &str) -> String {
     let lower = text.to_lowercase();
-    let Some(list_pos) = lower.find("list") else {
-        return text.to_string();
-    };
-    // "list" must end at a word boundary ("playlist," ok; "listened" not).
-    let after = list_pos + "list".len();
-    if lower[after..].chars().next().is_some_and(|c| c.is_alphanumeric()) {
-        return text.to_string();
-    }
-    // Intent must appear early (an opener, not a mention later in the sentence).
-    let intro_words = lower[..list_pos].split_whitespace().count();
-    if intro_words > 8 {
-        return text.to_string();
-    }
-    let has_verb = ["make", "create", "write", "give", "note", "add", "start"]
-        .iter()
-        .any(|v| lower[..list_pos].contains(v));
-    let is_list_of = lower[list_pos..].starts_with("list of");
-    if !has_verb && !is_list_of {
+    // Cheap gate: dictated lists mention "list" or use an explicit colon.
+    if !contains_word(&lower, "list") && !lower.contains(':') {
         return text.to_string();
     }
 
-    // Items start after "list" (+ optional "of <noun phrase>" up to a separator).
-    let mut items_start = list_pos + "list".len();
-    if is_list_of {
-        // keep "of <words>" in the intro until the first separator
-        let rest = &text[items_start..];
-        let sep = rest.find([',', ':', ';']).unwrap_or(0);
-        items_start += sep;
+    // Candidate split point: last colon, or the end of the last anchor word.
+    const ANCHORS: &[&str] = &[
+        "list", "have", "has", "add", "include", "buy", "get", "need", "needs", "following",
+        "pack", "bring",
+    ];
+    // (a colon inside a time like "6:30" doesn't count)
+    let mut anchor_end: Option<usize> = lower
+        .rfind(':')
+        .filter(|&p| !lower[p + 1..].chars().next().is_some_and(|c| c.is_ascii_digit()))
+        .map(|p| p + 1);
+    for a in ANCHORS {
+        let mut search = 0;
+        while let Some(rel) = lower[search..].find(a) {
+            let start = search + rel;
+            let end = start + a.len();
+            let before = start == 0
+                || !lower[..start].chars().next_back().is_some_and(|c| c.is_alphanumeric());
+            let after = end >= lower.len()
+                || !lower[end..].chars().next().is_some_and(|c| c.is_alphanumeric());
+            if before && after && end > anchor_end.unwrap_or(0) {
+                // Anchor must actually be followed by material to enumerate.
+                if lower[end..].trim_start_matches([':', ',', ';', ' ']).len() > 2 {
+                    anchor_end = Some(end);
+                }
+            }
+            search = end;
+            if search >= lower.len() {
+                break;
+            }
+        }
     }
-    let intro = text[..items_start].trim().trim_end_matches([':', ',', ';']);
-    let items_text = text[items_start..].trim_start_matches([':', ',', ';']).trim();
-    if items_text.is_empty() {
+    let Some(split_at) = anchor_end else {
+        return text.to_string();
+    };
+
+    let intro = text[..split_at].trim().trim_end_matches([':', ',', ';']);
+    let items_text = text[split_at..].trim_start_matches([':', ',', ';', ' ']).trim();
+    if intro.is_empty() || items_text.is_empty() {
         return text.to_string();
     }
 
     let items: Vec<String> = items_text
         .split([',', ';'])
-        .flat_map(|chunk| split_on_and(chunk))
+        .flat_map(split_on_and)
         .map(|s| s.trim().trim_end_matches('.').trim().to_string())
         .filter(|s| !s.is_empty())
         .map(capitalize)
         .collect();
-    if items.len() < 2 {
+    // Every item must look like an item, not a clause.
+    if items.len() < 2 || items.iter().any(|i| i.split_whitespace().count() > 5) {
         return text.to_string();
     }
 
@@ -300,6 +332,36 @@ mod tests {
     fn bulletize_and_only() {
         let out = bulletize("Create a to-do list, finish the report and call mom.");
         assert_eq!(out, "Create a to-do list:\n- Finish the report\n- Call mom");
+    }
+
+    #[test]
+    fn bulletize_conversational_colon() {
+        // Real user dictation from live testing (take003).
+        let out = bulletize(
+            "Okay, fine. Now I'm making my grocery list. Make sure to add the following: apple, mango, grapes, dark chocolate.",
+        );
+        assert_eq!(
+            out,
+            "Okay, fine. Now I'm making my grocery list. Make sure to add the following:\n- Apple\n- Mango\n- Grapes\n- Dark chocolate"
+        );
+    }
+
+    #[test]
+    fn bulletize_conversational_should_have() {
+        // Real user dictation from live testing (take004).
+        let out = bulletize(
+            "I want you to make me a grocery list and the grocery list should have apple, mango, grapes, and chocolate.",
+        );
+        assert_eq!(
+            out,
+            "I want you to make me a grocery list and the grocery list should have:\n- Apple\n- Mango\n- Grapes\n- Chocolate"
+        );
+    }
+
+    #[test]
+    fn bulletize_ignores_time_colons() {
+        let t = "Remind the team at 6:30, not 7:00 and not 8:00.";
+        assert_eq!(bulletize(t), t);
     }
 
     #[test]
