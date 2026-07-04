@@ -1,0 +1,10 @@
+[package]
+name = "whispr-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+whispr-core = { path = "../whispr-core" }
+anyhow = "1"
+hound = "3"
