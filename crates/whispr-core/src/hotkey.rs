@@ -41,3 +41,4 @@ impl HoldKey {
 }
 
 pub const VK_F9: i32 = 0x78;
+pub const VK_F10: i32 = 0x79;
