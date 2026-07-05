@@ -38,49 +38,36 @@
 }
 
 :root[data-theme="dark"]{
-  --paper:            #241c14;
-  --paper-raised:     #2f2417;
-  --paper-raised-2:   #2b2115;
-  --ink:              #f7ecd4;
-  --ink-soft:         #ddc9a2;
-  --ink-faint:        #c7b08a;
-  --rule:             rgba(234,217,184,0.12);
-  --rule-strong:      rgba(234,217,184,0.22);
-  --accent:           #c96a5a;
-  --accent-deep:      #e0836f;
-  --accent-soft:      rgba(201,106,90,0.14);
-  --accent-soft-strong:rgba(201,106,90,0.24);
-  --focus-ring:       0 0 0 3px rgba(201,106,90,0.28);
-  --good:             #8fbf7f;
-  --good-soft:        rgba(143,191,127,0.14);
-  --danger:           #e3a08f;
-  --shadow-01:        0 1px 2px rgba(0,0,0,0.25);
-  --shadow-02:        0 12px 32px rgba(0,0,0,0.4);
-  --shadow-deboss:    inset 0 1px 2px rgba(0,0,0,0.35), inset 0 -1px 0 rgba(255,255,255,0.03);
+  --paper:            #131215;
+  --paper-raised:     #1b1a1e;
+  --paper-raised-2:   #201f23;
+  --ink:              #efeae2;
+  --ink-soft:         #c9c3ba;
+  --ink-faint:        #a29b90;
+  --rule:             rgba(239,234,226,0.10);
+  --rule-strong:      rgba(239,234,226,0.20);
+  --accent:           #ef7a5f;
+  --accent-deep:      #ff9478;
+  --accent-soft:      rgba(239,122,95,0.16);
+  --accent-soft-strong:rgba(239,122,95,0.28);
+  --focus-ring:       0 0 0 3px rgba(239,122,95,0.34);
+  --good:             #86d19a;
+  --good-soft:        rgba(134,209,154,0.16);
+  --danger:           #ff9d85;
+  --shadow-01:        0 1px 2px rgba(0,0,0,0.45), 0 0 0 1px rgba(255,255,255,0.02);
+  --shadow-02:        0 16px 40px rgba(0,0,0,0.55);
+  --shadow-deboss:    inset 0 1px 2px rgba(0,0,0,0.45), inset 0 -1px 0 rgba(255,255,255,0.04);
 }
 
-@media (prefers-color-scheme: dark){
-  :root[data-theme="auto"]{
-    --paper:            #241c14;
-    --paper-raised:     #2f2417;
-    --paper-raised-2:   #2b2115;
-    --ink:              #f7ecd4;
-    --ink-soft:         #ddc9a2;
-    --ink-faint:        #c7b08a;
-    --rule:             rgba(234,217,184,0.12);
-    --rule-strong:      rgba(234,217,184,0.22);
-    --accent:           #c96a5a;
-    --accent-deep:      #e0836f;
-    --accent-soft:      rgba(201,106,90,0.14);
-    --accent-soft-strong:rgba(201,106,90,0.24);
-    --focus-ring:       0 0 0 3px rgba(201,106,90,0.28);
-    --good:             #8fbf7f;
-    --good-soft:        rgba(143,191,127,0.14);
-    --danger:           #e3a08f;
-    --shadow-01:        0 1px 2px rgba(0,0,0,0.25);
-    --shadow-02:        0 12px 32px rgba(0,0,0,0.4);
-    --shadow-deboss:    inset 0 1px 2px rgba(0,0,0,0.35), inset 0 -1px 0 rgba(255,255,255,0.03);
-  }
+/* dark-mode-specific paper texture: the light-mode gradients above are tuned
+   for warm cream paper and don't adapt via vars, so give dark its own subtle,
+   near-black-appropriate ambient wash */
+:root[data-theme="dark"] body{
+  background-image:
+    repeating-linear-gradient(to bottom, transparent 0px, transparent 33px, rgba(255,255,255,0.018) 34px),
+    radial-gradient(ellipse at 12% -8%, rgba(255,246,238,0.05), transparent 55%),
+    radial-gradient(ellipse at 100% 0%, rgba(239,122,95,0.07), transparent 45%),
+    radial-gradient(ellipse at 50% 120%, rgba(0,0,0,0.35), transparent 60%);
 }
 
 *{ box-sizing: border-box; }
@@ -208,8 +195,7 @@ header.top{
   transition: background-color .18s ease, color .18s ease;
 }
 .theme-seg button.selected{ background: var(--ink); color: var(--paper); }
-:root[data-theme="dark"] .theme-seg button.selected,
-:root[data-theme="auto"] .theme-seg button.selected{ background: var(--accent); color: var(--paper); }
+:root[data-theme="dark"] .theme-seg button.selected{ background: var(--accent); color: var(--paper); }
 
 /* ---------------- Grid ---------------- */
 .grid{
@@ -482,7 +468,7 @@ section.panel{ padding-top: 2px; }
   color: #fbf3e6;
   box-shadow: 0 1px 4px rgba(0,0,0,0.18);
 }
-:root[data-theme="dark"] .tri-btn.selected{ color:#241c14; }
+:root[data-theme="dark"] .tri-btn.selected{ color: var(--paper); }
 
 /* ---------------- Dictionary table ---------------- */
 table.dict{ width:100%; border-collapse: collapse; font-size: 14px; }
@@ -758,7 +744,6 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
         <span class="status-text" id="statusText">connecting&hellip;</span>
       </span>
       <div class="theme-seg" id="themeSegHeader">
-        <button data-val="auto" type="button">Auto</button>
         <button data-val="light" type="button">Light</button>
         <button data-val="dark" type="button">Dark</button>
       </div>
@@ -839,11 +824,10 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
         <span class="section-index">04</span>
       </div>
       <div class="tri-toggle" id="themeToggleCard">
-        <div class="tri-btn" data-val="auto" role="button" tabindex="0">Auto</div>
         <div class="tri-btn" data-val="light" role="button" tabindex="0">Light</div>
         <div class="tri-btn" data-val="dark" role="button" tabindex="0">Dark</div>
       </div>
-      <p class="helper">Auto follows your Windows setting. The toggle in the header previews the effect immediately.</p>
+      <p class="helper">Light is a warm cream paper; Dark is a true low-light theme. The toggle in the header previews the effect immediately.</p>
     </section>
 
     <!-- Dictionary -->
@@ -901,7 +885,7 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
       engine: "parakeet",
       hotkey_vk: 0x78,
       llm_mode: "auto",
-      theme: "auto",
+      theme: "light",
       dict: []
     },
     enabled: true,
@@ -912,8 +896,14 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
 
   function q(id) { return document.getElementById(id); }
 
+  function normalizeTheme(t) {
+    // Only "dark" is ever dark; anything else (including legacy "auto") is light.
+    return t === "dark" ? "dark" : "light";
+  }
+
   function applyTheme() {
-    document.documentElement.setAttribute("data-theme", state.settings.theme || "auto");
+    state.settings.theme = normalizeTheme(state.settings.theme);
+    document.documentElement.setAttribute("data-theme", state.settings.theme);
     syncThemeControls();
   }
 
@@ -1204,7 +1194,7 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
         engine: state.settings.engine,
         hotkey_vk: state.settings.hotkey_vk,
         llm_mode: state.settings.llm_mode,
-        theme: state.settings.theme,
+        theme: normalizeTheme(state.settings.theme),
         dict: state.settings.dict
       };
       els.saveBtn.disabled = true;

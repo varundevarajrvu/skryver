@@ -28,7 +28,7 @@ impl Default for Settings {
             engine: "parakeet".into(),
             hotkey_vk: 0x78, // F9
             llm_mode: "auto".into(),
-            theme: "auto".into(),
+            theme: "light".into(),
             dict: Vec::new(),
         }
     }

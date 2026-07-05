@@ -136,6 +136,7 @@ pub fn needs_rephrase(text: &str) -> bool {
         "wait no",
         "scratch that",
         "change that",
+        "change it to",
         "let me rephrase",
         "rephrase that",
         "or rather",
@@ -143,6 +144,16 @@ pub fn needs_rephrase(text: &str) -> bool {
         "correction",
         "no not",
         "no i said",
+        "instead of",
+        "rather than",
+        "hold on",
+        "let me redo",
+        "start over",
+        "delete that",
+        "cancel that",
+        "not that",
+        "or actually",
+        "on second thought",
     ];
     if CORRECTION_PHRASES.iter().any(|p| lower.contains(p)) {
         return true;
@@ -466,5 +477,23 @@ mod tests {
         // Clean sentences must stay on the fast path.
         assert!(!needs_rephrase("The meeting starts at nine tomorrow morning."));
         assert!(!needs_rephrase("Please send the invoice to accounting today."));
+    }
+
+    #[test]
+    fn rephrase_on_new_correction_phrasings() {
+        assert!(needs_rephrase("Send it to accounting, change it to finance please."));
+        assert!(needs_rephrase("Bring the blue folder instead of the red one."));
+        assert!(needs_rephrase("Email Sam rather than Alex about this."));
+        assert!(needs_rephrase("Hold on, that's not what I meant to say."));
+        assert!(needs_rephrase("Let me redo that sentence."));
+        assert!(needs_rephrase("Actually, start over, this is wrong."));
+        assert!(needs_rephrase("Delete that last part please."));
+        assert!(needs_rephrase("Cancel that, we're not doing it anymore."));
+        assert!(needs_rephrase("Not that one, the other document."));
+        assert!(needs_rephrase("Or actually, let's meet at noon."));
+        assert!(needs_rephrase("On second thought, make it Friday."));
+        // Clean sentences must still stay on the fast path.
+        assert!(!needs_rephrase("Please forward the invoice to the finance team."));
+        assert!(!needs_rephrase("We are meeting at noon on Friday to review the budget."));
     }
 }
