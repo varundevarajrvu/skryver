@@ -1,0 +1,1137 @@
+<title>Codex — whispr settings mockup</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<!--
+  ================================================================
+  DIRECTION: "Codex" — Dark Developer Focus
+  ================================================================
+  A premium developer-tool aesthetic for whispr's settings window —
+  terminal-adjacent but refined, like a high-end IDE theme rather
+  than gamer neon.
+
+  PALETTE (dark, default)
+    --bg          #17140f   warm charcoal base (warm, not blue-cold)
+    --bg-elev     #1e1a15   panel / card surface
+    --bg-elev-2   #262019   raised surface (inputs, keycaps)
+    --border      rgba(255,255,255,.09)
+    --text        #e8e2d6   soft off-white
+    --text-dim    #a89e8c   secondary text
+    --accent      #d9a441   amber/gold — primary accent
+    --accent-ink  #241c0d   text on amber fills
+    --good        #7fb069   muted green — "fast" / ok states
+    --info        #7fa7c9   muted blue — "ai" badge
+
+  PALETTE (light variant)
+    --bg          #f4efe4   warm off-white (paper heritage)
+    --bg-elev     #ffffff
+    --bg-elev-2   #ece4d2
+    --border      rgba(30,24,14,.12)
+    --text        #221d14
+    --text-dim    #6b6252
+    --accent      #b1791f   amber, deepened for contrast on light
+    --good        #4f7a3d
+    --info        #3d6a91
+
+  TYPE
+    Monospace  (Cascadia Code, Consolas, ui-monospace)
+      -> wordmark, labels, keycaps, latency figures, badges, timestamps
+    Sans       (Segoe UI, system-ui)
+      -> body copy, helper text, table prose
+    A thin serif (Georgia) is used once, for the tagline, to nod at
+    whispr's "paper" heritage without breaking the dev-tool feel.
+
+  LAYOUT
+    A real dashboard grid: a fixed control rail (hero toggle + engine +
+    hotkey + AI cleanup + theme) alongside a two-column main pane
+    (dictionary editor / dictation history) that spreads out to fill
+    1920px like a professional tool, and stacks to a single column
+    down to ~560px.
+  ================================================================
+-->
+
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #17140f;
+    --bg-elev: #1e1a15;
+    --bg-elev-2: #262019;
+    --border: rgba(255, 255, 255, 0.09);
+    --border-strong: rgba(255, 255, 255, 0.16);
+    --text: #e8e2d6;
+    --text-dim: #a89e8c;
+    --text-faint: #7c7364;
+    --accent: #d9a441;
+    --accent-soft: rgba(217, 164, 65, 0.14);
+    --accent-ink: #241c0d;
+    --good: #7fb069;
+    --good-soft: rgba(127, 176, 105, 0.14);
+    --info: #7fa7c9;
+    --info-soft: rgba(127, 167, 201, 0.14);
+    --danger: #c9705f;
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+
+    --mono: "Cascadia Code", "Cascadia Mono", Consolas, "SFMono-Regular", Menlo, monospace;
+    --sans: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    --serif: Georgia, "Iowan Old Style", serif;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root {
+      color-scheme: light;
+      --bg: #f4efe4;
+      --bg-elev: #fffdf9;
+      --bg-elev-2: #ece4d2;
+      --border: rgba(30, 24, 14, 0.12);
+      --border-strong: rgba(30, 24, 14, 0.22);
+      --text: #221d14;
+      --text-dim: #6b6252;
+      --text-faint: #8a806e;
+      --accent: #b1791f;
+      --accent-soft: rgba(177, 121, 31, 0.12);
+      --accent-ink: #fffaf0;
+      --good: #4f7a3d;
+      --good-soft: rgba(79, 122, 61, 0.12);
+      --info: #3d6a91;
+      --info-soft: rgba(61, 106, 145, 0.12);
+      --danger: #a8452f;
+      --shadow: 0 12px 28px rgba(60, 45, 20, 0.12);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #17140f;
+    --bg-elev: #1e1a15;
+    --bg-elev-2: #262019;
+    --border: rgba(255, 255, 255, 0.09);
+    --border-strong: rgba(255, 255, 255, 0.16);
+    --text: #e8e2d6;
+    --text-dim: #a89e8c;
+    --text-faint: #7c7364;
+    --accent: #d9a441;
+    --accent-soft: rgba(217, 164, 65, 0.14);
+    --accent-ink: #241c0d;
+    --good: #7fb069;
+    --good-soft: rgba(127, 176, 105, 0.14);
+    --info: #7fa7c9;
+    --info-soft: rgba(127, 167, 201, 0.14);
+    --danger: #c9705f;
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  :root[data-theme="light"] {
+    color-scheme: light;
+    --bg: #f4efe4;
+    --bg-elev: #fffdf9;
+    --bg-elev-2: #ece4d2;
+    --border: rgba(30, 24, 14, 0.12);
+    --border-strong: rgba(30, 24, 14, 0.22);
+    --text: #221d14;
+    --text-dim: #6b6252;
+    --text-faint: #8a806e;
+    --accent: #b1791f;
+    --accent-soft: rgba(177, 121, 31, 0.12);
+    --accent-ink: #fffaf0;
+    --good: #4f7a3d;
+    --good-soft: rgba(79, 122, 61, 0.12);
+    --info: #3d6a91;
+    --info-soft: rgba(61, 106, 145, 0.12);
+    --danger: #a8452f;
+    --shadow: 0 12px 28px rgba(60, 45, 20, 0.12);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    transition: background 0.2s ease, color 0.2s ease;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 40px 40px;
+    background-attachment: fixed;
+    background-position: -1px -1px;
+  }
+
+  /* ---------- header ---------- */
+
+  header.top {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 16px clamp(16px, 3vw, 40px);
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    min-width: 0;
+  }
+
+  .brand .mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: 0.02em;
+    color: var(--text);
+  }
+
+  .brand .mark svg {
+    flex: none;
+  }
+
+  .brand .mark .dot {
+    color: var(--accent);
+  }
+
+  .brand .tagline {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--text-dim);
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .head-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: none;
+  }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.03em;
+    padding: 7px 12px 7px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-elev);
+    cursor: pointer;
+    color: var(--text);
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .status-pill .ring {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--good);
+    box-shadow: 0 0 0 3px var(--good-soft);
+  }
+
+  .status-pill[data-state="recording"] .ring {
+    background: var(--danger);
+    box-shadow: 0 0 0 3px rgba(201, 112, 95, 0.18);
+    animation: pulse 1.1s ease-in-out infinite;
+  }
+
+  .status-pill[data-state="transcribing"] .ring,
+  .status-pill[data-state="polishing"] .ring {
+    background: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+    animation: pulse 1.1s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.35); opacity: 0.6; }
+  }
+
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-elev);
+    color: var(--text);
+    cursor: pointer;
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--accent);
+  }
+
+  .theme-toggle svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* ---------- shell / grid ---------- */
+
+  .shell {
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: clamp(16px, 3vw, 32px) clamp(16px, 3vw, 40px) 80px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+
+  @media (min-width: 900px) {
+    .shell {
+      grid-template-columns: 320px 1fr;
+      gap: 24px;
+    }
+  }
+
+  @media (min-width: 1500px) {
+    .shell {
+      grid-template-columns: 360px 1fr;
+      gap: 28px;
+    }
+  }
+
+  .rail {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  @media (min-width: 900px) {
+    .rail {
+      position: sticky;
+      top: 84px;
+    }
+  }
+
+  .main {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  @media (min-width: 1300px) {
+    .main {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
+
+  /* ---------- card ---------- */
+
+  .card {
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+    min-width: 0;
+  }
+
+  .card h2 {
+    margin: 0 0 4px;
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card h2 .num {
+    color: var(--accent);
+  }
+
+  .card .helper {
+    margin: 8px 0 0;
+    font-size: 13px;
+    color: var(--text-dim);
+    line-height: 1.55;
+  }
+
+  .card .helper code {
+    font-family: var(--mono);
+    background: var(--bg-elev-2);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+  /* ---------- hero enable/pause ---------- */
+
+  .hero {
+    text-align: center;
+    padding: 28px 20px 24px;
+  }
+
+  .hero h2 {
+    justify-content: center;
+  }
+
+  .hero-toggle {
+    margin: 18px auto 6px;
+    width: 100%;
+    max-width: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 18px 20px;
+    border-radius: 14px;
+    border: 1px solid var(--border-strong);
+    background: var(--bg-elev-2);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .hero-toggle .dot {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: var(--text-faint);
+    flex: none;
+  }
+
+  .hero-toggle.on {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    box-shadow: 0 6px 24px var(--accent-soft);
+  }
+
+  .hero-toggle.on .dot {
+    background: var(--accent-ink);
+    box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.12);
+  }
+
+  .hero-sub {
+    font-size: 12.5px;
+    color: var(--text-faint);
+    font-family: var(--mono);
+    margin-top: 10px;
+  }
+
+  /* ---------- engine picker ---------- */
+
+  .option-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 14px;
+  }
+
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--bg-elev-2);
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+
+  .option:hover {
+    border-color: var(--border-strong);
+  }
+
+  .option.selected {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+
+  .option .radio {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 2px solid var(--text-faint);
+    flex: none;
+    margin-top: 2px;
+    position: relative;
+  }
+
+  .option.selected .radio {
+    border-color: var(--accent);
+  }
+
+  .option.selected .radio::after {
+    content: "";
+    position: absolute;
+    inset: 2px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+
+  .option .body strong {
+    font-size: 14px;
+    display: block;
+  }
+
+  .option .body span {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    display: block;
+    margin-top: 2px;
+  }
+
+  .option .tag {
+    margin-left: auto;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--good);
+    background: var(--good-soft);
+    padding: 3px 7px;
+    border-radius: 5px;
+    flex: none;
+    align-self: flex-start;
+  }
+
+  /* ---------- hotkey keycaps ---------- */
+
+  .keycap-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .keycap {
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 0;
+    text-align: center;
+    border-radius: 8px;
+    border: 1px solid var(--border-strong);
+    border-bottom-width: 3px;
+    background: var(--bg-elev-2);
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: transform 0.08s ease, border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .keycap:hover {
+    color: var(--text);
+    border-color: var(--accent);
+  }
+
+  .keycap:active {
+    transform: translateY(2px);
+    border-bottom-width: 1px;
+  }
+
+  .keycap.selected {
+    background: var(--accent);
+    color: var(--accent-ink);
+    border-color: var(--accent);
+    border-bottom-color: color-mix(in srgb, var(--accent) 60%, black);
+  }
+
+  .hotkey-caption {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .hotkey-caption .held {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-strong);
+    border-bottom-width: 3px;
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  /* ---------- segmented control ---------- */
+
+  .segmented {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 10px;
+    background: var(--bg-elev-2);
+    border: 1px solid var(--border);
+    margin-top: 14px;
+  }
+
+  .segmented button {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    padding: 9px 8px;
+    border-radius: 7px;
+    border: none;
+    background: transparent;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+
+  .segmented button.selected {
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-weight: 700;
+  }
+
+  /* ---------- dictionary table ---------- */
+
+  .dict-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 14px;
+    font-size: 13.5px;
+  }
+
+  .dict-table th {
+    text-align: left;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    font-weight: 600;
+    padding: 0 10px 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .dict-table td {
+    padding: 10px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: middle;
+  }
+
+  .dict-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .dict-table .cell {
+    display: inline-block;
+    min-width: 60px;
+    padding: 4px 6px;
+    border-radius: 5px;
+    border: 1px dashed transparent;
+    font-family: var(--mono);
+  }
+
+  .dict-table .cell:hover,
+  .dict-table .cell:focus {
+    border-color: var(--border-strong);
+    background: var(--bg-elev-2);
+    outline: none;
+  }
+
+  .dict-table .wrong {
+    color: var(--danger);
+    text-decoration: line-through wavy 1px;
+    text-decoration-color: color-mix(in srgb, var(--danger) 50%, transparent);
+  }
+
+  .dict-table .arrow {
+    color: var(--text-faint);
+    padding: 0 4px;
+  }
+
+  .dict-table .right {
+    color: var(--good);
+    font-weight: 600;
+  }
+
+  .dict-table .row-actions {
+    text-align: right;
+    width: 32px;
+  }
+
+  .icon-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+    display: inline-flex;
+  }
+
+  .icon-btn:hover {
+    color: var(--danger);
+    background: var(--bg-elev-2);
+  }
+
+  .add-rule {
+    margin-top: 14px;
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px dashed var(--border-strong);
+    background: transparent;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+
+  .add-rule:hover {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    border-style: solid;
+  }
+
+  /* ---------- history ---------- */
+
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  .history-item {
+    border: 1px solid var(--border);
+    background: var(--bg-elev-2);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+
+  .history-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--text-faint);
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  .history-meta .ts {
+    color: var(--text-dim);
+  }
+
+  .badge {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 5px;
+    font-weight: 700;
+  }
+
+  .badge.fast {
+    color: var(--good);
+    background: var(--good-soft);
+  }
+
+  .badge.ai {
+    color: var(--info);
+    background: var(--info-soft);
+  }
+
+  .history-meta .latency {
+    margin-left: auto;
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .history-text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  .history-text ul {
+    margin: 6px 0 0;
+    padding-left: 20px;
+  }
+
+  .history-text li {
+    margin: 2px 0;
+  }
+
+  .history-text p {
+    margin: 0;
+  }
+
+  /* ---------- footer note ---------- */
+
+  .foot-note {
+    text-align: center;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--text-faint);
+    padding: 24px 20px 0;
+  }
+
+  @media (max-width: 559px) {
+    .keycap-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>
+
+<body>
+  <header class="top">
+    <div class="brand">
+      <span class="mark">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.6"/>
+          <path d="M9.5 8.5L7 12l2.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M14.5 8.5L17 12l-2.5 3.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        codex<span class="dot">_</span>
+      </span>
+      <span class="tagline">Private voice dictation, fully on your machine</span>
+    </div>
+    <div class="head-actions">
+      <button class="status-pill" id="statusPill" data-state="ready" title="Click to preview states">
+        <span class="ring"></span>
+        <span id="statusLabel">Ready</span>
+      </button>
+      <button class="theme-toggle" id="themeToggle" title="Toggle light / dark">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.6"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="shell">
+    <!-- ============ CONTROL RAIL ============ -->
+    <div class="rail">
+      <section class="card hero">
+        <h2><span class="num">01</span> Dictation</h2>
+        <button class="hero-toggle on" id="heroToggle">
+          <span class="dot"></span>
+          <span id="heroLabel">Enabled</span>
+        </button>
+        <div class="hero-sub" id="heroSub">whispr is listening for F9</div>
+      </section>
+
+      <section class="card">
+        <h2><span class="num">02</span> Engine</h2>
+        <div class="option-row" id="enginePicker">
+          <label class="option selected" data-engine="parakeet">
+            <span class="radio"></span>
+            <span class="body">
+              <strong>High accuracy</strong>
+              <span>Parakeet &middot; best for code, jargon, long-form</span>
+            </span>
+            <span class="tag">Selected</span>
+          </label>
+          <label class="option" data-engine="moonshine">
+            <span class="radio"></span>
+            <span class="body">
+              <strong>Fastest</strong>
+              <span>Moonshine &middot; lowest latency, lighter CPU use</span>
+            </span>
+          </label>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2><span class="num">03</span> Hotkey</h2>
+        <div class="keycap-grid" id="hotkeyGrid">
+          <!-- generated by JS: F1-F12 -->
+        </div>
+        <div class="hotkey-caption">
+          <span class="held">HOLD</span>
+          <span>to dictate &mdash; release to transcribe</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2><span class="num">04</span> AI cleanup</h2>
+        <div class="segmented" id="cleanupPicker">
+          <button data-val="off">Off</button>
+          <button data-val="auto" class="selected">Auto</button>
+          <button data-val="always">Always</button>
+        </div>
+        <p class="helper">Auto polishes only messy takes. <code>Always</code> is slower (3&ndash;10s per dictation on CPU).</p>
+      </section>
+
+      <section class="card">
+        <h2><span class="num">05</span> Theme</h2>
+        <div class="segmented" id="themePicker">
+          <button data-val="auto">Auto</button>
+          <button data-val="light">Light</button>
+          <button data-val="dark" class="selected">Dark</button>
+        </div>
+        <p class="helper">Auto follows your Windows setting. whispr defaults to dark.</p>
+      </section>
+    </div>
+
+    <!-- ============ MAIN PANE ============ -->
+    <div class="main">
+      <section class="card">
+        <h2><span class="num">06</span> Dictionary</h2>
+        <table class="dict-table">
+          <thead>
+            <tr>
+              <th>Whispr hears</th>
+              <th></th>
+              <th>Replace with</th>
+              <th class="row-actions"></th>
+            </tr>
+          </thead>
+          <tbody id="dictBody">
+            <tr>
+              <td><span class="cell wrong" contenteditable spellcheck="false">varum</span></td>
+              <td class="arrow">&rarr;</td>
+              <td><span class="cell right" contenteditable spellcheck="false">Varun</span></td>
+              <td class="row-actions"><button class="icon-btn" title="Remove rule">&times;</button></td>
+            </tr>
+            <tr>
+              <td><span class="cell wrong" contenteditable spellcheck="false">git hub</span></td>
+              <td class="arrow">&rarr;</td>
+              <td><span class="cell right" contenteditable spellcheck="false">GitHub</span></td>
+              <td class="row-actions"><button class="icon-btn" title="Remove rule">&times;</button></td>
+            </tr>
+            <tr>
+              <td><span class="cell wrong" contenteditable spellcheck="false">java script</span></td>
+              <td class="arrow">&rarr;</td>
+              <td><span class="cell right" contenteditable spellcheck="false">JavaScript</span></td>
+              <td class="row-actions"><button class="icon-btn" title="Remove rule">&times;</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="add-rule" id="addRule">+ Add rule</button>
+        <p class="helper">Add a rule when whispr repeatedly misspells a word you use.</p>
+      </section>
+
+      <section class="card">
+        <h2><span class="num">07</span> History</h2>
+        <div class="history-list">
+          <article class="history-item">
+            <div class="history-meta">
+              <span class="ts">Today &middot; 10:42 AM</span>
+              <span class="badge fast">fast</span>
+              <span class="latency">480 ms</span>
+            </div>
+            <div class="history-text">
+              <p>Let's ship the auth refactor tonight if the tests pass on the Windows runner.</p>
+            </div>
+          </article>
+
+          <article class="history-item">
+            <div class="history-meta">
+              <span class="ts">Today &middot; 9:58 AM</span>
+              <span class="badge ai">ai</span>
+              <span class="latency">3.8 s</span>
+            </div>
+            <div class="history-text">
+              <p>Make me a grocery list:</p>
+              <ul>
+                <li>Eggs</li>
+                <li>Milk</li>
+                <li>Bread</li>
+              </ul>
+            </div>
+          </article>
+
+          <article class="history-item">
+            <div class="history-meta">
+              <span class="ts">Today &middot; 8:20 AM</span>
+              <span class="badge fast">fast</span>
+              <span class="latency">410 ms</span>
+            </div>
+            <div class="history-text">
+              <p>GitHub Actions is failing on the Windows runner again &mdash; probably the cache key.</p>
+            </div>
+          </article>
+
+          <article class="history-item">
+            <div class="history-meta">
+              <span class="ts">Yesterday &middot; 6:47 PM</span>
+              <span class="badge ai">ai</span>
+              <span class="latency">6.1 s</span>
+            </div>
+            <div class="history-text">
+              <p>Quick note to self: the settings window needs to handle fullscreen properly, it looks cramped stretched wide right now, worth revisiting the layout this week.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <p class="foot-note">whispr &middot; runs fully offline &middot; no audio ever leaves this machine</p>
+
+  <script>
+    // ---------- theme ----------
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const themePicker = document.getElementById('themePicker');
+
+    const sunPath = '<path d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.6"/>';
+    const moonPath = '<path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>';
+
+    function resolvedIsDark() {
+      const explicit = root.getAttribute('data-theme');
+      if (explicit === 'dark') return true;
+      if (explicit === 'light') return false;
+      return window.matchMedia('(prefers-color-scheme: light)').matches ? false : true;
+    }
+
+    function syncIcon() {
+      themeIcon.innerHTML = resolvedIsDark() ? moonPath : sunPath;
+    }
+
+    function setTheme(mode, updateSegment) {
+      if (mode === 'auto') {
+        root.removeAttribute('data-theme');
+      } else {
+        root.setAttribute('data-theme', mode);
+      }
+      syncIcon();
+      if (updateSegment !== false) {
+        [...themePicker.children].forEach(b => b.classList.toggle('selected', b.dataset.val === mode));
+      }
+    }
+
+    themeToggle.addEventListener('click', () => {
+      const next = resolvedIsDark() ? 'light' : 'dark';
+      setTheme(next);
+    });
+
+    themePicker.addEventListener('click', (e) => {
+      const btn = e.target.closest('button');
+      if (!btn) return;
+      setTheme(btn.dataset.val);
+    });
+
+    setTheme('dark'); // this direction defaults to dark
+
+    // ---------- status pill demo cycle ----------
+    const statusPill = document.getElementById('statusPill');
+    const statusLabel = document.getElementById('statusLabel');
+    const states = ['ready', 'recording', 'transcribing', 'polishing'];
+    const stateLabels = { ready: 'Ready', recording: 'Recording', transcribing: 'Transcribing', polishing: 'Polishing' };
+    let stateIdx = 0;
+    statusPill.addEventListener('click', () => {
+      stateIdx = (stateIdx + 1) % states.length;
+      const s = states[stateIdx];
+      statusPill.dataset.state = s;
+      statusLabel.textContent = stateLabels[s];
+    });
+
+    // ---------- hero enable/pause ----------
+    const heroToggle = document.getElementById('heroToggle');
+    const heroLabel = document.getElementById('heroLabel');
+    const heroSub = document.getElementById('heroSub');
+    heroToggle.addEventListener('click', () => {
+      const on = heroToggle.classList.toggle('on');
+      heroLabel.textContent = on ? 'Enabled' : 'Paused';
+      heroSub.textContent = on ? 'whispr is listening for F9' : 'Dictation is paused';
+    });
+
+    // ---------- engine picker ----------
+    const enginePicker = document.getElementById('enginePicker');
+    enginePicker.addEventListener('click', (e) => {
+      const opt = e.target.closest('.option');
+      if (!opt) return;
+      [...enginePicker.children].forEach(o => {
+        o.classList.remove('selected');
+        const tag = o.querySelector('.tag');
+        if (tag) tag.remove();
+      });
+      opt.classList.add('selected');
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.textContent = 'Selected';
+      opt.appendChild(tag);
+    });
+
+    // ---------- hotkey keycaps ----------
+    const hotkeyGrid = document.getElementById('hotkeyGrid');
+    for (let i = 1; i <= 12; i++) {
+      const key = 'F' + i;
+      const btn = document.createElement('button');
+      btn.className = 'keycap' + (key === 'F9' ? ' selected' : '');
+      btn.textContent = key;
+      btn.dataset.key = key;
+      hotkeyGrid.appendChild(btn);
+    }
+    hotkeyGrid.addEventListener('click', (e) => {
+      const btn = e.target.closest('.keycap');
+      if (!btn) return;
+      [...hotkeyGrid.children].forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+
+    // ---------- segmented pickers (cleanup) ----------
+    function wireSegmented(id) {
+      const el = document.getElementById(id);
+      el.addEventListener('click', (e) => {
+        const btn = e.target.closest('button');
+        if (!btn) return;
+        [...el.children].forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+      });
+    }
+    wireSegmented('cleanupPicker');
+
+    // ---------- dictionary: add rule ----------
+    const dictBody = document.getElementById('dictBody');
+    document.getElementById('addRule').addEventListener('click', () => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><span class="cell wrong" contenteditable spellcheck="false">new word</span></td>
+        <td class="arrow">&rarr;</td>
+        <td><span class="cell right" contenteditable spellcheck="false">Replacement</span></td>
+        <td class="row-actions"><button class="icon-btn" title="Remove rule">&times;</button></td>
+      `;
+      dictBody.appendChild(tr);
+      tr.querySelector('.wrong').focus();
+    });
+    dictBody.addEventListener('click', (e) => {
+      const btn = e.target.closest('.icon-btn');
+      if (!btn) return;
+      btn.closest('tr').remove();
+    });
+  </script>
+</body>

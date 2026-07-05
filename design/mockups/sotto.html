@@ -1,0 +1,1070 @@
+<title>Sotto — whispr settings</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<!--
+  DIRECTION: "Sotto" — Modern Editorial Minimal
+  Concept: sotto voce — under the voice. Quiet, restrained, expensive-feeling.
+  A magazine/literary aesthetic applied to a settings surface: generous
+  whitespace, a strict editorial grid, and typographic contrast doing all
+  the work instead of color or ornament.
+
+  PALETTE
+    Light: paper #faf8f4, ink #1c1a17, rule hairline rgba(28,26,23,.12),
+           accent (single, used sparingly) muted ochre #a9782f
+    Dark:  charcoal #16140f, paper-ink #f2ede4, rule hairline rgba(242,237,228,.14),
+           accent muted ochre (lightened) #c99a4d
+
+  TYPE
+    Display/serif: Georgia, "Cambria", "Palatino Linotype", serif — big,
+      tight leading, for wordmark + section heads.
+    Body/label: "Segoe UI", system-ui, sans-serif — quiet workhorse for
+      copy, controls, data. Micro-labels are small caps, letter-spaced.
+    Mono: Consolas, "Courier New", monospace — for latency/timestamp figures.
+-->
+<style>
+  :root {
+    --paper: #faf8f4;
+    --paper-raised: #ffffff;
+    --ink: #1c1a17;
+    --ink-soft: #4a453d;
+    --ink-faint: #8a8377;
+    --rule: rgba(28, 26, 23, 0.12);
+    --rule-strong: rgba(28, 26, 23, 0.22);
+    --accent: #a9782f;
+    --accent-soft: rgba(169, 120, 47, 0.1);
+    --accent-ink: #7a5a22;
+    --focus-ring: rgba(169, 120, 47, 0.35);
+    --serif: Georgia, Cambria, "Palatino Linotype", "Book Antiqua", serif;
+    --sans: "Segoe UI", "Segoe UI Variable", system-ui, -apple-system, sans-serif;
+    --mono: Consolas, "Courier New", monospace;
+    --shadow-01: 0 1px 2px rgba(28, 26, 23, 0.04);
+    --shadow-02: 0 6px 24px rgba(28, 26, 23, 0.07);
+    color-scheme: light;
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #16140f;
+    --paper-raised: #1d1a14;
+    --ink: #f2ede4;
+    --ink-soft: #c9c2b4;
+    --ink-faint: #8f887a;
+    --rule: rgba(242, 237, 228, 0.14);
+    --rule-strong: rgba(242, 237, 228, 0.24);
+    --accent: #c99a4d;
+    --accent-soft: rgba(201, 154, 77, 0.14);
+    --accent-ink: #dcb06e;
+    --focus-ring: rgba(201, 154, 77, 0.35);
+    --shadow-01: 0 1px 2px rgba(0, 0, 0, 0.2);
+    --shadow-02: 0 12px 32px rgba(0, 0, 0, 0.35);
+    color-scheme: dark;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #16140f;
+      --paper-raised: #1d1a14;
+      --ink: #f2ede4;
+      --ink-soft: #c9c2b4;
+      --ink-faint: #8f887a;
+      --rule: rgba(242, 237, 228, 0.14);
+      --rule-strong: rgba(242, 237, 228, 0.24);
+      --accent: #c99a4d;
+      --accent-soft: rgba(201, 154, 77, 0.14);
+      --accent-ink: #dcb06e;
+      --shadow-01: 0 1px 2px rgba(0, 0, 0, 0.2);
+      --shadow-02: 0 12px 32px rgba(0, 0, 0, 0.35);
+      color-scheme: dark;
+    }
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    transition: background-color 0.25s ease, color 0.25s ease;
+    min-height: 100vh;
+  }
+
+  ::selection { background: var(--accent-soft); color: var(--ink); }
+
+  a { color: inherit; }
+
+  .micro {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+
+  /* ---------- Shell ---------- */
+  .shell {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 0 clamp(20px, 4vw, 64px) 96px;
+  }
+
+  /* ---------- Header ---------- */
+  header.top {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    padding: clamp(28px, 5vw, 56px) clamp(20px, 4vw, 64px) 28px;
+    max-width: 1600px;
+    margin: 0 auto;
+    border-bottom: 1px solid var(--rule);
+    flex-wrap: wrap;
+  }
+
+  .brand-block { display: flex; flex-direction: column; gap: 6px; }
+
+  .wordmark {
+    font-family: var(--serif);
+    font-size: clamp(34px, 4.6vw, 54px);
+    line-height: 0.95;
+    letter-spacing: -0.01em;
+    margin: 0;
+    font-weight: 400;
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+
+  .wordmark .dot { color: var(--accent); font-size: 0.6em; }
+
+  .tagline {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    color: var(--ink-faint);
+    letter-spacing: 0.01em;
+    max-width: 40ch;
+  }
+
+  .top-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  /* Status pill */
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px 7px 11px;
+    border: 1px solid var(--rule-strong);
+    border-radius: 100px;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 600;
+    color: var(--ink-soft);
+    background: var(--paper-raised);
+  }
+
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ink-faint);
+    flex: none;
+  }
+
+  .status-pill[data-state="ready"] .status-dot { background: #5a8a63; }
+  .status-pill[data-state="recording"] .status-dot {
+    background: #b8433a;
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+  .status-pill[data-state="transcribing"] .status-dot,
+  .status-pill[data-state="polishing"] .status-dot {
+    background: var(--accent);
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.45; transform: scale(0.82); }
+  }
+
+  /* Theme toggle */
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--rule-strong);
+    border-radius: 100px;
+    padding: 3px;
+    gap: 2px;
+    background: var(--paper-raised);
+  }
+
+  .theme-toggle button {
+    border: none;
+    background: transparent;
+    color: var(--ink-faint);
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 7px 13px;
+    border-radius: 100px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .theme-toggle button svg { width: 13px; height: 13px; }
+
+  .theme-toggle button.active {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  /* ---------- Layout grid ---------- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: clamp(20px, 2.4vw, 40px);
+    margin-top: 48px;
+  }
+
+  .col-12 { grid-column: span 12; }
+  .col-8 { grid-column: span 8; }
+  .col-7 { grid-column: span 7; }
+  .col-6 { grid-column: span 6; }
+  .col-5 { grid-column: span 5; }
+  .col-4 { grid-column: span 4; }
+
+  @media (max-width: 980px) {
+    .col-8, .col-7, .col-6, .col-5, .col-4 { grid-column: span 12; }
+  }
+
+  section.panel { padding-top: 4px; }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 22px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .section-head h2 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(21px, 2vw, 27px);
+    margin: 0;
+    letter-spacing: -0.005em;
+  }
+
+  .section-index {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-faint);
+    letter-spacing: 0.02em;
+  }
+
+  .helper {
+    font-size: 13px;
+    color: var(--ink-faint);
+    line-height: 1.55;
+    margin: 10px 0 0;
+    max-width: 58ch;
+  }
+
+  /* ---------- Hero dictation control ---------- */
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 22px;
+    padding: 40px clamp(24px, 3vw, 48px);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--paper-raised);
+    box-shadow: var(--shadow-01);
+  }
+
+  .hero-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .hero-label .micro { margin-bottom: 6px; display: block; }
+
+  .hero-title {
+    font-family: var(--serif);
+    font-size: clamp(24px, 2.6vw, 32px);
+    margin: 0;
+    font-weight: 400;
+  }
+
+  .toggle-switch {
+    position: relative;
+    width: 96px;
+    height: 168px;
+    border: 1px solid var(--rule-strong);
+    border-radius: 100px;
+    background: var(--paper);
+    cursor: pointer;
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: border-color 0.2s ease;
+  }
+
+  .toggle-switch .knob {
+    position: absolute;
+    left: 8px;
+    top: 8px;
+    width: 78px;
+    height: 78px;
+    border-radius: 50%;
+    background: var(--ink);
+    transition: transform 0.32s cubic-bezier(.5,0,.15,1), background-color 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-02);
+  }
+
+  .toggle-switch .knob svg { width: 26px; height: 26px; stroke: var(--paper); }
+
+  .toggle-switch.on .knob { transform: translateY(82px); background: var(--accent); }
+
+  .toggle-switch .cap {
+    text-align: center;
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 4px 0;
+  }
+
+  .hero-status-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+
+  .hero-status-line .key {
+    font-family: var(--mono);
+    font-size: 12px;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    padding: 2px 8px;
+    border-radius: 3px;
+    border: 1px solid var(--rule);
+  }
+
+  /* ---------- Choice groups (engine / hotkey / cleanup / theme) ---------- */
+  .choice-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .choice-card {
+    flex: 1 1 220px;
+    border: 1px solid var(--rule-strong);
+    border-radius: 3px;
+    padding: 16px 18px;
+    background: var(--paper-raised);
+    cursor: pointer;
+    transition: border-color 0.18s ease, background-color 0.18s ease;
+    position: relative;
+  }
+
+  .choice-card:hover { border-color: var(--ink-faint); }
+
+  .choice-card.selected {
+    border-color: var(--ink);
+    background: var(--accent-soft);
+  }
+
+  :root[data-theme="dark"] .choice-card.selected { border-color: var(--accent); }
+
+  .choice-card .title {
+    font-size: 14.5px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .choice-card .sub {
+    font-size: 12px;
+    color: var(--ink-faint);
+    margin-top: 4px;
+  }
+
+  .choice-check {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1.5px solid var(--rule-strong);
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .choice-card.selected .choice-check {
+    border-color: var(--ink);
+    background: var(--ink);
+  }
+
+  :root[data-theme="dark"] .choice-card.selected .choice-check {
+    border-color: var(--accent);
+    background: var(--accent);
+  }
+
+  .choice-check svg { width: 9px; height: 9px; stroke: var(--paper); opacity: 0; }
+  .choice-card.selected .choice-check svg { opacity: 1; }
+
+  /* segmented control (small groups: cleanup, theme) */
+  .segmented {
+    display: inline-flex;
+    border: 1px solid var(--rule-strong);
+    border-radius: 100px;
+    padding: 3px;
+    gap: 2px;
+    background: var(--paper-raised);
+  }
+
+  .segmented button {
+    border: none;
+    background: transparent;
+    font-family: var(--sans);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    padding: 8px 18px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  .segmented button.active { background: var(--ink); color: var(--paper); }
+
+  /* hotkey grid */
+  .hotkey-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    max-width: 480px;
+  }
+
+  @media (max-width: 560px) {
+    .hotkey-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  .hotkey-grid button {
+    font-family: var(--mono);
+    font-size: 13px;
+    padding: 12px 0;
+    border: 1px solid var(--rule-strong);
+    border-radius: 3px;
+    background: var(--paper-raised);
+    color: var(--ink-soft);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .hotkey-grid button:hover { border-color: var(--ink-faint); }
+
+  .hotkey-grid button.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  :root[data-theme="dark"] .hotkey-grid button.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #16140f;
+  }
+
+  .hotkey-caption {
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin-top: 14px;
+  }
+
+  .hotkey-caption strong { font-weight: 600; color: var(--ink); }
+
+  /* ---------- Dictionary table ---------- */
+  .dict-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+
+  .dict-table thead th {
+    text-align: left;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 600;
+    padding: 0 12px 10px;
+    border-bottom: 1px solid var(--rule-strong);
+  }
+
+  .dict-table tbody td {
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: middle;
+  }
+
+  .dict-table tbody tr:last-child td { border-bottom: 1px solid var(--rule); }
+
+  .dict-table input[type="text"] {
+    width: 100%;
+    border: 1px solid transparent;
+    background: transparent;
+    font-family: var(--sans);
+    font-size: 13.5px;
+    color: var(--ink);
+    padding: 7px 8px;
+    border-radius: 3px;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .dict-table input[type="text"]:hover {
+    background: var(--paper);
+    border-color: var(--rule);
+  }
+
+  .dict-table input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: var(--paper-raised);
+    box-shadow: 0 0 0 3px var(--focus-ring);
+  }
+
+  .arrow-cell {
+    color: var(--ink-faint);
+    text-align: center;
+    width: 32px;
+    font-size: 14px;
+  }
+
+  .row-actions { width: 40px; text-align: right; }
+
+  .icon-btn {
+    border: none;
+    background: transparent;
+    color: var(--ink-faint);
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 3px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s ease, background-color 0.15s ease;
+  }
+
+  .icon-btn:hover { color: #b8433a; background: var(--paper); }
+  .icon-btn svg { width: 15px; height: 15px; }
+
+  .add-rule {
+    margin-top: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px dashed var(--rule-strong);
+    background: transparent;
+    color: var(--ink-soft);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 18px;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+
+  .add-rule:hover { border-color: var(--accent); color: var(--accent-ink); }
+  .add-rule svg { width: 13px; height: 13px; }
+
+  /* ---------- History ---------- */
+  .history-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .history-item {
+    display: grid;
+    grid-template-columns: 118px 1fr;
+    gap: 24px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .history-item:first-child { padding-top: 0; }
+
+  @media (max-width: 640px) {
+    .history-item { grid-template-columns: 1fr; gap: 8px; }
+  }
+
+  .history-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .history-time {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-faint);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 100px;
+    width: fit-content;
+  }
+
+  .badge.fast {
+    color: #4c7a54;
+    background: rgba(76, 122, 84, 0.12);
+  }
+
+  .badge.ai {
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+  }
+
+  .history-latency {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--ink-faint);
+  }
+
+  .history-text {
+    font-size: 14.5px;
+    line-height: 1.65;
+    color: var(--ink);
+  }
+
+  .history-text ul {
+    margin: 8px 0 0;
+    padding-left: 20px;
+  }
+
+  .history-text li { margin: 2px 0; }
+  .history-text p { margin: 0; }
+
+  /* ---------- Footer ---------- */
+  footer {
+    max-width: 1600px;
+    margin: 64px auto 0;
+    padding: 24px clamp(20px, 4vw, 64px) 0;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  footer .micro { color: var(--ink-faint); }
+
+  /* Utility */
+  .stack { display: flex; flex-direction: column; gap: 18px; }
+  .hairline-box {
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: var(--paper-raised);
+    padding: 28px clamp(20px, 2.6vw, 34px);
+    box-shadow: var(--shadow-01);
+  }
+</style>
+
+<div class="shell">
+
+  <header class="top">
+    <div class="brand-block">
+      <h1 class="wordmark">Sotto<span class="dot">•</span></h1>
+      <p class="tagline">Private voice dictation, fully on your machine.</p>
+    </div>
+
+    <div class="top-right">
+      <span class="status-pill" id="statusPill" data-state="ready">
+        <span class="status-dot"></span>
+        <span id="statusLabel">Ready</span>
+      </span>
+
+      <div class="theme-toggle" id="themeToggle">
+        <button data-theme-choice="light" class="active" aria-label="Light theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.4M12 19.6V22M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2 12h2.4M19.6 12H22M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"/></svg>
+          Light
+        </button>
+        <button data-theme-choice="dark" aria-label="Dark theme">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5z"/></svg>
+          Dark
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <!-- Hero dictation toggle -->
+    <section class="col-12">
+      <div class="hero">
+        <div class="hero-top">
+          <div class="hero-label">
+            <span class="micro">Dictation engine</span>
+            <h2 class="hero-title">Enable to begin listening for your hotkey</h2>
+          </div>
+        </div>
+        <div style="display:flex; align-items:center; gap:32px; flex-wrap:wrap;">
+          <div class="toggle-switch on" id="dictationToggle" role="button" tabindex="0" aria-pressed="true">
+            <span class="cap">On</span>
+            <span class="knob">
+              <svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"><path d="M12 15a3 3 0 0 0 3-3V6a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3z"/><path d="M19 11a7 7 0 0 1-14 0M12 19v3"/></svg>
+            </span>
+            <span class="cap">Off</span>
+          </div>
+          <div class="hero-status-line">
+            <span>Hold <span class="key">F9</span> anywhere to dictate — release to transcribe.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Engine picker -->
+    <section class="panel col-6">
+      <div class="section-head">
+        <h2>Engine</h2>
+        <span class="section-index">01</span>
+      </div>
+      <div class="choice-row" id="enginePicker">
+        <div class="choice-card selected" data-engine="parakeet">
+          <div class="title">High accuracy <span class="choice-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6l3 3 5-6"/></svg></span></div>
+          <div class="sub">Parakeet — best transcription quality</div>
+        </div>
+        <div class="choice-card" data-engine="moonshine">
+          <div class="title">Fastest <span class="choice-check"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 6l3 3 5-6"/></svg></span></div>
+          <div class="sub">Moonshine — lowest latency</div>
+        </div>
+      </div>
+      <p class="helper">Both models run entirely offline. Switch any time — takes effect on your next dictation.</p>
+    </section>
+
+    <!-- Hotkey picker -->
+    <section class="panel col-6">
+      <div class="section-head">
+        <h2>Hotkey</h2>
+        <span class="section-index">02</span>
+      </div>
+      <div class="hotkey-grid" id="hotkeyGrid"></div>
+      <p class="hotkey-caption">Hold <strong id="hotkeyCaption">F9</strong> to dictate.</p>
+    </section>
+
+    <!-- AI cleanup -->
+    <section class="panel col-6">
+      <div class="section-head">
+        <h2>AI cleanup</h2>
+        <span class="section-index">03</span>
+      </div>
+      <div class="segmented" id="cleanupPicker">
+        <button data-cleanup="off">Off</button>
+        <button data-cleanup="auto" class="active">Auto</button>
+        <button data-cleanup="always">Always</button>
+      </div>
+      <p class="helper">Auto polishes only messy takes. Always is slower (3–10s per dictation on CPU).</p>
+    </section>
+
+    <!-- Theme -->
+    <section class="panel col-6">
+      <div class="section-head">
+        <h2>Theme</h2>
+        <span class="section-index">04</span>
+      </div>
+      <div class="segmented" id="themePicker">
+        <button data-theme-pick="auto">Auto</button>
+        <button data-theme-pick="light" class="active">Light</button>
+        <button data-theme-pick="dark">Dark</button>
+      </div>
+      <p class="helper">Auto follows your Windows setting. This mockup's header toggle previews the effect immediately.</p>
+    </section>
+
+    <!-- Dictionary editor -->
+    <section class="panel col-12">
+      <div class="section-head">
+        <h2>Dictionary</h2>
+        <span class="section-index">05</span>
+      </div>
+      <div class="hairline-box">
+        <table class="dict-table">
+          <thead>
+            <tr>
+              <th style="width:42%">whispr hears</th>
+              <th class="arrow-cell"></th>
+              <th style="width:42%">Replace with</th>
+              <th class="row-actions"></th>
+            </tr>
+          </thead>
+          <tbody id="dictBody">
+            <tr>
+              <td><input type="text" value="varum" /></td>
+              <td class="arrow-cell">→</td>
+              <td><input type="text" value="Varun" /></td>
+              <td class="row-actions">
+                <button class="icon-btn" aria-label="Delete rule" onclick="this.closest('tr').remove()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td><input type="text" value="git hub" /></td>
+              <td class="arrow-cell">→</td>
+              <td><input type="text" value="GitHub" /></td>
+              <td class="row-actions">
+                <button class="icon-btn" aria-label="Delete rule" onclick="this.closest('tr').remove()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+                </button>
+              </td>
+            </tr>
+            <tr>
+              <td><input type="text" value="java script" /></td>
+              <td class="arrow-cell">→</td>
+              <td><input type="text" value="JavaScript" /></td>
+              <td class="row-actions">
+                <button class="icon-btn" aria-label="Delete rule" onclick="this.closest('tr').remove()">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="add-rule" id="addRuleBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          Add rule
+        </button>
+        <p class="helper">Add a rule when whispr repeatedly misspells a word you use.</p>
+      </div>
+    </section>
+
+    <!-- Dictation history -->
+    <section class="panel col-12">
+      <div class="section-head">
+        <h2>History</h2>
+        <span class="section-index">06</span>
+      </div>
+
+      <div class="history-list">
+        <div class="history-item">
+          <div class="history-meta">
+            <span class="history-time">Today, 2:41 PM</span>
+            <span class="badge ai">AI</span>
+            <span class="history-latency">4.2 s</span>
+          </div>
+          <div class="history-text">
+            <p>Make me a grocery list:</p>
+            <ul>
+              <li>Eggs</li>
+              <li>Milk</li>
+              <li>Bread</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="history-item">
+          <div class="history-meta">
+            <span class="history-time">Today, 1:58 PM</span>
+            <span class="badge fast">Fast</span>
+            <span class="history-latency">480 ms</span>
+          </div>
+          <div class="history-text">
+            <p>Hey, can you push the meeting to four instead of three, I've got a conflict with the design review.</p>
+          </div>
+        </div>
+
+        <div class="history-item">
+          <div class="history-meta">
+            <span class="history-time">Today, 11:20 AM</span>
+            <span class="badge ai">AI</span>
+            <span class="history-latency">3.6 s</span>
+          </div>
+          <div class="history-text">
+            <p>Reminder to self — follow up with the landlord about the lease renewal before the fifteenth.</p>
+          </div>
+        </div>
+
+        <div class="history-item">
+          <div class="history-meta">
+            <span class="history-time">Yesterday, 6:07 PM</span>
+            <span class="badge fast">Fast</span>
+            <span class="history-latency">510 ms</span>
+          </div>
+          <div class="history-text">
+            <p>Set the thermostat to sixty-eight before bed and lock the front door.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <footer>
+    <span class="micro">whispr — runs fully offline</span>
+    <span class="micro">v0.4.2</span>
+  </footer>
+
+</div>
+
+<script>
+  // ---------- Theme toggle (header) ----------
+  const root = document.documentElement;
+  const themeToggle = document.getElementById('themeToggle');
+  themeToggle.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const choice = btn.dataset.themeChoice;
+    root.setAttribute('data-theme', choice);
+    [...themeToggle.querySelectorAll('button')].forEach(b => b.classList.toggle('active', b === btn));
+    // keep the "Theme" segmented control in sync for narrative consistency
+    const themePicker = document.getElementById('themePicker');
+    [...themePicker.querySelectorAll('button')].forEach(b => {
+      b.classList.toggle('active', b.dataset.themePick === choice);
+    });
+  });
+
+  // ---------- Theme segmented control (settings section) ----------
+  const themePicker = document.getElementById('themePicker');
+  themePicker.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    [...themePicker.querySelectorAll('button')].forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const pick = btn.dataset.themePick;
+    if (pick === 'light' || pick === 'dark') {
+      root.setAttribute('data-theme', pick);
+      [...themeToggle.querySelectorAll('button')].forEach(b => b.classList.toggle('active', b.dataset.themeChoice === pick));
+    }
+  });
+
+  // ---------- Hero dictation toggle ----------
+  const dictationToggle = document.getElementById('dictationToggle');
+  const statusPill = document.getElementById('statusPill');
+  const statusLabel = document.getElementById('statusLabel');
+
+  function setStatus(state, label) {
+    statusPill.dataset.state = state;
+    statusLabel.textContent = label;
+  }
+
+  function toggleDictation() {
+    const isOn = dictationToggle.classList.toggle('on');
+    dictationToggle.setAttribute('aria-pressed', isOn ? 'true' : 'false');
+    setStatus(isOn ? 'ready' : 'off', isOn ? 'Ready' : 'Paused');
+  }
+
+  dictationToggle.addEventListener('click', toggleDictation);
+  dictationToggle.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleDictation(); }
+  });
+
+  // Small demo: cycle status states on the pill itself when clicked, to show all four.
+  const demoStates = [
+    ['ready', 'Ready'],
+    ['recording', 'Recording'],
+    ['transcribing', 'Transcribing'],
+    ['polishing', 'Polishing'],
+  ];
+  let demoIndex = 0;
+  statusPill.style.cursor = 'pointer';
+  statusPill.title = 'Click to preview status states';
+  statusPill.addEventListener('click', () => {
+    demoIndex = (demoIndex + 1) % demoStates.length;
+    const [state, label] = demoStates[demoIndex];
+    setStatus(state, label);
+  });
+
+  // ---------- Engine picker ----------
+  const enginePicker = document.getElementById('enginePicker');
+  enginePicker.addEventListener('click', (e) => {
+    const card = e.target.closest('.choice-card');
+    if (!card) return;
+    [...enginePicker.querySelectorAll('.choice-card')].forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+  });
+
+  // ---------- Hotkey grid (F1–F12) ----------
+  const hotkeyGrid = document.getElementById('hotkeyGrid');
+  const hotkeyCaption = document.getElementById('hotkeyCaption');
+  const defaultKey = 'F9';
+  for (let i = 1; i <= 12; i++) {
+    const key = 'F' + i;
+    const btn = document.createElement('button');
+    btn.textContent = key;
+    btn.dataset.key = key;
+    if (key === defaultKey) btn.classList.add('active');
+    btn.addEventListener('click', () => {
+      [...hotkeyGrid.querySelectorAll('button')].forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      hotkeyCaption.textContent = key;
+    });
+    hotkeyGrid.appendChild(btn);
+  }
+
+  // ---------- AI cleanup segmented ----------
+  const cleanupPicker = document.getElementById('cleanupPicker');
+  cleanupPicker.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    [...cleanupPicker.querySelectorAll('button')].forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  });
+
+  // ---------- Dictionary: add rule ----------
+  const dictBody = document.getElementById('dictBody');
+  document.getElementById('addRuleBtn').addEventListener('click', () => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><input type="text" placeholder="mishears this" /></td>
+      <td class="arrow-cell">&#8594;</td>
+      <td><input type="text" placeholder="as this" /></td>
+      <td class="row-actions">
+        <button class="icon-btn" aria-label="Delete rule" onclick="this.closest('tr').remove()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>
+        </button>
+      </td>`;
+    dictBody.appendChild(tr);
+    tr.querySelector('input').focus();
+  });
+</script>

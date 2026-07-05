@@ -1,0 +1,964 @@
+<title>Quill — Settings</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<style>
+/* =========================================================================
+   DESIGN DIRECTION: "QUILL" — Refined Literary Paperback
+   -------------------------------------------------------------------------
+   A settings surface that reads like a beautifully typeset book or a
+   fountain-pen stationer's brand — not a SaaS dashboard.
+
+   PALETTE (light — "cream paper")
+     paper base      #f6efdd  →  layered into a subtle vignette/texture
+     paper raised    #efe6cf  (cards, slightly deeper cream)
+     ink (body text) #3a2c20
+     ink, muted      #7a6a55
+     hairline rule   #d8c9a8 / #c7b691
+     accent (ink)    #7a1f2b  oxblood / wax-seal red — sparing use only
+     accent, deep    #591520
+     accent-blue alt #2b3550  (reserved, used only for "fast" badge ink)
+
+   PALETTE (dark — "candle-lit library")
+     espresso base   #241c14
+     espresso raised #2f2417
+     parchment text  #ead9b8
+     parchment muted #a9967a
+     hairline rule   #4a3a26
+     accent (ink)    #c96a5a  warmed oxblood for legibility on dark
+     accent, deep    #e0836f
+
+   TYPE
+     Headings / wordmark : Palatino Linotype, "Book Antiqua", Georgia, serif
+     Body                : Cambria, Georgia, "Times New Roman", serif
+     Labels (small caps) : Constantia, Georgia, serif — letter-spaced,
+                            uppercase, small-caps flavor for structure
+     Numeric / code bits : Consolas, "Courier New", monospace (timestamps,
+                            latency figures, hotkey glyphs)
+
+   MOTIF
+     A drawn fountain-pen nib + ink drop stands in for a logo mark.
+     Cards are "letterpress" — soft debossed inner shadow, hairline rule
+     borders, generous whitespace, faint ruled notebook lines in the page
+     background. No gradients-as-decoration, no glassmorphism, no neon.
+     ========================================================================= */
+
+:root{
+  --paper:        #f6efdd;
+  --paper-raised: #efe6cf;
+  --paper-raised-2:#f1e9d2;
+  --ink:          #3a2c20;
+  --ink-muted:    #7a6a55;
+  --ink-faint:    #9c8b70;
+  --rule:         #d8c9a8;
+  --rule-strong:  #c7b691;
+  --accent:       #7a1f2b;
+  --accent-deep:  #591520;
+  --accent-ink:   #7a1f2b;
+  --accent-soft:  rgba(122,31,43,0.10);
+  --accent-soft-strong: rgba(122,31,43,0.18);
+  --shadow-deboss: inset 0 1px 2px rgba(58,44,32,0.10), inset 0 -1px 0 rgba(255,255,255,0.35);
+  --shadow-card:  0 1px 0 rgba(255,255,255,0.5), 0 2px 10px rgba(58,44,32,0.06);
+  --focus-ring:   0 0 0 3px rgba(122,31,43,0.22);
+  --serif-head:   "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  --serif-body:   Cambria, Georgia, "Times New Roman", serif;
+  --serif-label:  Constantia, Georgia, serif;
+  --mono:         Consolas, "Courier New", monospace;
+}
+
+:root[data-theme="dark"]{
+  --paper:        #241c14;
+  --paper-raised: #2f2417;
+  --paper-raised-2:#2b2115;
+  --ink:          #ead9b8;
+  --ink-muted:    #a9967a;
+  --ink-faint:    #8a795f;
+  --rule:         #4a3a26;
+  --rule-strong:  #59462e;
+  --accent:       #c96a5a;
+  --accent-deep:  #e0836f;
+  --accent-ink:   #d98474;
+  --accent-soft:  rgba(201,106,90,0.14);
+  --accent-soft-strong: rgba(201,106,90,0.24);
+  --shadow-deboss: inset 0 1px 2px rgba(0,0,0,0.35), inset 0 -1px 0 rgba(255,255,255,0.03);
+  --shadow-card:  0 1px 0 rgba(255,255,255,0.02), 0 4px 16px rgba(0,0,0,0.35);
+  --focus-ring:   0 0 0 3px rgba(201,106,90,0.28);
+}
+
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:        #241c14;
+    --paper-raised: #2f2417;
+    --paper-raised-2:#2b2115;
+    --ink:          #ead9b8;
+    --ink-muted:    #a9967a;
+    --ink-faint:    #8a795f;
+    --rule:         #4a3a26;
+    --rule-strong:  #59462e;
+    --accent:       #c96a5a;
+    --accent-deep:  #e0836f;
+    --accent-ink:   #d98474;
+    --accent-soft:  rgba(201,106,90,0.14);
+    --accent-soft-strong: rgba(201,106,90,0.24);
+    --shadow-deboss: inset 0 1px 2px rgba(0,0,0,0.35), inset 0 -1px 0 rgba(255,255,255,0.03);
+    --shadow-card:  0 1px 0 rgba(255,255,255,0.02), 0 4px 16px rgba(0,0,0,0.35);
+    --focus-ring:   0 0 0 3px rgba(201,106,90,0.28);
+  }
+}
+
+*{ box-sizing:border-box; }
+html,body{ margin:0; padding:0; }
+
+body{
+  font-family: var(--serif-body);
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 37px,
+      rgba(122,95,45,0.055) 38px
+    ),
+    radial-gradient(ellipse at 15% -10%, rgba(255,252,240,0.55), transparent 55%),
+    radial-gradient(ellipse at 100% 0%, rgba(122,31,43,0.05), transparent 45%),
+    radial-gradient(ellipse at 50% 120%, rgba(0,0,0,0.06), transparent 60%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  line-height: 1.6;
+  transition: background-color .25s ease, color .25s ease;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection{ background: var(--accent-soft-strong); color: var(--ink); }
+
+.page{
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 40px 32px 96px;
+}
+
+@media (min-width: 900px){
+  .page{ padding: 56px 48px 120px; }
+}
+
+/* ---------- Header ---------- */
+header.top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding-bottom: 28px;
+  margin-bottom: 36px;
+  border-bottom: 1px solid var(--rule);
+}
+
+.wordmark-row{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+
+.nib{
+  width:40px;
+  height:40px;
+  flex:none;
+  color: var(--accent-ink);
+}
+
+.wordmark{
+  font-family: var(--serif-head);
+  font-size: 2.5rem;
+  letter-spacing: 0.5px;
+  font-weight: 400;
+  margin:0;
+  color: var(--ink);
+  display:flex;
+  align-items:baseline;
+  gap: 2px;
+}
+.wordmark .dot{ color: var(--accent-ink); }
+
+.tagline{
+  margin: 4px 0 0 0;
+  font-family: var(--serif-label);
+  font-style: italic;
+  color: var(--ink-muted);
+  font-size: 0.98rem;
+  letter-spacing: 0.2px;
+}
+
+.header-right{
+  display:flex;
+  align-items:center;
+  gap:16px;
+  flex-wrap:wrap;
+}
+
+/* Theme toggle */
+.theme-toggle{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 14px;
+  border-radius:999px;
+  border:1px solid var(--rule-strong);
+  background: var(--paper-raised);
+  color: var(--ink);
+  font-family: var(--serif-label);
+  font-size: 0.82rem;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  cursor:pointer;
+  box-shadow: var(--shadow-card);
+  transition: all .2s ease;
+}
+.theme-toggle:hover{ border-color: var(--accent); color: var(--accent-ink); }
+.theme-toggle:focus-visible{ outline:none; box-shadow: var(--focus-ring); }
+.theme-toggle svg{ width:16px; height:16px; }
+
+/* Status pill */
+.status-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding: 10px 20px 10px 16px;
+  border-radius: 999px;
+  background: var(--paper-raised);
+  border: 1px solid var(--rule-strong);
+  box-shadow: var(--shadow-card);
+  font-family: var(--serif-label);
+}
+.status-dot{
+  width:10px; height:10px; border-radius:50%;
+  background: #4f7a4a;
+  box-shadow: 0 0 0 3px rgba(79,122,74,0.18);
+}
+:root[data-theme="dark"] .status-dot{ background:#7fae6f; box-shadow:0 0 0 3px rgba(127,174,111,0.22); }
+.status-text{
+  font-size: 0.86rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.status-text b{ color: var(--ink); font-weight:600; }
+.status-sub{
+  font-size: 0.72rem;
+  color: var(--ink-faint);
+  font-style: italic;
+  margin-left: 2px;
+}
+
+/* ---------- Layout grid ---------- */
+.grid{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+@media (min-width: 880px){
+  .grid{
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .span-2{ grid-column: 1 / -1; }
+}
+
+@media (min-width: 1400px){
+  .grid{
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .span-2{ grid-column: span 2; }
+  .span-3{ grid-column: 1 / -1; }
+}
+
+/* ---------- Card ---------- */
+.card{
+  background: var(--paper-raised);
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  padding: 26px 28px;
+  box-shadow: var(--shadow-card);
+  position: relative;
+}
+.card::before{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border-radius:7px;
+  border: 1px solid rgba(122,31,43,0.06);
+  pointer-events:none;
+}
+:root[data-theme="dark"] .card::before{ border-color: rgba(201,106,90,0.08); }
+
+.card-label{
+  font-family: var(--serif-label);
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent-ink);
+  margin: 0 0 6px 0;
+}
+
+.card-title{
+  font-family: var(--serif-head);
+  font-size: 1.28rem;
+  margin: 0 0 10px 0;
+  color: var(--ink);
+  font-weight:400;
+}
+
+.card-help{
+  font-size: 0.88rem;
+  color: var(--ink-muted);
+  font-style: italic;
+  line-height:1.55;
+  margin: 10px 0 0 0;
+}
+
+hr.hairline{
+  border:none;
+  border-top: 1px solid var(--rule);
+  margin: 18px 0;
+}
+
+/* ---------- Hero enable/pause ---------- */
+.hero-card{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 28px;
+  flex-wrap: wrap;
+  padding: 30px 32px;
+}
+.hero-left h2{
+  font-family: var(--serif-head);
+  font-weight:400;
+  font-size: 1.5rem;
+  margin: 0 0 6px 0;
+}
+.hero-left p{
+  margin:0;
+  color: var(--ink-muted);
+  font-size: 0.95rem;
+  max-width: 46ch;
+}
+
+.big-toggle{
+  display:flex;
+  align-items:center;
+  gap: 18px;
+  flex: none;
+}
+
+.switch{
+  --w: 92px;
+  --h: 46px;
+  width: var(--w);
+  height: var(--h);
+  border-radius: 999px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.02));
+  border: 1px solid var(--rule-strong);
+  box-shadow: var(--shadow-deboss);
+  position: relative;
+  cursor: pointer;
+  flex: none;
+  transition: background .25s ease;
+}
+.switch .knob{
+  position:absolute;
+  top: 3px; left: 3px;
+  width: calc(var(--h) - 8px);
+  height: calc(var(--h) - 8px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #fbf6e8, #d8c9a8);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  transition: transform .28s cubic-bezier(.4,1.4,.5,1);
+}
+.switch.on{
+  background: linear-gradient(to bottom, var(--accent-deep), var(--accent));
+  border-color: var(--accent-deep);
+}
+.switch.on .knob{
+  transform: translateX(calc(var(--w) - var(--h)));
+  background: radial-gradient(circle at 35% 30%, #fff6ee, #f2e2d3);
+}
+.switch:focus-visible{ outline:none; box-shadow: var(--focus-ring); }
+
+.toggle-caption{
+  font-family: var(--serif-label);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+}
+.toggle-caption b{
+  display:block;
+  font-family: var(--serif-head);
+  font-size: 1.2rem;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+  margin-top:2px;
+}
+
+/* ---------- Engine picker ---------- */
+.option-row{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+@media (max-width: 480px){
+  .option-row{ grid-template-columns: 1fr; }
+}
+
+.option-tile{
+  border: 1px solid var(--rule-strong);
+  border-radius: 8px;
+  padding: 16px 18px;
+  cursor: pointer;
+  background: var(--paper-raised-2);
+  transition: border-color .18s ease, box-shadow .18s ease;
+  position: relative;
+}
+.option-tile:hover{ border-color: var(--accent); }
+.option-tile.selected{
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent) inset, var(--shadow-card);
+  background: var(--accent-soft);
+}
+.option-tile .oname{
+  font-family: var(--serif-head);
+  font-size: 1.02rem;
+  color: var(--ink);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+}
+.option-tile .otag{
+  font-size: 0.72rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-family: var(--serif-label);
+  margin-top:4px;
+  display:block;
+}
+.check-mark{
+  width:18px; height:18px;
+  border-radius:50%;
+  border: 1px solid var(--rule-strong);
+  flex: none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+}
+.option-tile.selected .check-mark{
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.check-mark svg{ width:11px; height:11px; opacity:0; }
+.option-tile.selected .check-mark svg{ opacity:1; }
+
+/* ---------- Hotkey segmented ---------- */
+.segmented{
+  display:flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px;
+  background: var(--paper-raised-2);
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  box-shadow: var(--shadow-deboss);
+}
+.seg-btn{
+  flex: 1 1 auto;
+  min-width: 42px;
+  text-align:center;
+  padding: 8px 6px;
+  border-radius: 6px;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+  cursor:pointer;
+  border: 1px solid transparent;
+  background: transparent;
+}
+.seg-btn:hover{ color: var(--ink); }
+.seg-btn.selected{
+  background: var(--paper);
+  border-color: var(--rule-strong);
+  color: var(--accent-ink);
+  font-weight: 700;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.4), 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.hold-caption{
+  margin-top: 12px;
+  font-size: 0.86rem;
+  color: var(--ink-muted);
+  display:flex;
+  align-items:center;
+  gap: 8px;
+}
+.hold-caption kbd{
+  font-family: var(--mono);
+  background: var(--paper);
+  border: 1px solid var(--rule-strong);
+  border-radius: 4px;
+  padding: 1px 7px;
+  color: var(--accent-ink);
+  font-size: 0.8rem;
+}
+
+/* ---------- AI cleanup segmented (three-way pill) ---------- */
+.tri-toggle{
+  display:flex;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--paper-raised-2);
+  padding: 4px;
+  box-shadow: var(--shadow-deboss);
+  gap: 4px;
+}
+.tri-btn{
+  flex:1;
+  text-align:center;
+  padding: 9px 10px;
+  border-radius: 999px;
+  font-family: var(--serif-label);
+  font-size: 0.82rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  cursor:pointer;
+}
+.tri-btn.selected{
+  background: var(--accent);
+  color: #fbf3e6;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+}
+:root[data-theme="dark"] .tri-btn.selected{ color: #241c14; }
+
+/* ---------- Theme setting (Auto/Light/Dark) reuse tri ---------- */
+
+/* ---------- Dictionary table ---------- */
+table.dict{
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 4px;
+}
+table.dict th{
+  text-align:left;
+  font-family: var(--serif-label);
+  font-size: 0.7rem;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-weight:400;
+  padding: 6px 10px 10px 0;
+  border-bottom: 1px solid var(--rule-strong);
+}
+table.dict td{
+  padding: 11px 10px 11px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 0.95rem;
+  vertical-align: middle;
+}
+table.dict tr:last-of-type td{ border-bottom: none; }
+.dict-wrong{ color: var(--ink-muted); font-style: italic; }
+.dict-arrow{ color: var(--accent-ink); padding: 0 8px; }
+.dict-right{ color: var(--ink); font-weight: 600; }
+.dict-del{
+  cursor:pointer;
+  color: var(--ink-faint);
+  font-family: var(--serif-label);
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border: none;
+  background: none;
+  padding: 4px 8px;
+}
+.dict-del:hover{ color: var(--accent); }
+
+.add-rule{
+  margin-top: 16px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background: none;
+  border: 1px dashed var(--rule-strong);
+  color: var(--accent-ink);
+  font-family: var(--serif-label);
+  font-size: 0.82rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 9px 16px;
+  border-radius: 6px;
+  cursor:pointer;
+}
+.add-rule:hover{ border-color: var(--accent); background: var(--accent-soft); }
+
+/* ---------- History ---------- */
+.history-item{
+  padding: 18px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.history-item:last-child{ border-bottom: none; padding-bottom: 4px; }
+.history-item:first-child{ padding-top: 6px; }
+
+.history-meta{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+.history-time{
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+}
+.badge{
+  font-family: var(--serif-label);
+  font-size: 0.68rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--rule-strong);
+}
+.badge.fast{ color: #2b3550; border-color: #b9c0d6; background: rgba(43,53,80,0.07); }
+:root[data-theme="dark"] .badge.fast{ color:#aab6e0; border-color:#48507a; background: rgba(170,182,224,0.10); }
+.badge.ai{ color: var(--accent-ink); border-color: var(--accent); background: var(--accent-soft); }
+.history-latency{
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  margin-left: auto;
+}
+.history-text{
+  font-size: 0.98rem;
+  color: var(--ink);
+  line-height: 1.65;
+}
+.history-text ul{
+  margin: 6px 0 0 0;
+  padding-left: 1.3em;
+}
+.history-text li{ margin: 2px 0; }
+.history-text .lead{ display:block; margin-bottom: 2px; }
+
+/* ---------- Footer ---------- */
+.foot{
+  text-align:center;
+  margin-top: 48px;
+  color: var(--ink-faint);
+  font-family: var(--serif-label);
+  font-size: 0.78rem;
+  letter-spacing: 0.6px;
+  font-style: italic;
+}
+
+@media (max-width: 560px){
+  .hero-card{ flex-direction:column; align-items:flex-start; }
+}
+</style>
+
+<div class="page">
+
+  <header class="top">
+    <div>
+      <div class="wordmark-row">
+        <svg class="nib" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M24 4 L40 20 L24 44 L8 20 Z" stroke="currentColor" stroke-width="1.4" fill="none"/>
+          <path d="M24 8 L24 30" stroke="currentColor" stroke-width="1.4"/>
+          <circle cx="24" cy="34" r="2.4" fill="currentColor"/>
+          <path d="M17 19 Q24 24 31 19" stroke="currentColor" stroke-width="1" fill="none" opacity="0.6"/>
+        </svg>
+        <h1 class="wordmark">Quill<span class="dot">.</span></h1>
+      </div>
+      <p class="tagline">Private voice dictation, fully on your machine</p>
+    </div>
+
+    <div class="header-right">
+      <div class="status-pill" title="Other states: Recording, Transcribing, Polishing">
+        <span class="status-dot"></span>
+        <span class="status-text"><b>Ready</b></span>
+        <span class="status-sub">· listening for your hotkey</span>
+      </div>
+      <button class="theme-toggle" id="themeToggle" type="button">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path id="themeIconPath" d="M12 3v2M12 19v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M3 12h2M19 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4M12 7a5 5 0 100 10 5 5 0 000-10z"/>
+        </svg>
+        <span id="themeLabel">Light</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="grid">
+
+    <!-- Hero enable/pause -->
+    <div class="card hero-card span-3">
+      <div class="hero-left">
+        <p class="card-label">Dictation</p>
+        <h2>Enable whispr to listen for your hotkey</h2>
+        <p>When enabled, hold <b>F9</b> anywhere on your machine to dictate. Nothing leaves this device.</p>
+      </div>
+      <div class="big-toggle">
+        <span class="toggle-caption">Status<b id="toggleState">Enabled</b></span>
+        <div class="switch on" id="mainSwitch" role="switch" aria-checked="true" tabindex="0">
+          <div class="knob"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Engine picker -->
+    <div class="card span-2">
+      <p class="card-label">Engine</p>
+      <h3 class="card-title">Transcription model</h3>
+      <div class="option-row">
+        <div class="option-tile selected" data-engine="parakeet" tabindex="0">
+          <div class="oname">High accuracy
+            <span class="check-mark"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-6" stroke="#fbf3e6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+          <span class="otag">Parakeet</span>
+        </div>
+        <div class="option-tile" data-engine="moonshine" tabindex="0">
+          <div class="oname">Fastest
+            <span class="check-mark"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-6" stroke="#fbf3e6" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+          <span class="otag">Moonshine</span>
+        </div>
+      </div>
+      <p class="card-help">High accuracy favors correctness on names and jargon. Fastest trades a little accuracy for near-instant results.</p>
+    </div>
+
+    <!-- Hotkey picker -->
+    <div class="card">
+      <p class="card-label">Hotkey</p>
+      <h3 class="card-title">Hold to dictate</h3>
+      <div class="segmented" id="hotkeySeg">
+        <!-- F1..F12 -->
+      </div>
+      <p class="hold-caption">Hold <kbd id="hotkeyLabel">F9</kbd> anywhere to speak.</p>
+    </div>
+
+    <!-- AI cleanup -->
+    <div class="card">
+      <p class="card-label">AI Cleanup</p>
+      <h3 class="card-title">Polish transcripts</h3>
+      <div class="tri-toggle" id="cleanupToggle">
+        <div class="tri-btn" data-val="off">Off</div>
+        <div class="tri-btn selected" data-val="auto">Auto</div>
+        <div class="tri-btn" data-val="always">Always</div>
+      </div>
+      <p class="card-help">Auto polishes only messy takes. Always is slower (3–10s per dictation on CPU).</p>
+    </div>
+
+    <!-- Theme setting -->
+    <div class="card">
+      <p class="card-label">Appearance</p>
+      <h3 class="card-title">Theme</h3>
+      <div class="tri-toggle" id="appearanceToggle">
+        <div class="tri-btn" data-val="auto">Auto</div>
+        <div class="tri-btn selected" data-val="light">Light</div>
+        <div class="tri-btn" data-val="dark">Dark</div>
+      </div>
+      <p class="card-help">Auto follows your Windows setting. This card is just a preference — the toggle above previews it live.</p>
+    </div>
+
+    <!-- Dictionary editor -->
+    <div class="card span-2">
+      <p class="card-label">Dictionary</p>
+      <h3 class="card-title">Personal corrections</h3>
+      <table class="dict">
+        <thead>
+          <tr><th>Misheard as</th><th></th><th>Correct to</th><th></th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="dict-wrong">“varum”</td>
+            <td class="dict-arrow">→</td>
+            <td class="dict-right">Varun</td>
+            <td><button class="dict-del">Remove</button></td>
+          </tr>
+          <tr>
+            <td class="dict-wrong">“git hub”</td>
+            <td class="dict-arrow">→</td>
+            <td class="dict-right">GitHub</td>
+            <td><button class="dict-del">Remove</button></td>
+          </tr>
+          <tr>
+            <td class="dict-wrong">“java script”</td>
+            <td class="dict-arrow">→</td>
+            <td class="dict-right">JavaScript</td>
+            <td><button class="dict-del">Remove</button></td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="add-rule" type="button">+ &nbsp;Add rule</button>
+      <p class="card-help">Add a rule when whispr repeatedly misspells a word you use.</p>
+    </div>
+
+    <!-- History -->
+    <div class="card span-3">
+      <p class="card-label">History</p>
+      <h3 class="card-title">Recent dictations</h3>
+
+      <div class="history-item">
+        <div class="history-meta">
+          <span class="history-time">Today · 09:42:11</span>
+          <span class="badge ai">ai</span>
+          <span class="history-latency">2,140 ms</span>
+        </div>
+        <div class="history-text">
+          <span class="lead">Make me a grocery list:</span>
+          <ul>
+            <li>Eggs</li>
+            <li>Milk</li>
+            <li>Bread</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="history-item">
+        <div class="history-meta">
+          <span class="history-time">Today · 09:37:52</span>
+          <span class="badge fast">fast</span>
+          <span class="history-latency">480 ms</span>
+        </div>
+        <div class="history-text">Can you push the meeting to three thirty tomorrow, I have a conflict in the morning.</div>
+      </div>
+
+      <div class="history-item">
+        <div class="history-meta">
+          <span class="history-time">Today · 08:55:03</span>
+          <span class="badge ai">ai</span>
+          <span class="history-latency">1,910 ms</span>
+        </div>
+        <div class="history-text">Reminder to self: review the pull request from Priya before standup, and reply to the GitHub thread about the JavaScript build failure.</div>
+      </div>
+
+      <div class="history-item">
+        <div class="history-meta">
+          <span class="history-time">Yesterday · 21:12:40</span>
+          <span class="badge fast">fast</span>
+          <span class="history-latency">510 ms</span>
+        </div>
+        <div class="history-text">Note to self, the espresso machine needs descaling this weekend.</div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <p class="foot">whispr runs entirely offline · no audio or text ever leaves this machine</p>
+</div>
+
+<script>
+(function(){
+  const root = document.documentElement;
+  const themeToggle = document.getElementById('themeToggle');
+  const themeLabel = document.getElementById('themeLabel');
+  const appearanceToggle = document.getElementById('appearanceToggle');
+
+  function setTheme(mode, updateAppearanceCard){
+    if(mode === 'dark'){
+      root.setAttribute('data-theme','dark');
+      themeLabel.textContent = 'Dark';
+    } else {
+      root.setAttribute('data-theme','light');
+      themeLabel.textContent = 'Light';
+    }
+    if(updateAppearanceCard){
+      appearanceToggle.querySelectorAll('.tri-btn').forEach(b=>{
+        b.classList.toggle('selected', b.dataset.val === mode);
+      });
+    }
+  }
+
+  themeToggle.addEventListener('click', function(){
+    const current = root.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+    setTheme(current === 'dark' ? 'light' : 'dark', true);
+  });
+
+  // Appearance tri-toggle (Auto/Light/Dark) — also drives the live preview
+  appearanceToggle.querySelectorAll('.tri-btn').forEach(btn=>{
+    btn.addEventListener('click', function(){
+      appearanceToggle.querySelectorAll('.tri-btn').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      const val = btn.dataset.val;
+      if(val === 'auto'){
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        setTheme(prefersDark ? 'dark' : 'light', false);
+      } else {
+        setTheme(val, false);
+      }
+    });
+  });
+
+  // Generic tri-toggle behavior (cleanup)
+  document.getElementById('cleanupToggle').querySelectorAll('.tri-btn').forEach(btn=>{
+    btn.addEventListener('click', function(){
+      this.parentElement.querySelectorAll('.tri-btn').forEach(b=>b.classList.remove('selected'));
+      this.classList.add('selected');
+    });
+  });
+
+  // Engine picker
+  document.querySelectorAll('.option-tile').forEach(tile=>{
+    tile.addEventListener('click', function(){
+      this.parentElement.querySelectorAll('.option-tile').forEach(t=>t.classList.remove('selected'));
+      this.classList.add('selected');
+    });
+    tile.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); this.click(); }
+    });
+  });
+
+  // Hotkey segmented F1-F12
+  const seg = document.getElementById('hotkeySeg');
+  const hotkeyLabel = document.getElementById('hotkeyLabel');
+  for(let i=1;i<=12;i++){
+    const b = document.createElement('div');
+    b.className = 'seg-btn' + (i===9 ? ' selected' : '');
+    b.textContent = 'F'+i;
+    b.dataset.key = 'F'+i;
+    b.tabIndex = 0;
+    b.addEventListener('click', function(){
+      seg.querySelectorAll('.seg-btn').forEach(s=>s.classList.remove('selected'));
+      this.classList.add('selected');
+      hotkeyLabel.textContent = this.dataset.key;
+    });
+    seg.appendChild(b);
+  }
+
+  // Main enable/pause switch
+  const mainSwitch = document.getElementById('mainSwitch');
+  const toggleState = document.getElementById('toggleState');
+  function toggleMain(){
+    const isOn = mainSwitch.classList.toggle('on');
+    mainSwitch.setAttribute('aria-checked', isOn ? 'true' : 'false');
+    toggleState.textContent = isOn ? 'Enabled' : 'Paused';
+  }
+  mainSwitch.addEventListener('click', toggleMain);
+  mainSwitch.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggleMain(); }
+  });
+
+  // Add rule affordance (visual only)
+  document.querySelector('.add-rule').addEventListener('click', function(){
+    const tbody = document.querySelector('table.dict tbody');
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td class="dict-wrong">“new phrase”</td><td class="dict-arrow">→</td><td class="dict-right">Correction</td><td><button class="dict-del">Remove</button></td>';
+    tbody.appendChild(tr);
+    tr.querySelector('.dict-del').addEventListener('click', function(){ tr.remove(); });
+  });
+
+  document.querySelectorAll('.dict-del').forEach(btn=>{
+    btn.addEventListener('click', function(){ this.closest('tr').remove(); });
+  });
+})();
+</script>

@@ -3,464 +3,777 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>whispr</title>
+<title>Xenon</title>
 <style>
-  :root {
-    --paper: #f4ecd8;
-    --paper-2: #efe6cf;
-    --ink: #3c2d23;
-    --ink-soft: #6b5744;
-    --ink-faint: #8c795f;
-    --rule: rgba(60, 45, 35, 0.10);
-    --accent: #8a5a34;
-    --accent-2: #b3492f;
-    --card: #fbf6ea;
-    --card-border: rgba(60, 45, 35, 0.16);
-    --shadow: rgba(60, 45, 35, 0.12);
-    --danger: #8a3324;
-    --good: #4c6b3f;
-  }
-  :root[data-theme="dark"] {
-    --paper: #211c17;
-    --paper-2: #2a241d;
-    --ink: #e8dcc6;
-    --ink-soft: #c3b393;
-    --ink-faint: #8f8168;
-    --rule: rgba(232, 220, 198, 0.08);
-    --accent: #d0a672;
-    --accent-2: #dd8266;
-    --card: #2a251e;
-    --card-border: rgba(232, 220, 198, 0.14);
-    --shadow: rgba(0, 0, 0, 0.35);
-    --good: #9ac488;
-    --danger: #e3a08f;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root[data-theme="auto"] {
-      --paper: #211c17;
-      --paper-2: #2a241d;
-      --ink: #e8dcc6;
-      --ink-soft: #c3b393;
-      --ink-faint: #8f8168;
-      --rule: rgba(232, 220, 198, 0.08);
-      --accent: #d0a672;
-      --accent-2: #dd8266;
-      --card: #2a251e;
-      --card-border: rgba(232, 220, 198, 0.14);
-      --shadow: rgba(0, 0, 0, 0.35);
-      --good: #9ac488;
-      --danger: #e3a08f;
-    }
-  }
+/* =============================================================================
+   XENON — fused "warm editorial" design
+   Sotto's airy magazine grid + restrained typographic structure,
+   rendered on Quill's warm paper skin with fountain-pen-ink accents.
+   ============================================================================= */
 
-  * { box-sizing: border-box; }
+:root{
+  --paper:            #f6efdd;
+  --paper-raised:     #efe6cf;
+  --paper-raised-2:   #f1e9d2;
+  --ink:              #3a2c20;
+  --ink-soft:         #6b5744;
+  --ink-faint:        #8c795f;
+  --rule:             rgba(58,44,32,0.13);
+  --rule-strong:      rgba(58,44,32,0.24);
+  --accent:           #7a1f2b;
+  --accent-deep:      #591520;
+  --accent-soft:      rgba(122,31,43,0.10);
+  --accent-soft-strong:rgba(122,31,43,0.18);
+  --focus-ring:       0 0 0 3px rgba(122,31,43,0.22);
+  --good:             #4c7a54;
+  --good-soft:        rgba(76,122,84,0.12);
+  --danger:           #8a3324;
+  --shadow-01:        0 1px 2px rgba(58,44,32,0.06);
+  --shadow-02:        0 8px 28px rgba(58,44,32,0.08);
+  --shadow-deboss:    inset 0 1px 2px rgba(58,44,32,0.10), inset 0 -1px 0 rgba(255,255,255,0.35);
 
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    background: var(--paper);
-    color: var(--ink);
-    font-family: Georgia, 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', serif;
-  }
+  --serif-head: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  --serif-body: Cambria, Georgia, "Times New Roman", serif;
+  --serif-label:"Constantia", Georgia, serif;
+  --mono: Consolas, "Courier New", monospace;
+}
 
-  body {
-    background-image: repeating-linear-gradient(
-      to bottom,
-      transparent 0,
-      transparent 27px,
-      var(--rule) 27px,
-      var(--rule) 28px
-    );
-    min-height: 100vh;
-    overflow-y: auto;
-  }
+:root[data-theme="dark"]{
+  --paper:            #241c14;
+  --paper-raised:     #2f2417;
+  --paper-raised-2:   #2b2115;
+  --ink:              #ead9b8;
+  --ink-soft:         #c3b393;
+  --ink-faint:        #a9967a;
+  --rule:             rgba(234,217,184,0.12);
+  --rule-strong:      rgba(234,217,184,0.22);
+  --accent:           #c96a5a;
+  --accent-deep:      #e0836f;
+  --accent-soft:      rgba(201,106,90,0.14);
+  --accent-soft-strong:rgba(201,106,90,0.24);
+  --focus-ring:       0 0 0 3px rgba(201,106,90,0.28);
+  --good:             #8fbf7f;
+  --good-soft:        rgba(143,191,127,0.14);
+  --danger:           #e3a08f;
+  --shadow-01:        0 1px 2px rgba(0,0,0,0.25);
+  --shadow-02:        0 12px 32px rgba(0,0,0,0.4);
+  --shadow-deboss:    inset 0 1px 2px rgba(0,0,0,0.35), inset 0 -1px 0 rgba(255,255,255,0.03);
+}
 
-  .page {
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 28px 32px 56px;
+@media (prefers-color-scheme: dark){
+  :root[data-theme="auto"]{
+    --paper:            #241c14;
+    --paper-raised:     #2f2417;
+    --paper-raised-2:   #2b2115;
+    --ink:              #ead9b8;
+    --ink-soft:         #c3b393;
+    --ink-faint:        #a9967a;
+    --rule:             rgba(234,217,184,0.12);
+    --rule-strong:      rgba(234,217,184,0.22);
+    --accent:           #c96a5a;
+    --accent-deep:      #e0836f;
+    --accent-soft:      rgba(201,106,90,0.14);
+    --accent-soft-strong:rgba(201,106,90,0.24);
+    --focus-ring:       0 0 0 3px rgba(201,106,90,0.28);
+    --good:             #8fbf7f;
+    --good-soft:        rgba(143,191,127,0.14);
+    --danger:           #e3a08f;
+    --shadow-01:        0 1px 2px rgba(0,0,0,0.25);
+    --shadow-02:        0 12px 32px rgba(0,0,0,0.4);
+    --shadow-deboss:    inset 0 1px 2px rgba(0,0,0,0.35), inset 0 -1px 0 rgba(255,255,255,0.03);
   }
+}
 
-  header.masthead {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    border-bottom: 2px solid var(--ink);
-    padding-bottom: 10px;
-    margin-bottom: 22px;
-  }
+*{ box-sizing: border-box; }
+html, body{ margin:0; padding:0; }
 
-  header.masthead h1 {
-    font-size: 30px;
-    font-weight: normal;
-    letter-spacing: 0.02em;
-    margin: 0;
-    font-variant: small-caps;
-  }
+body{
+  font-family: var(--serif-body);
+  color: var(--ink);
+  background-color: var(--paper);
+  background-image:
+    repeating-linear-gradient(to bottom, transparent 0px, transparent 33px, rgba(122,95,45,0.05) 34px),
+    radial-gradient(ellipse at 12% -8%, rgba(255,252,240,0.5), transparent 55%),
+    radial-gradient(ellipse at 100% 0%, rgba(122,31,43,0.045), transparent 45%),
+    radial-gradient(ellipse at 50% 120%, rgba(0,0,0,0.05), transparent 60%);
+  background-attachment: fixed;
+  min-height: 100vh;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color .25s ease, color .25s ease;
+}
 
-  header.masthead .tagline {
-    font-size: 12px;
-    color: var(--ink-faint);
-    font-style: italic;
-  }
+::selection{ background: var(--accent-soft-strong); color: var(--ink); }
 
-  .status-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    margin-bottom: 24px;
-    padding: 14px 18px;
-    background: var(--card);
-    border: 1px solid var(--card-border);
-    border-radius: 3px;
-    box-shadow: 0 1px 3px var(--shadow);
-  }
+.shell{
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 56px) clamp(20px, 4vw, 56px) 80px;
+}
 
-  .status-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+/* ---------------- Header ---------------- */
+header.top{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:24px;
+  flex-wrap:wrap;
+  padding-bottom: 26px;
+  margin-bottom: 40px;
+  border-bottom: 2px solid var(--ink);
+}
 
-  .status-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    background: var(--ink-faint);
-    flex: none;
-    transition: background 0.2s ease;
-  }
-  .status-dot.ready { background: var(--good); }
-  .status-dot.busy { background: var(--accent-2); animation: pulse 1.2s ease-in-out infinite; }
-  .status-dot.error { background: var(--danger); }
+.brand-block{ display:flex; flex-direction:column; gap:6px; }
 
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.35; }
-  }
+.wordmark-row{ display:flex; align-items:center; gap:12px; }
 
-  .status-text {
-    font-size: 15px;
-    font-style: italic;
-    color: var(--ink-soft);
-  }
+.mark{ width:38px; height:38px; flex:none; color: var(--accent); }
 
-  .toggle-btn {
-    font-family: inherit;
-    font-size: 14px;
-    padding: 8px 18px;
-    border-radius: 3px;
-    border: 1.5px solid var(--ink);
-    background: var(--ink);
-    color: var(--paper);
-    cursor: pointer;
-    letter-spacing: 0.03em;
-  }
-  .toggle-btn.paused {
-    background: transparent;
-    color: var(--ink);
-  }
-  .toggle-btn:active { transform: translateY(1px); }
+.wordmark{
+  font-family: var(--serif-head);
+  font-size: clamp(32px, 4vw, 46px);
+  line-height: 0.95;
+  letter-spacing: 0.01em;
+  margin:0;
+  font-weight:400;
+  color: var(--ink);
+}
 
-  section.card {
-    background: var(--card);
-    border: 1px solid var(--card-border);
-    border-radius: 3px;
-    padding: 18px 22px;
-    margin-bottom: 18px;
-    box-shadow: 0 1px 3px var(--shadow);
-  }
+.tagline{
+  margin:0;
+  font-family: var(--serif-label);
+  font-style: italic;
+  color: var(--ink-faint);
+  font-size: 0.95rem;
+  letter-spacing: 0.2px;
+}
 
-  section.card h2 {
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    font-variant: small-caps;
-    color: var(--ink-faint);
-    margin: 0 0 14px;
-    border-bottom: 1px solid var(--rule);
-    padding-bottom: 8px;
-  }
+.top-right{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
 
-  .field-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 16px;
-    margin-bottom: 12px;
-  }
-  .field-row:last-child { margin-bottom: 0; }
+.status-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  padding: 9px 16px 9px 12px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-01);
+  font-family: var(--serif-label);
+}
+.status-dot{
+  width:9px; height:9px; border-radius:50%;
+  background: var(--ink-faint);
+  flex:none;
+  transition: background .2s ease;
+}
+.status-dot.ready{ background: var(--good); box-shadow: 0 0 0 3px var(--good-soft); }
+.status-dot.busy{ background: var(--accent); animation: pulse 1.3s ease-in-out infinite; }
+.status-dot.error{ background: var(--danger); }
+@keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.4;} }
 
-  .field-label {
-    font-size: 15px;
-    color: var(--ink);
-    flex: none;
-    min-width: 130px;
-  }
+.status-text{
+  font-size: 0.82rem;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: var(--ink);
+}
 
-  select, input[type="text"] {
-    font-family: inherit;
-    font-size: 14px;
-    color: var(--ink);
-    background: var(--paper-2);
-    border: 1px solid var(--card-border);
-    border-radius: 3px;
-    padding: 6px 10px;
-  }
+/* header theme segmented (compact) */
+.theme-seg{
+  display:inline-flex;
+  border:1px solid var(--rule-strong);
+  border-radius:999px;
+  padding:3px;
+  gap:2px;
+  background: var(--paper-raised);
+  box-shadow: var(--shadow-01);
+}
+.theme-seg button{
+  border:none;
+  background:transparent;
+  font-family: var(--serif-label);
+  font-size: 0.74rem;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding: 7px 12px;
+  border-radius: 999px;
+  cursor:pointer;
+  transition: background-color .18s ease, color .18s ease;
+}
+.theme-seg button.selected{ background: var(--ink); color: var(--paper); }
+:root[data-theme="dark"] .theme-seg button.selected,
+:root[data-theme="auto"] .theme-seg button.selected{ background: var(--accent); color: var(--paper); }
 
-  select { min-width: 200px; cursor: pointer; }
+/* ---------------- Grid ---------------- */
+.grid{
+  display:grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: clamp(20px, 2.4vw, 36px);
+}
+.col-12{ grid-column: span 12; }
+.col-6{ grid-column: span 6; }
+@media (max-width: 860px){
+  .col-6{ grid-column: span 12; }
+}
 
-  .radio-group {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-  .radio-group label {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 14px;
-    cursor: pointer;
-  }
-  .radio-group input { accent-color: var(--accent); cursor: pointer; }
+section.panel{ padding-top: 2px; }
 
-  .helper {
-    font-size: 12.5px;
-    font-style: italic;
-    color: var(--ink-faint);
-    margin-top: 10px;
-    line-height: 1.5;
-  }
+.section-head{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--rule);
+}
+.section-head h2{
+  font-family: var(--serif-head);
+  font-weight:400;
+  font-size: clamp(20px, 1.8vw, 25px);
+  letter-spacing: 0.01em;
+  margin:0;
+}
+.section-index{
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--ink-faint);
+  letter-spacing: 0.03em;
+}
 
-  table.dict-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 10px;
-  }
-  table.dict-table th {
-    text-align: left;
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--ink-faint);
-    font-weight: normal;
-    padding: 4px 6px;
-    border-bottom: 1px solid var(--rule);
-  }
-  table.dict-table td {
-    padding: 4px 6px;
-    border-bottom: 1px solid var(--rule);
-  }
-  table.dict-table input[type="text"] {
-    width: 100%;
-    border: none;
-    background: transparent;
-    padding: 4px 2px;
-  }
-  table.dict-table input[type="text"]:focus {
-    outline: none;
-    background: var(--paper-2);
-    border-radius: 2px;
-  }
-  .arrow-col { width: 24px; text-align: center; color: var(--ink-faint); }
-  .del-col { width: 30px; text-align: center; }
+.helper{
+  font-size: 12.8px;
+  font-style: italic;
+  color: var(--ink-faint);
+  line-height: 1.6;
+  margin: 12px 0 0;
+  max-width: 62ch;
+}
 
-  .icon-btn {
-    background: none;
-    border: none;
-    color: var(--ink-faint);
-    cursor: pointer;
-    font-size: 16px;
-    line-height: 1;
-    padding: 2px 6px;
-  }
-  .icon-btn:hover { color: var(--danger); }
+.hairline-box{
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--paper-raised);
+  padding: 26px clamp(18px, 2.4vw, 30px);
+  box-shadow: var(--shadow-01);
+  position: relative;
+}
+.hairline-box::before{
+  content:"";
+  position:absolute;
+  inset:6px;
+  border-radius: 3px;
+  border: 1px solid var(--accent-soft);
+  pointer-events:none;
+}
 
-  .link-btn {
-    background: none;
-    border: none;
-    color: var(--accent);
-    font-family: inherit;
-    font-size: 13.5px;
-    cursor: pointer;
-    padding: 4px 0;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
+/* ---------------- Hero (enable/pause) ---------------- */
+.hero{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:28px;
+  flex-wrap:wrap;
+  padding: 30px clamp(22px, 3vw, 40px);
+  margin-bottom: 40px;
+}
+.hero-left h2{
+  font-family: var(--serif-head);
+  font-weight:400;
+  font-size: clamp(21px, 2.4vw, 28px);
+  margin: 0 0 6px;
+}
+.hero-left p{
+  margin:0;
+  color: var(--ink-soft);
+  font-size: 0.94rem;
+  max-width: 48ch;
+}
+.hero-left .micro{ display:block; margin-bottom: 8px; }
 
-  .save-row {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-top: 4px;
-  }
+.micro{
+  font-family: var(--serif-label);
+  font-size: 0.72rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--accent);
+}
 
-  .save-btn {
-    font-family: inherit;
-    font-size: 15px;
-    padding: 9px 24px;
-    border-radius: 3px;
-    border: 1.5px solid var(--accent);
-    background: var(--accent);
-    color: var(--paper);
-    cursor: pointer;
-    letter-spacing: 0.02em;
-  }
-  .save-btn:active { transform: translateY(1px); }
-  .save-btn:disabled { opacity: 0.5; cursor: default; }
+.big-toggle{ display:flex; align-items:center; gap:18px; flex:none; }
+.toggle-caption{
+  font-family: var(--serif-label);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  text-align: right;
+}
+.toggle-caption b{
+  display:block;
+  font-family: var(--serif-head);
+  font-size: 1.15rem;
+  letter-spacing:0;
+  text-transform:none;
+  color: var(--ink);
+  margin-top: 2px;
+}
 
-  .save-note {
-    font-size: 12.5px;
-    color: var(--ink-faint);
-    font-style: italic;
-  }
+.switch{
+  --w: 84px; --h: 42px;
+  width: var(--w); height: var(--h);
+  border-radius: 999px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.08), rgba(0,0,0,0.02));
+  border: 1px solid var(--rule-strong);
+  box-shadow: var(--shadow-deboss);
+  position: relative;
+  cursor:pointer;
+  flex:none;
+  transition: background .25s ease;
+}
+.switch .knob{
+  position:absolute; top:3px; left:3px;
+  width: calc(var(--h) - 8px); height: calc(var(--h) - 8px);
+  border-radius:50%;
+  background: radial-gradient(circle at 35% 30%, #fbf6e8, #d8c9a8);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.25);
+  transition: transform .28s cubic-bezier(.4,1.4,.5,1);
+}
+.switch.on{
+  background: linear-gradient(to bottom, var(--accent-deep), var(--accent));
+  border-color: var(--accent-deep);
+}
+.switch.on .knob{
+  transform: translateX(calc(var(--w) - var(--h)));
+  background: radial-gradient(circle at 35% 30%, #fff6ee, #f2e2d3);
+}
+.switch:focus-visible{ outline:none; box-shadow: var(--focus-ring); }
 
-  .history-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
+/* ---------------- Choice cards (engine) ---------------- */
+.choice-row{ display:flex; flex-wrap:wrap; gap: 12px; }
+.choice-card{
+  flex: 1 1 220px;
+  border: 1px solid var(--rule-strong);
+  border-radius: 4px;
+  padding: 16px 18px;
+  background: var(--paper-raised-2);
+  cursor:pointer;
+  transition: border-color .18s ease, background-color .18s ease, box-shadow .18s ease;
+}
+.choice-card:hover{ border-color: var(--accent); }
+.choice-card.selected{
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 0 0 1px var(--accent) inset;
+}
+.choice-card .title{
+  font-family: var(--serif-head);
+  font-size: 1rem;
+  color: var(--ink);
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+}
+.choice-card .sub{
+  font-family: var(--serif-label);
+  font-size: 0.72rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-top: 5px;
+  display:block;
+}
+.choice-check{
+  width:17px; height:17px; border-radius:50%;
+  border:1.5px solid var(--rule-strong);
+  flex:none; display:flex; align-items:center; justify-content:center;
+}
+.choice-card.selected .choice-check{ border-color: var(--accent); background: var(--accent); }
+.choice-check svg{ width:9px; height:9px; stroke:var(--paper); opacity:0; }
+.choice-card.selected .choice-check svg{ opacity:1; }
 
-  .history-item {
-    padding: 12px 14px;
-    background: var(--paper-2);
-    border: 1px solid var(--rule);
-    border-radius: 3px;
-  }
+/* ---------------- Hotkey segmented grid ---------------- */
+.hotkey-grid{
+  display:grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+  max-width: 480px;
+  padding: 6px;
+  background: var(--paper-raised-2);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  box-shadow: var(--shadow-deboss);
+}
+@media (max-width: 480px){ .hotkey-grid{ grid-template-columns: repeat(4, 1fr); } }
+.hotkey-grid button{
+  font-family: var(--mono);
+  font-size: 12.5px;
+  padding: 10px 0;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ink-soft);
+  cursor:pointer;
+  transition: all .15s ease;
+}
+.hotkey-grid button:hover{ color: var(--ink); }
+.hotkey-grid button.selected{
+  background: var(--paper);
+  border-color: var(--rule-strong);
+  color: var(--accent);
+  font-weight: 700;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.4), 0 1px 3px rgba(0,0,0,0.08);
+}
 
-  .history-meta {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 6px;
-    font-size: 12px;
-    color: var(--ink-faint);
-  }
+.hold-caption{
+  margin-top: 14px;
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+}
+.hold-caption kbd{
+  font-family: var(--mono);
+  background: var(--paper);
+  border: 1px solid var(--rule-strong);
+  border-radius: 4px;
+  padding: 1px 7px;
+  color: var(--accent);
+  font-size: 0.82rem;
+}
 
-  .badge {
-    font-size: 10.5px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    padding: 2px 7px;
-    border-radius: 10px;
-    border: 1px solid var(--card-border);
-  }
-  .badge.fast { color: var(--good); border-color: var(--good); }
-  .badge.ai { color: var(--accent-2); border-color: var(--accent-2); }
+/* ---------------- Tri-segmented (cleanup / theme) ---------------- */
+.tri-toggle{
+  display:flex;
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  background: var(--paper-raised-2);
+  padding: 4px;
+  gap: 4px;
+  box-shadow: var(--shadow-deboss);
+  max-width: 420px;
+}
+.tri-btn{
+  flex:1;
+  text-align:center;
+  padding: 9px 10px;
+  border-radius: 999px;
+  font-family: var(--serif-label);
+  font-size: 0.8rem;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  cursor:pointer;
+}
+.tri-btn.selected{
+  background: var(--accent);
+  color: #fbf3e6;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+}
+:root[data-theme="dark"] .tri-btn.selected{ color:#241c14; }
 
-  .history-text {
-    font-size: 15px;
-    line-height: 1.55;
-    white-space: pre-wrap;
-    color: var(--ink);
-  }
+/* ---------------- Dictionary table ---------------- */
+table.dict{ width:100%; border-collapse: collapse; font-size: 14px; }
+table.dict th{
+  text-align:left;
+  font-family: var(--serif-label);
+  font-size: 0.7rem;
+  letter-spacing: 1.6px;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-weight:400;
+  padding: 0 10px 10px 0;
+  border-bottom: 1px solid var(--rule-strong);
+}
+table.dict td{
+  padding: 10px 10px 10px 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: middle;
+}
+table.dict tr:last-of-type td{ border-bottom: 1px solid var(--rule); }
+table.dict input[type="text"]{
+  width:100%;
+  border: 1px solid transparent;
+  background: transparent;
+  font-family: var(--serif-body);
+  font-size: 14px;
+  color: var(--ink);
+  padding: 7px 8px;
+  border-radius: 3px;
+  transition: border-color .15s ease, background-color .15s ease;
+}
+table.dict input[type="text"]:hover{ background: var(--paper); border-color: var(--rule); }
+table.dict input[type="text"]:focus{
+  outline:none;
+  border-color: var(--accent);
+  background: var(--paper);
+  box-shadow: var(--focus-ring);
+}
+.arrow-col{ width:28px; text-align:center; color: var(--accent); font-size: 14px; }
+.del-col{ width: 40px; text-align:right; }
 
-  .empty-note {
-    font-size: 14px;
-    font-style: italic;
-    color: var(--ink-faint);
-    text-align: center;
-    padding: 18px 0;
-  }
+.icon-btn{
+  border:none; background:transparent;
+  color: var(--ink-faint);
+  cursor:pointer;
+  padding:6px;
+  border-radius:3px;
+  display:inline-flex; align-items:center; justify-content:center;
+  transition: color .15s ease, background-color .15s ease;
+}
+.icon-btn:hover{ color: var(--danger); background: var(--paper); }
+.icon-btn svg{ width:15px; height:15px; }
 
-  ::-webkit-scrollbar { width: 10px; }
-  ::-webkit-scrollbar-thumb { background: var(--card-border); border-radius: 5px; }
-  ::-webkit-scrollbar-track { background: transparent; }
+.add-rule{
+  margin-top: 16px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:none;
+  border: 1px dashed var(--rule-strong);
+  color: var(--accent);
+  font-family: var(--serif-label);
+  font-size: 0.8rem;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 9px 16px;
+  border-radius: 5px;
+  cursor:pointer;
+}
+.add-rule:hover{ border-color: var(--accent); background: var(--accent-soft); }
+
+/* ---------------- Save row ---------------- */
+.save-row{
+  display:flex;
+  align-items:center;
+  gap: 16px;
+  margin: 8px 0 44px;
+  flex-wrap: wrap;
+}
+.save-btn{
+  font-family: var(--serif-label);
+  font-size: 0.85rem;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 12px 28px;
+  border-radius: 3px;
+  border: 1.5px solid var(--accent);
+  background: var(--accent);
+  color: #fbf3e6;
+  cursor:pointer;
+  transition: transform .05s ease, opacity .15s ease;
+}
+.save-btn:active{ transform: translateY(1px); }
+.save-btn:disabled{ opacity: 0.5; cursor:default; }
+.save-note{
+  font-size: 12.5px;
+  font-style: italic;
+  color: var(--ink-faint);
+}
+
+/* ---------------- History ---------------- */
+.history-list{ display:flex; flex-direction:column; }
+.history-item{
+  display:grid;
+  grid-template-columns: 132px 1fr;
+  gap: 22px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--rule);
+}
+.history-item:first-child{ padding-top: 2px; }
+.history-item:last-child{ border-bottom: none; }
+@media (max-width: 640px){
+  .history-item{ grid-template-columns: 1fr; gap:8px; }
+}
+.history-meta{ display:flex; flex-direction:column; gap:8px; }
+.history-time{ font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint); }
+.badge{
+  display:inline-flex; align-items:center; gap:5px;
+  font-family: var(--serif-label);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 999px;
+  width: fit-content;
+  border: 1px solid transparent;
+}
+.badge.fast{ color: var(--good); background: var(--good-soft); }
+.badge.ai{ color: var(--accent); background: var(--accent-soft); }
+.history-latency{ font-family: var(--mono); font-size: 11px; color: var(--ink-faint); }
+.history-text{ font-size: 15px; line-height: 1.65; color: var(--ink); white-space: pre-wrap; }
+.empty-note{
+  font-size: 14px;
+  font-style: italic;
+  color: var(--ink-faint);
+  text-align:center;
+  padding: 20px 0;
+}
+
+/* ---------------- Footer ---------------- */
+.foot{
+  text-align:center;
+  margin-top: 56px;
+  color: var(--ink-faint);
+  font-family: var(--serif-label);
+  font-size: 0.76rem;
+  letter-spacing: 0.6px;
+  font-style: italic;
+}
+
+::-webkit-scrollbar{ width:10px; }
+::-webkit-scrollbar-thumb{ background: var(--rule-strong); border-radius:5px; }
+::-webkit-scrollbar-track{ background: transparent; }
 </style>
 </head>
 <body>
-<div class="page">
+<div class="shell">
 
-  <header class="masthead">
-    <h1>whispr</h1>
-    <span class="tagline">a quiet dictation companion</span>
+  <header class="top">
+    <div class="brand-block">
+      <div class="wordmark-row">
+        <svg class="mark" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="24" cy="24" rx="21" ry="8" stroke="currentColor" stroke-width="1.5" transform="rotate(45 24 24)"/>
+          <ellipse cx="24" cy="24" rx="21" ry="8" stroke="currentColor" stroke-width="1.5" transform="rotate(-45 24 24)"/>
+          <circle cx="24" cy="24" r="3.4" fill="currentColor"/>
+        </svg>
+        <h1 class="wordmark">Xenon</h1>
+      </div>
+      <p class="tagline">a quiet dictation companion &mdash; fully on your machine</p>
+    </div>
+
+    <div class="top-right">
+      <span class="status-pill">
+        <span class="status-dot" id="statusDot"></span>
+        <span class="status-text" id="statusText">connecting&hellip;</span>
+      </span>
+      <div class="theme-seg" id="themeSegHeader">
+        <button data-val="auto" type="button">Auto</button>
+        <button data-val="light" type="button">Light</button>
+        <button data-val="dark" type="button">Dark</button>
+      </div>
+    </div>
   </header>
 
-  <div class="status-row">
-    <div class="status-left">
-      <span class="status-dot" id="statusDot"></span>
-      <span class="status-text" id="statusText">connecting…</span>
+  <div class="hairline-box hero">
+    <div class="hero-left">
+      <span class="micro">Dictation</span>
+      <h2>Enable Xenon to listen for your hotkey</h2>
+      <p id="heroSub">When enabled, hold your chosen key anywhere on your machine to dictate. Nothing leaves this device.</p>
     </div>
-    <button class="toggle-btn" id="toggleBtn" type="button">Pause</button>
+    <div class="big-toggle">
+      <span class="toggle-caption">Status<b id="toggleStateLabel">Enabled</b></span>
+      <div class="switch on" id="mainSwitch" role="switch" aria-checked="true" tabindex="0">
+        <div class="knob"></div>
+      </div>
+    </div>
   </div>
 
-  <section class="card">
-    <h2>Engine</h2>
-    <div class="field-row">
-      <span class="field-label">Recognition model</span>
-      <div class="radio-group">
-        <label><input type="radio" name="engine" value="parakeet" /> Parakeet — High accuracy</label>
-        <label><input type="radio" name="engine" value="moonshine" /> Moonshine — Fastest</label>
+  <div class="grid">
+
+    <!-- Engine -->
+    <section class="panel col-6">
+      <div class="section-head">
+        <h2>Engine</h2>
+        <span class="section-index">01</span>
       </div>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>Hotkey</h2>
-    <div class="field-row">
-      <span class="field-label">Hold-to-dictate key</span>
-      <select id="hotkeySelect"></select>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>AI cleanup</h2>
-    <div class="field-row">
-      <span class="field-label">Polish mode</span>
-      <div class="radio-group">
-        <label><input type="radio" name="llmMode" value="off" /> Off</label>
-        <label><input type="radio" name="llmMode" value="auto" /> Auto</label>
-        <label><input type="radio" name="llmMode" value="always" /> Always</label>
+      <div class="choice-row" id="enginePicker">
+        <div class="choice-card" data-engine="parakeet" tabindex="0">
+          <div class="title">High accuracy
+            <span class="choice-check"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+          <span class="sub">Parakeet</span>
+        </div>
+        <div class="choice-card" data-engine="moonshine" tabindex="0">
+          <div class="title">Fastest
+            <span class="choice-check"><svg viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+          </div>
+          <span class="sub">Moonshine</span>
+        </div>
       </div>
-    </div>
-    <p class="helper">
-      Auto (recommended) only sends messy takes — fillers, stutters, run-on lists — through the
-      local language model; clean speech stays on the instant path. Always polishes every take,
-      which adds roughly 3–10 seconds of latency per take with no GPU.
-    </p>
-  </section>
+      <p class="helper">High accuracy favors correctness on names and jargon. Fastest trades a little accuracy for near-instant results.</p>
+    </section>
 
-  <section class="card">
-    <h2>Appearance</h2>
-    <div class="field-row">
-      <span class="field-label">Theme</span>
-      <div class="radio-group">
-        <label><input type="radio" name="theme" value="auto" /> Auto</label>
-        <label><input type="radio" name="theme" value="light" /> Light</label>
-        <label><input type="radio" name="theme" value="dark" /> Dark</label>
+    <!-- Hotkey -->
+    <section class="panel col-6">
+      <div class="section-head">
+        <h2>Hotkey</h2>
+        <span class="section-index">02</span>
       </div>
+      <div class="hotkey-grid" id="hotkeyGrid"></div>
+      <p class="hold-caption">Hold <kbd id="hotkeyLabel">F9</kbd> anywhere to dictate.</p>
+    </section>
+
+    <!-- AI cleanup -->
+    <section class="panel col-6">
+      <div class="section-head">
+        <h2>AI cleanup</h2>
+        <span class="section-index">03</span>
+      </div>
+      <div class="tri-toggle" id="cleanupToggle">
+        <div class="tri-btn" data-val="off">Off</div>
+        <div class="tri-btn" data-val="auto">Auto</div>
+        <div class="tri-btn" data-val="always">Always</div>
+      </div>
+      <p class="helper">
+        Auto (recommended) only sends messy takes &mdash; fillers, stutters, run-on lists &mdash; through the
+        local language model; clean speech stays on the instant path. Always polishes every take,
+        which adds roughly 3&ndash;10 seconds of latency per take with no GPU.
+      </p>
+    </section>
+
+    <!-- Appearance -->
+    <section class="panel col-6">
+      <div class="section-head">
+        <h2>Appearance</h2>
+        <span class="section-index">04</span>
+      </div>
+      <div class="tri-toggle" id="themeToggleCard">
+        <div class="tri-btn" data-val="auto">Auto</div>
+        <div class="tri-btn" data-val="light">Light</div>
+        <div class="tri-btn" data-val="dark">Dark</div>
+      </div>
+      <p class="helper">Auto follows your Windows setting. The toggle in the header previews the effect immediately.</p>
+    </section>
+
+    <!-- Dictionary -->
+    <section class="panel col-12">
+      <div class="section-head">
+        <h2>Personal dictionary</h2>
+        <span class="section-index">05</span>
+      </div>
+      <div class="hairline-box">
+        <table class="dict">
+          <thead>
+            <tr><th style="width:44%">Xenon hears&hellip;</th><th></th><th style="width:44%">&hellip;and writes</th><th></th></tr>
+          </thead>
+          <tbody id="dictBody"></tbody>
+        </table>
+        <button class="add-rule" id="addRowBtn" type="button">+ &nbsp;Add a rule</button>
+        <p class="helper">
+          Add a rule when Xenon repeatedly misspells a word you use (e.g. a name). Matching is
+          case-insensitive and whole-word.
+        </p>
+      </div>
+    </section>
+
+    <div class="col-12 save-row">
+      <button class="save-btn" id="saveBtn" type="button">Save settings</button>
+      <span class="save-note" id="saveNote"></span>
     </div>
-  </section>
 
-  <section class="card">
-    <h2>Personal dictionary</h2>
-    <table class="dict-table">
-      <thead>
-        <tr><th>Whispr hears…</th><th></th><th>…and writes</th><th></th></tr>
-      </thead>
-      <tbody id="dictBody"></tbody>
-    </table>
-    <button class="link-btn" id="addRowBtn" type="button">+ add a rule</button>
-    <p class="helper">
-      Add a rule when whispr repeatedly misspells a word you use (e.g. a name). Matching is
-      case-insensitive and whole-word.
-    </p>
-  </section>
+    <!-- History -->
+    <section class="panel col-12">
+      <div class="section-head">
+        <h2>Recent takes</h2>
+        <span class="section-index">06</span>
+      </div>
+      <div class="history-list" id="historyList">
+        <div class="empty-note">Nothing dictated yet.</div>
+      </div>
+    </section>
 
-  <div class="save-row">
-    <button class="save-btn" id="saveBtn" type="button">Save settings</button>
-    <span class="save-note" id="saveNote"></span>
   </div>
 
-  <section class="card" style="margin-top: 26px;">
-    <h2>Recent takes</h2>
-    <div class="history-list" id="historyList">
-      <div class="empty-note">Nothing dictated yet.</div>
-    </div>
-  </section>
-
+  <p class="foot">Xenon runs entirely offline &middot; no audio or text ever leaves this machine</p>
 </div>
 
 <script>
@@ -489,38 +802,79 @@
 
   function applyTheme() {
     document.documentElement.setAttribute("data-theme", state.settings.theme || "auto");
+    syncThemeControls();
   }
 
-  function renderHotkeySelect() {
-    els.hotkeySelect.innerHTML = "";
-    HOTKEYS.forEach(function (pair) {
-      var opt = document.createElement("option");
-      opt.value = pair[1];
-      opt.textContent = pair[0];
-      if (pair[1] === state.settings.hotkey_vk) opt.selected = true;
-      els.hotkeySelect.appendChild(opt);
+  function syncThemeControls() {
+    [els.themeSegHeader, els.themeToggleCard].forEach(function (group) {
+      if (!group) return;
+      var btns = group.querySelectorAll("[data-val]");
+      for (var i = 0; i < btns.length; i++) {
+        btns[i].classList.toggle("selected", btns[i].dataset.val === state.settings.theme);
+      }
     });
   }
 
-  function renderRadios() {
-    setRadioValue("engine", state.settings.engine);
-    setRadioValue("llmMode", state.settings.llm_mode);
-    setRadioValue("theme", state.settings.theme);
-  }
-
-  function setRadioValue(name, value) {
-    var nodes = document.getElementsByName(name);
-    for (var i = 0; i < nodes.length; i++) {
-      nodes[i].checked = nodes[i].value === value;
+  function wireThemeGroup(group) {
+    var btns = group.querySelectorAll("[data-val]");
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].addEventListener("click", function () {
+        state.settings.theme = this.dataset.val;
+        applyTheme();
+      });
     }
   }
 
-  function getRadioValue(name) {
-    var nodes = document.getElementsByName(name);
-    for (var i = 0; i < nodes.length; i++) {
-      if (nodes[i].checked) return nodes[i].value;
+  function renderHotkeyGrid() {
+    els.hotkeyGrid.innerHTML = "";
+    HOTKEYS.forEach(function (pair) {
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.textContent = pair[0];
+      btn.dataset.vk = pair[1];
+      if (pair[1] === state.settings.hotkey_vk) btn.classList.add("selected");
+      btn.addEventListener("click", function () {
+        state.settings.hotkey_vk = parseInt(this.dataset.vk, 10);
+        renderHotkeyGrid();
+        els.hotkeyLabel.textContent = this.textContent;
+      });
+      els.hotkeyGrid.appendChild(btn);
+    });
+    var current = HOTKEYS.filter(function (p) { return p[1] === state.settings.hotkey_vk; })[0];
+    els.hotkeyLabel.textContent = current ? current[0] : "F9";
+  }
+
+  function wireTriToggle(el, onPick) {
+    var btns = el.querySelectorAll(".tri-btn");
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].addEventListener("click", function () {
+        onPick(this.dataset.val);
+      });
     }
-    return null;
+  }
+
+  function setTriSelected(el, value) {
+    var btns = el.querySelectorAll(".tri-btn");
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].classList.toggle("selected", btns[i].dataset.val === value);
+    }
+  }
+
+  function renderEngine() {
+    var cards = els.enginePicker.querySelectorAll(".choice-card");
+    for (var i = 0; i < cards.length; i++) {
+      cards[i].classList.toggle("selected", cards[i].dataset.engine === state.settings.engine);
+    }
+  }
+
+  function renderAll() {
+    applyTheme();
+    renderHotkeyGrid();
+    renderEngine();
+    setTriSelected(els.cleanupToggle, state.settings.llm_mode);
+    renderDictTable();
+    renderToggle();
+    renderStatus();
   }
 
   function renderDictTable() {
@@ -562,8 +916,8 @@
     var delBtn = document.createElement("button");
     delBtn.className = "icon-btn";
     delBtn.type = "button";
-    delBtn.textContent = "✕";
     delBtn.title = "Remove rule";
+    delBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg>';
     delBtn.addEventListener("click", function () {
       state.settings.dict.splice(idx, 1);
       renderDictTable();
@@ -578,8 +932,6 @@
   }
 
   function collectDictFromTable() {
-    // Table inputs mutate state.settings.dict directly via listeners,
-    // so this just filters out fully-empty rows before a save.
     return state.settings.dict.filter(function (pair) {
       return (pair[0] || "").trim() !== "" && (pair[1] || "").trim() !== "";
     });
@@ -600,11 +952,13 @@
 
   function renderToggle() {
     if (state.enabled) {
-      els.toggleBtn.textContent = "Pause";
-      els.toggleBtn.classList.remove("paused");
+      els.mainSwitch.classList.add("on");
+      els.mainSwitch.setAttribute("aria-checked", "true");
+      els.toggleStateLabel.textContent = "Enabled";
     } else {
-      els.toggleBtn.textContent = "Resume";
-      els.toggleBtn.classList.add("paused");
+      els.mainSwitch.classList.remove("on");
+      els.mainSwitch.setAttribute("aria-checked", "false");
+      els.toggleStateLabel.textContent = "Paused";
     }
   }
 
@@ -616,6 +970,7 @@
     meta.className = "history-meta";
 
     var time = document.createElement("span");
+    time.className = "history-time";
     time.textContent = entry.time;
     meta.appendChild(time);
 
@@ -625,6 +980,7 @@
     meta.appendChild(badge);
 
     var ms = document.createElement("span");
+    ms.className = "history-latency";
     ms.textContent = entry.ms + " ms";
     meta.appendChild(ms);
 
@@ -666,7 +1022,7 @@
       }
       tries++;
       if (tries > 200) {
-        els.statusText.textContent = "whispr backend unavailable";
+        els.statusText.textContent = "Xenon backend unavailable";
         return;
       }
       setTimeout(poll, 25);
@@ -676,41 +1032,55 @@
   function init() {
     els.statusDot = q("statusDot");
     els.statusText = q("statusText");
-    els.toggleBtn = q("toggleBtn");
-    els.hotkeySelect = q("hotkeySelect");
+    els.themeSegHeader = q("themeSegHeader");
+    els.themeToggleCard = q("themeToggleCard");
+    els.mainSwitch = q("mainSwitch");
+    els.toggleStateLabel = q("toggleStateLabel");
+    els.enginePicker = q("enginePicker");
+    els.hotkeyGrid = q("hotkeyGrid");
+    els.hotkeyLabel = q("hotkeyLabel");
+    els.cleanupToggle = q("cleanupToggle");
     els.dictBody = q("dictBody");
     els.addRowBtn = q("addRowBtn");
     els.saveBtn = q("saveBtn");
     els.saveNote = q("saveNote");
     els.historyList = q("historyList");
 
-    els.toggleBtn.addEventListener("click", function () {
+    els.mainSwitch.addEventListener("click", function () {
       state.enabled = !state.enabled;
       renderToggle();
       invoke("set_enabled", { enabled: state.enabled });
     });
+    els.mainSwitch.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        els.mainSwitch.click();
+      }
+    });
+
+    els.enginePicker.querySelectorAll(".choice-card").forEach(function (card) {
+      card.addEventListener("click", function () {
+        state.settings.engine = this.dataset.engine;
+        renderEngine();
+      });
+      card.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); this.click(); }
+      });
+    });
+
+    wireTriToggle(els.cleanupToggle, function (val) {
+      state.settings.llm_mode = val;
+      setTriSelected(els.cleanupToggle, val);
+    });
+
+    wireThemeGroup(els.themeSegHeader);
+    wireThemeGroup(els.themeToggleCard);
 
     els.addRowBtn.addEventListener("click", function () {
       state.settings.dict.push(["", ""]);
       renderDictTable();
       var inputs = els.dictBody.querySelectorAll("input[type=text]");
       if (inputs.length) inputs[inputs.length - 2].focus();
-    });
-
-    els.hotkeySelect.addEventListener("change", function () {
-      state.settings.hotkey_vk = parseInt(els.hotkeySelect.value, 10);
-    });
-
-    ["engine", "llmMode", "theme"].forEach(function (name) {
-      var nodes = document.getElementsByName(name);
-      for (var i = 0; i < nodes.length; i++) {
-        nodes[i].addEventListener("change", function () {
-          state.settings.engine = getRadioValue("engine");
-          state.settings.llm_mode = getRadioValue("llmMode");
-          state.settings.theme = getRadioValue("theme");
-          applyTheme();
-        });
-      }
     });
 
     els.saveBtn.addEventListener("click", function () {
@@ -743,12 +1113,7 @@
         state.settings = s.settings;
         state.enabled = s.enabled;
         state.status = s.status;
-        applyTheme();
-        renderHotkeySelect();
-        renderRadios();
-        renderDictTable();
-        renderToggle();
-        renderStatus();
+        renderAll();
       }).catch(function (err) {
         els.statusText.textContent = "error: " + err;
       });
