@@ -192,6 +192,15 @@ impl Formatter {
             }
         }
         eprintln!("[llm] llama-server ready in {:.1}s", t0.elapsed().as_secs_f32());
+
+        // Prime the prompt cache in the background so the FIRST real user
+        // request is warm instead of paying the ~27s cold cost. Runs
+        // detached (we don't keep or join the JoinHandle) so `spawn` returns
+        // immediately and the pipeline can report "ready" without waiting on
+        // this; it talks to the server over HTTP by port, so it doesn't need
+        // (and can't safely share) `&self`.
+        std::thread::spawn(warmup);
+
         Ok(Self { child })
     }
 
@@ -220,34 +229,64 @@ impl Formatter {
     }
 
     fn try_format(&self, transcript: &str) -> Result<String> {
-        let mut messages = vec![serde_json::json!({"role": "system", "content": SYSTEM_PROMPT})];
-        for (raw, clean) in FEW_SHOTS {
-            messages.push(serde_json::json!({"role": "user", "content": wrap(raw)}));
-            messages.push(serde_json::json!({"role": "assistant", "content": clean}));
-        }
-        messages.push(serde_json::json!({"role": "user", "content": wrap(transcript)}));
+        // 90s (up from 60s): cache_prompt + the startup warmup should keep real
+        // requests around ~11s, but this leaves margin under mild CPU contention
+        // so we don't spuriously fall back to the raw transcript.
+        request_cleanup(transcript, Duration::from_secs(90))
+    }
+}
 
-        // Generous output budget: reformatting can add bullet newlines but not prose.
-        let max_tokens = (transcript.split_whitespace().count() * 3).max(64).min(512);
-        let body = serde_json::json!({
-            "messages": messages,
-            "temperature": 0.1,
-            "max_tokens": max_tokens,
-            "cache_prompt": true,
-        });
+/// Build the exact chat-completion request body used for a real cleanup
+/// request — shared by `try_format` and the startup warmup so the warmup
+/// primes the identical prefix (system prompt + few-shots) that
+/// `cache_prompt: true` will then serve out of llama-server's prompt cache.
+fn build_body(transcript: &str) -> serde_json::Value {
+    let mut messages = vec![serde_json::json!({"role": "system", "content": SYSTEM_PROMPT})];
+    for (raw, clean) in FEW_SHOTS {
+        messages.push(serde_json::json!({"role": "user", "content": wrap(raw)}));
+        messages.push(serde_json::json!({"role": "assistant", "content": clean}));
+    }
+    messages.push(serde_json::json!({"role": "user", "content": wrap(transcript)}));
 
-        let resp: serde_json::Value =
-            ureq::post(&format!("http://127.0.0.1:{PORT}/v1/chat/completions"))
-                .timeout(Duration::from_secs(60))
-                .send_json(body)
-                .context("llama-server request")?
-                .into_json()
-                .context("parse llama-server response")?;
+    // Generous output budget: reformatting can add bullet newlines but not prose.
+    let max_tokens = (transcript.split_whitespace().count() * 3).max(64).min(512);
+    serde_json::json!({
+        "messages": messages,
+        "temperature": 0.1,
+        "max_tokens": max_tokens,
+        "cache_prompt": true,
+    })
+}
 
-        resp["choices"][0]["message"]["content"]
-            .as_str()
-            .map(|s| s.to_string())
-            .context("no content in llama-server response")
+/// POST a cleanup request for `transcript` to the local llama-server and
+/// return the raw model output (untrimmed, unfiltered). Shared by
+/// `Formatter::try_format` and the background warmup.
+fn request_cleanup(transcript: &str, timeout: Duration) -> Result<String> {
+    let body = build_body(transcript);
+
+    let resp: serde_json::Value =
+        ureq::post(&format!("http://127.0.0.1:{PORT}/v1/chat/completions"))
+            .timeout(timeout)
+            .send_json(body)
+            .context("llama-server request")?
+            .into_json()
+            .context("parse llama-server response")?;
+
+    resp["choices"][0]["message"]["content"]
+        .as_str()
+        .map(|s| s.to_string())
+        .context("no content in llama-server response")
+}
+
+/// Fire one throwaway cleanup request using the exact same message prefix as
+/// a real request, so llama-server's prompt cache (`cache_prompt: true`) is
+/// already primed and JIT/warm-up costs are paid before the user's first real
+/// correction. Best-effort: errors and timeouts are swallowed, never panics.
+fn warmup() {
+    let t0 = Instant::now();
+    match request_cleanup("hello there", Duration::from_secs(90)) {
+        Ok(_) => eprintln!("[llm] warmup done in {:.1}s", t0.elapsed().as_secs_f32()),
+        Err(e) => eprintln!("[llm] warmup failed: {e}"),
     }
 }
 
