@@ -807,13 +807,11 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
       </div>
       <div class="tri-toggle" id="cleanupToggle">
         <div class="tri-btn" data-val="off" role="button" tabindex="0">Off</div>
-        <div class="tri-btn" data-val="auto" role="button" tabindex="0">Auto</div>
         <div class="tri-btn" data-val="always" role="button" tabindex="0">Always</div>
       </div>
       <p class="helper">
-        Auto (recommended) only sends messy takes &mdash; fillers, stutters, run-on lists &mdash; through the
-        local language model; clean speech stays on the instant path. Always polishes every take,
-        which adds roughly 3&ndash;10 seconds of latency per take with no GPU.
+        Every dictation is polished by the on-device AI (adds a few seconds per take).
+        Set to Off for instant, raw dictation.
       </p>
     </section>
 
@@ -884,7 +882,7 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
     settings: {
       engine: "parakeet",
       hotkey_vk: 0x78,
-      llm_mode: "auto",
+      llm_mode: "always",
       theme: "light",
       dict: []
     },
@@ -899,6 +897,12 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
   function normalizeTheme(t) {
     // Only "dark" is ever dark; anything else (including legacy "auto") is light.
     return t === "dark" ? "dark" : "light";
+  }
+
+  function normalizeLlmMode(m) {
+    // "auto" was removed from the UI; treat any legacy "auto" (or "always") as
+    // "always" so the removed option never renders as selected. Only "off" stays off.
+    return m === "off" ? "off" : "always";
   }
 
   function applyTheme() {
@@ -976,7 +980,7 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
     applyTheme();
     renderHotkeyGrid();
     renderEngine();
-    setTriSelected(els.cleanupToggle, state.settings.llm_mode);
+    setTriSelected(els.cleanupToggle, normalizeLlmMode(state.settings.llm_mode));
     renderDictTable();
     renderToggle();
     renderStatus();
@@ -1174,8 +1178,30 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
     });
 
     wireTriToggle(els.cleanupToggle, function (val) {
+      var prev = state.settings.llm_mode;
       state.settings.llm_mode = val;
       setTriSelected(els.cleanupToggle, val);
+      if (val === prev) return;
+
+      var label = val === "always" ? "Always" : "Off";
+      var payload = {
+        engine: state.settings.engine,
+        hotkey_vk: state.settings.hotkey_vk,
+        llm_mode: val,
+        theme: normalizeTheme(state.settings.theme),
+        dict: collectDictFromTable()
+      };
+      els.saveNote.textContent = "AI cleanup: " + label + " — applying…";
+      invoke("set_settings", { settings: payload })
+        .then(function () {
+          els.saveNote.textContent = "AI cleanup: " + label + ".";
+        })
+        .catch(function (err) {
+          els.saveNote.textContent = "AI cleanup change failed: " + err;
+        })
+        .finally(function () {
+          setTimeout(function () { els.saveNote.textContent = ""; }, 4000);
+        });
     });
 
     wireThemeGroup(els.themeSegHeader);
@@ -1216,6 +1242,7 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
     waitForTauri(function () {
       invoke("get_state").then(function (s) {
         state.settings = s.settings;
+        state.settings.llm_mode = normalizeLlmMode(state.settings.llm_mode);
         state.enabled = s.enabled;
         state.status = s.status;
         renderAll();
