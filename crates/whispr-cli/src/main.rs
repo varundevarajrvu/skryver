@@ -70,11 +70,8 @@ fn main() -> Result<()> {
     let mut engine = asr::Engine::load(engine_kind, &root, threads)?;
 
     let formatter = if use_llm {
-        let server = root
-            .ancestors()
-            .map(|a| a.join("tools/llama/llama-server.exe"))
-            .find(|p| p.exists())
-            .context("llama-server.exe not found (expected tools/llama/ near models root)")?;
+        let server = llm::find_server_exe(&root)
+            .context("llama-server.exe not found (expected <exe_dir>/llama/ when packaged, or tools/llama/ near models root in dev)")?;
         let gguf = root.join("qwen2.5-1.5b-instruct-q4_k_m.gguf");
         anyhow::ensure!(gguf.exists(), "LLM model missing: {}", gguf.display());
         Some(llm::Formatter::spawn(&server, &gguf, threads as usize)?)

@@ -39,10 +39,7 @@ fn run_once(app: &AppHandle, shared: &Arc<Shared>, ctl_rx: &mpsc::Receiver<()>) 
 
     let formatter = if llm_mode != "off" {
         set_status(app, shared, "starting AI cleanup…");
-        let server = root
-            .ancestors()
-            .map(|a| a.join("tools/llama/llama-server.exe"))
-            .find(|p| p.exists());
+        let server = llm::find_server_exe(&root);
         let gguf = root.join("qwen2.5-1.5b-instruct-q4_k_m.gguf");
         match server {
             Some(server) if gguf.exists() => Some(llm::Formatter::spawn(&server, &gguf, 8)?),

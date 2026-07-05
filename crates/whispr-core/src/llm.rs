@@ -151,6 +151,23 @@ fn looks_like_reply(output: &str, input: &str) -> bool {
     false
 }
 
+/// Locate `llama-server.exe`, checked in order:
+/// 1. `<exe_dir>/llama/llama-server.exe` (PACKAGED layout, next to the app exe).
+/// 2. `tools/llama/llama-server.exe` found by walking up from `models_root`
+///    (DEV layout — repo checkout).
+pub fn find_server_exe(models_root: &Path) -> Option<std::path::PathBuf> {
+    if let Some(exe_dir) = crate::asr::exe_dir() {
+        let packaged = exe_dir.join("llama").join("llama-server.exe");
+        if packaged.exists() {
+            return Some(packaged);
+        }
+    }
+    models_root
+        .ancestors()
+        .map(|a| a.join("tools/llama/llama-server.exe"))
+        .find(|p| p.exists())
+}
+
 pub struct Formatter {
     child: Child,
 }

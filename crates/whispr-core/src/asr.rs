@@ -99,11 +99,28 @@ fn model_file(dir: &Path, name: &str) -> Result<String> {
     Ok(p.to_string_lossy().into_owned())
 }
 
-/// Locate the models root: `WHISPR_MODELS` env var, or walk up from the current
-/// dir looking for `bench/models`.
+/// The directory containing the running executable, if determinable. Used to
+/// resolve the packaged (portable) layout, where models/DLLs/llama-server
+/// live next to whispr-app.exe / whispr-cli.exe instead of inside the dev repo.
+pub fn exe_dir() -> Option<PathBuf> {
+    std::env::current_exe()
+        .ok()
+        .and_then(|p| p.parent().map(|p| p.to_path_buf()))
+}
+
+/// Locate the models root, checked in order:
+/// 1. `WHISPR_MODELS` env var, if set.
+/// 2. `<exe_dir>/models` (PACKAGED layout — a portable install next to the exe).
+/// 3. Walk up from the current dir looking for `bench/models` (DEV layout).
 pub fn default_models_root() -> Result<PathBuf> {
     if let Ok(d) = std::env::var("WHISPR_MODELS") {
         return Ok(PathBuf::from(d));
+    }
+    if let Some(dir) = exe_dir() {
+        let candidate = dir.join("models");
+        if candidate.exists() {
+            return Ok(candidate);
+        }
     }
     let mut dir = std::env::current_dir().context("cwd")?;
     loop {

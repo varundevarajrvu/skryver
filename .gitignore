@@ -4,3 +4,4 @@ bench/*.wav
 bench/*.tar.bz2
 target/
 logs/
+dist/
