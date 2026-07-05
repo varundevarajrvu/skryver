@@ -1,0 +1,506 @@
+<style>
+  :root {
+    --paper: #f6efdd;
+    --paper-2: #efe6cf;
+    --ink: #241a10;
+    --ink-soft: #4a3c2c;
+    --hairline: rgba(36, 26, 16, 0.16);
+    --accent: #7a1f2b;
+    --accent-ink: #ffffff;
+    --card-bg: rgba(255, 255, 255, 0.35);
+    --code-bg: rgba(36, 26, 16, 0.06);
+    color-scheme: light dark;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper: #131215;
+      --paper-2: #19171b;
+      --ink: #efeae2;
+      --ink-soft: #c9c1b4;
+      --hairline: rgba(239, 234, 226, 0.14);
+      --accent: #ef7a5f;
+      --accent-ink: #1a1210;
+      --card-bg: rgba(255, 255, 255, 0.04);
+      --code-bg: rgba(239, 234, 226, 0.07);
+    }
+  }
+
+  :root[data-theme="light"] {
+    --paper: #f6efdd;
+    --paper-2: #efe6cf;
+    --ink: #241a10;
+    --ink-soft: #4a3c2c;
+    --hairline: rgba(36, 26, 16, 0.16);
+    --accent: #7a1f2b;
+    --accent-ink: #ffffff;
+    --card-bg: rgba(255, 255, 255, 0.35);
+    --code-bg: rgba(36, 26, 16, 0.06);
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #131215;
+    --paper-2: #19171b;
+    --ink: #efeae2;
+    --ink-soft: #c9c1b4;
+    --hairline: rgba(239, 234, 226, 0.14);
+    --accent: #ef7a5f;
+    --accent-ink: #1a1210;
+    --card-bg: rgba(255, 255, 255, 0.04);
+    --code-bg: rgba(239, 234, 226, 0.07);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body { margin: 0; padding: 0; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .xn-root {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, sans-serif;
+    line-height: 1.55;
+    overflow-x: hidden;
+    position: relative;
+    min-height: 100%;
+  }
+
+  .xn-root h1, .xn-root h2, .xn-root h3, .xn-root .wordmark {
+    font-family: "Sitka Display", "Sitka Heading", Constantia, Cambria, Georgia, serif;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .xn-wrap {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ---------- background orbital motif ---------- */
+  .xn-bg-orbit {
+    position: absolute;
+    top: -18vw;
+    right: -18vw;
+    width: 60vw;
+    height: 60vw;
+    max-width: 640px;
+    max-height: 640px;
+    min-width: 320px;
+    min-height: 320px;
+    opacity: 0.06;
+    pointer-events: none;
+    z-index: 0;
+  }
+  :root[data-theme="dark"] .xn-bg-orbit,
+  @media (prefers-color-scheme: dark) { }
+  .xn-bg-orbit svg { width: 100%; height: 100%; display: block; }
+  .xn-bg-orbit .spin {
+    transform-origin: 50% 50%;
+    animation: xn-spin 120s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .xn-bg-orbit .spin { animation: none; }
+  }
+
+  /* ---------- header / hero ---------- */
+  header.xn-hero {
+    position: relative;
+    z-index: 1;
+    padding: 64px 0 56px;
+    text-align: center;
+  }
+
+  .xn-mark {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 18px;
+    display: block;
+  }
+
+  .wordmark {
+    font-size: 28px;
+    letter-spacing: 0.02em;
+    color: var(--accent);
+    margin: 0 0 28px;
+  }
+
+  h1.xn-headline {
+    font-size: clamp(28px, 5.4vw, 46px);
+    line-height: 1.12;
+    margin: 0 0 18px;
+    max-width: 15ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .xn-subhead {
+    font-size: clamp(15px, 2.2vw, 18px);
+    color: var(--ink-soft);
+    max-width: 46ch;
+    margin: 0 auto 34px;
+  }
+
+  .xn-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent);
+    color: var(--accent-ink);
+    font-size: 16px;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 14px 26px;
+    border-radius: 8px;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.08);
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  .xn-cta:hover { transform: translateY(-1px); opacity: 0.94; }
+  .xn-cta:active { transform: translateY(0); }
+
+  .xn-cta-sub {
+    display: block;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    opacity: 0.85;
+  }
+
+  /* ---------- sections ---------- */
+  section {
+    position: relative;
+    z-index: 1;
+    padding: 44px 0;
+  }
+
+  .xn-rule {
+    border: none;
+    border-top: 1px solid var(--hairline);
+    margin: 0;
+  }
+
+  h2.xn-h2 {
+    font-size: clamp(21px, 3vw, 27px);
+    margin: 0 0 14px;
+  }
+
+  .xn-eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin: 0 0 10px;
+  }
+
+  .xn-lede {
+    color: var(--ink-soft);
+    font-size: 16px;
+    max-width: 62ch;
+    margin: 0 0 8px;
+  }
+
+  /* pitch contrast block */
+  .xn-contrast {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 22px;
+  }
+  @media (min-width: 640px) {
+    .xn-contrast { grid-template-columns: 1fr 1fr; }
+  }
+  .xn-contrast-card {
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    padding: 18px 20px;
+    background: var(--card-bg);
+  }
+  .xn-contrast-card h3 {
+    font-size: 15px;
+    margin: 0 0 8px;
+    font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+    font-weight: 600;
+  }
+  .xn-contrast-card.on-device h3 { color: var(--accent); }
+  .xn-contrast-card p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+
+  /* feature grid */
+  .xn-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+    margin-top: 26px;
+  }
+  @media (min-width: 640px) {
+    .xn-grid { grid-template-columns: 1fr 1fr; }
+  }
+  .xn-card {
+    padding: 18px 0;
+    border-top: 1px solid var(--hairline);
+  }
+  .xn-card h3 {
+    font-size: 15.5px;
+    margin: 0 0 6px;
+    font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+    font-weight: 600;
+  }
+  .xn-card p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+
+  /* steps */
+  .xn-steps {
+    counter-reset: step;
+    list-style: none;
+    margin: 26px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 20px;
+  }
+  .xn-steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .xn-steps .num {
+    flex: 0 0 auto;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1.5px solid var(--accent);
+    color: var(--accent);
+    font-family: "Sitka Display", "Sitka Heading", Constantia, Georgia, serif;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+  }
+  .xn-steps .step-body h3 {
+    margin: 4px 0 4px;
+    font-size: 15.5px;
+    font-family: "Segoe UI Variable Text", "Segoe UI", system-ui, sans-serif;
+  }
+  .xn-steps .step-body p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .xn-key {
+    display: inline-block;
+    font-family: Consolas, "Cascadia Mono", monospace;
+    background: var(--code-bg);
+    border: 1px solid var(--hairline);
+    border-radius: 5px;
+    padding: 1px 8px;
+    font-size: 13px;
+  }
+
+  /* requirements */
+  .xn-note {
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    padding: 18px 20px;
+    background: var(--card-bg);
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-top: 18px;
+  }
+  .xn-note strong { color: var(--ink); }
+
+  /* feedback */
+  .xn-feedback {
+    text-align: center;
+  }
+  .xn-feedback-btn {
+    display: inline-block;
+    margin-top: 16px;
+    border: 1.5px solid var(--accent);
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14.5px;
+    padding: 11px 22px;
+    border-radius: 8px;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .xn-feedback-btn:hover {
+    background: var(--accent);
+    color: var(--accent-ink);
+  }
+
+  footer.xn-footer {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 40px 0 56px;
+    font-size: 13px;
+    color: var(--ink-soft);
+  }
+  footer.xn-footer .xn-rule { margin-bottom: 28px; }
+
+  @media (max-width: 420px) {
+    .xn-wrap { padding: 0 18px; }
+    header.xn-hero { padding: 48px 0 40px; }
+  }
+</style>
+
+<div class="xn-root">
+
+  <div class="xn-bg-orbit" aria-hidden="true">
+    <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <g class="spin">
+        <ellipse cx="100" cy="100" rx="90" ry="38" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--accent)" transform="rotate(28 100 100)"/>
+        <ellipse cx="100" cy="100" rx="90" ry="38" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--accent)" transform="rotate(-28 100 100)"/>
+      </g>
+    </svg>
+  </div>
+
+  <header class="xn-hero">
+    <div class="xn-wrap">
+      <svg class="xn-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Xenon orbital mark">
+        <ellipse cx="50" cy="50" rx="46" ry="19" fill="none" stroke="var(--accent)" stroke-width="3.4" transform="rotate(30 50 50)"/>
+        <ellipse cx="50" cy="50" rx="46" ry="19" fill="none" stroke="var(--accent)" stroke-width="3.4" transform="rotate(-30 50 50)"/>
+        <circle cx="50" cy="50" r="6.5" fill="var(--accent)"/>
+      </svg>
+      <p class="wordmark">Xenon</p>
+      <h1 class="xn-headline">Voice dictation that never leaves your laptop.</h1>
+      <p class="xn-subhead">Speak into any app and Xenon types clean, punctuated text — 100% on your device, no cloud, no account.</p>
+      <a id="downloadBtn" class="xn-cta" href="#download">
+        Download for Windows &middot; 1.7 GB
+      </a>
+      <span class="xn-cta-sub">Windows 10/11 &middot; unzip &amp; run &middot; no installer</span>
+    </div>
+  </header>
+
+  <hr class="xn-rule" />
+
+  <section id="why">
+    <div class="xn-wrap">
+      <p class="xn-eyebrow">Why on-device</p>
+      <h2 class="xn-h2">Your voice never leaves the room.</h2>
+      <p class="xn-lede">Recording, transcription, and the grammar cleanup all run locally, on your own CPU/GPU. Nothing is uploaded, nothing is logged to a server, and it keeps working with no internet connection at all — because there's no connection to lose.</p>
+      <div class="xn-contrast">
+        <div class="xn-contrast-card on-device">
+          <h3>Xenon</h3>
+          <p>Audio and text stay on your machine. No account, no subscription, works offline, nothing to leak.</p>
+        </div>
+        <div class="xn-contrast-card">
+          <h3>Typical cloud dictation</h3>
+          <p>Your voice is streamed to a server to be transcribed, usually tied to an account, and useless without a connection.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="xn-rule" />
+
+  <section id="features">
+    <div class="xn-wrap">
+      <p class="xn-eyebrow">Features</p>
+      <h2 class="xn-h2">Everything you need, nothing you don't.</h2>
+      <div class="xn-grid">
+        <div class="xn-card">
+          <h3>Hold-to-talk, anywhere</h3>
+          <p>Hold <span class="xn-key">F9</span>, speak, release — works in your browser, editor, chat, or email, in any text box on Windows.</p>
+        </div>
+        <div class="xn-card">
+          <h3>Automatic cleanup</h3>
+          <p>An on-device AI adds grammar and punctuation, so what you say comes out as text you'd actually send.</p>
+        </div>
+        <div class="xn-card">
+          <h3>Handles self-corrections</h3>
+          <p>Say "send it to John, sorry, Jane" and Xenon writes "send it to Jane" — no manual cleanup.</p>
+        </div>
+        <div class="xn-card">
+          <h3>Custom dictionary</h3>
+          <p>Teach it names, jargon, and terms that a generic model would otherwise mangle.</p>
+        </div>
+        <div class="xn-card">
+          <h3>Lightweight &amp; private</h3>
+          <p>No account, no telemetry, no background phone-home. Works fine on a plane.</p>
+        </div>
+        <div class="xn-card">
+          <h3>Light &amp; dark paperback themes</h3>
+          <p>A quiet, editorial look that matches whichever theme your system prefers.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="xn-rule" />
+
+  <section id="how">
+    <div class="xn-wrap">
+      <p class="xn-eyebrow">How it works</p>
+      <h2 class="xn-h2">Three steps, no setup wizard.</h2>
+      <ol class="xn-steps">
+        <li>
+          <span class="num">1</span>
+          <div class="step-body">
+            <h3>Download &amp; unzip</h3>
+            <p>Grab the archive below and unzip it anywhere you like.</p>
+          </div>
+        </li>
+        <li>
+          <span class="num">2</span>
+          <div class="step-body">
+            <h3>Run whispr-app.exe</h3>
+            <p>First launch loads the on-device AI model, which takes about 30&ndash;60 seconds. After that it starts instantly.</p>
+          </div>
+        </li>
+        <li>
+          <span class="num">3</span>
+          <div class="step-body">
+            <h3>Hold F9 and speak</h3>
+            <p>Click into any text box, hold <span class="xn-key">F9</span>, talk, and release. Your words appear, cleaned up.</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <hr class="xn-rule" />
+
+  <section id="requirements">
+    <div class="xn-wrap">
+      <p class="xn-eyebrow">Heads up</p>
+      <h2 class="xn-h2">A few honest notes</h2>
+      <div class="xn-note">
+        <p><strong>Requirements:</strong> Windows 10/11 (64-bit), a microphone, and about 2 GB of free disk space.</p>
+        <p style="margin-top:10px;"><strong>Unknown publisher warning:</strong> this is an early, unsigned build, so Windows SmartScreen may show "Windows protected your PC." Click <strong>More info</strong>, then <strong>Run anyway</strong>. That's expected for a small indie app without a code-signing certificate — not a sign anything's wrong.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="xn-rule" />
+
+  <section id="feedback" class="xn-feedback">
+    <div class="xn-wrap">
+      <p class="xn-eyebrow">Early build</p>
+      <h2 class="xn-h2">Tell me what breaks.</h2>
+      <p class="xn-lede" style="margin-left:auto;margin-right:auto;">Xenon is early and actively evolving. If something's clunky, missing, or just plain broken, I'd genuinely like to hear about it.</p>
+      <a class="xn-feedback-btn" href="mailto:varundevaraj29@gmail.com?subject=Xenon%20feedback">Send feedback</a>
+    </div>
+  </section>
+
+  <footer class="xn-footer">
+    <hr class="xn-rule" />
+    <div class="xn-wrap">
+      Xenon &mdash; made by Varun. Runs entirely on your device.
+    </div>
+  </footer>
+
+</div>
