@@ -55,6 +55,13 @@ fn run_once(app: &AppHandle, shared: &Arc<Shared>, ctl_rx: &mpsc::Receiver<()>) 
         None
     };
 
+    eprintln!(
+        "[pipe] engine={:?} llm_mode={} formatter={}",
+        engine_kind,
+        llm_mode,
+        formatter.is_some()
+    );
+
     let rec = audio::Recorder::open()?;
     set_status(app, shared, "ready");
 
@@ -87,19 +94,28 @@ fn run_once(app: &AppHandle, shared: &Arc<Shared>, ctl_rx: &mpsc::Receiver<()>) 
         };
         let dict = postproc::Dictionary::from_rules(dict_rules);
         let text = dict.apply(&engine.transcribe(&samples));
+        eprintln!("[take] asr: {:?} (len={})", text, text.len());
         if text.is_empty() {
             set_status(app, shared, "ready");
             continue;
         }
 
-        let use_llm = formatter.is_some()
-            && (llm_mode == "always" || (llm_mode == "auto" && postproc::needs_rephrase(&text)));
+        let nr = postproc::needs_rephrase(&text);
+        let use_llm = formatter.is_some() && (llm_mode == "always" || (llm_mode == "auto" && nr));
+        eprintln!(
+            "[take] llm_mode={} needs_rephrase={} -> use_llm={}",
+            llm_mode, nr, use_llm
+        );
         let (text, path) = if use_llm {
             set_status(app, shared, "polishing…");
-            (formatter.as_ref().unwrap().format(&text), "ai")
+            let pre = text.clone();
+            let post = formatter.as_ref().unwrap().format(&text);
+            eprintln!("[take] llm in={:?} out={:?}", pre, post);
+            (post, "ai")
         } else {
             (postproc::bulletize(&text), "fast")
         };
+        eprintln!("[take] FINAL path={} text={:?}", path, text);
 
         if let Err(e) = inject::paste_text(&text) {
             set_status(app, shared, &format!("paste failed: {e}"));
