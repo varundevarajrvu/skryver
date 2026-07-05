@@ -622,9 +622,100 @@ table.dict input[type="text"]:focus{
 ::-webkit-scrollbar{ width:10px; }
 ::-webkit-scrollbar-thumb{ background: var(--rule-strong); border-radius:5px; }
 ::-webkit-scrollbar-track{ background: transparent; }
+
+/* =============================================================================
+   AMBIENT BACKGROUND + POLISH PASS
+   The orbital-drift canvas sits behind all content (fixed, negative z-index);
+   the rest of this block layers refined motion & focus states onto the
+   existing controls above without altering their markup or behavior.
+   ============================================================================= */
+
+:root{
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+#bgCanvas{
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  pointer-events: none;
+  display: block;
+}
+
+/* refined, non-bouncy timing on existing interactive elements */
+body{ transition: background-color .25s var(--ease), color .25s var(--ease); }
+.status-dot{ transition: background-color .25s var(--ease); }
+.theme-seg button{ transition: background-color .2s var(--ease), color .2s var(--ease); }
+.choice-card{ transition: border-color .2s var(--ease), background-color .2s var(--ease), box-shadow .2s var(--ease), transform .15s var(--ease); }
+.choice-card:active{ transform: scale(0.99); }
+.hotkey-grid button{ transition: color .18s var(--ease), background-color .18s var(--ease), border-color .18s var(--ease), box-shadow .18s var(--ease), transform .12s var(--ease); }
+.hotkey-grid button:active{ transform: scale(0.95); }
+.icon-btn{ transition: color .18s var(--ease), background-color .18s var(--ease), transform .12s var(--ease); }
+.icon-btn:active{ transform: scale(0.9); }
+table.dict input[type="text"]{ transition: border-color .18s var(--ease), background-color .18s var(--ease); }
+.switch{ transition: background-color .25s var(--ease); }
+.switch .knob{ transition: transform .3s var(--ease); }
+.tri-btn{ transition: background-color .2s var(--ease), color .2s var(--ease), transform .12s var(--ease); }
+.tri-btn:active{ transform: scale(0.97); }
+.add-rule{ transition: border-color .18s var(--ease), background-color .18s var(--ease), transform .12s var(--ease); }
+.add-rule:active{ transform: translateY(1px); }
+.save-btn{ transition: transform .08s var(--ease), opacity .18s var(--ease); }
+
+/* focus-visible parity across the custom (non-native) controls */
+.choice-card:focus-visible,
+.tri-btn:focus-visible,
+.hotkey-grid button:focus-visible,
+.theme-seg button:focus-visible,
+.icon-btn:focus-visible,
+.add-rule:focus-visible,
+.save-btn:focus-visible{
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* status pill: calm and steady when ready; a slow, tasteful breathing glow
+   while a take is actively recording/transcribing/polishing */
+.status-pill{ transition: box-shadow .3s var(--ease); }
+.status-pill:has(.status-dot.busy){
+  animation: pillGlow 2.6s ease-in-out infinite;
+}
+@keyframes pillGlow{
+  0%, 100%{ box-shadow: var(--shadow-01); }
+  50%{ box-shadow: var(--shadow-01), 0 0 16px 2px var(--accent-soft-strong); }
+}
+
+/* history: gentle entrance as items are rendered or prepended live */
+@keyframes historyIn{
+  from{ opacity: 0; transform: translateY(7px); }
+  to{ opacity: 1; transform: translateY(0); }
+}
+.history-item{ animation: historyIn .45s var(--ease) both; }
+
+/* refined empty state for history */
+.empty-note{
+  padding: 40px 20px;
+  border: 1px dashed var(--rule);
+  border-radius: 6px;
+  background: var(--paper-raised-2);
+}
+
+/* accessibility: honor reduced motion for every CSS-driven animation/transition
+   above; the canvas loop itself is separately gated in JS (single static
+   frame, no rAF) */
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
 </style>
 </head>
 <body>
+<canvas id="bgCanvas" aria-hidden="true"></canvas>
 <div class="shell">
 
   <header class="top">
@@ -709,9 +800,9 @@ table.dict input[type="text"]:focus{
         <span class="section-index">03</span>
       </div>
       <div class="tri-toggle" id="cleanupToggle">
-        <div class="tri-btn" data-val="off">Off</div>
-        <div class="tri-btn" data-val="auto">Auto</div>
-        <div class="tri-btn" data-val="always">Always</div>
+        <div class="tri-btn" data-val="off" role="button" tabindex="0">Off</div>
+        <div class="tri-btn" data-val="auto" role="button" tabindex="0">Auto</div>
+        <div class="tri-btn" data-val="always" role="button" tabindex="0">Always</div>
       </div>
       <p class="helper">
         Auto (recommended) only sends messy takes &mdash; fillers, stutters, run-on lists &mdash; through the
@@ -727,9 +818,9 @@ table.dict input[type="text"]:focus{
         <span class="section-index">04</span>
       </div>
       <div class="tri-toggle" id="themeToggleCard">
-        <div class="tri-btn" data-val="auto">Auto</div>
-        <div class="tri-btn" data-val="light">Light</div>
-        <div class="tri-btn" data-val="dark">Dark</div>
+        <div class="tri-btn" data-val="auto" role="button" tabindex="0">Auto</div>
+        <div class="tri-btn" data-val="light" role="button" tabindex="0">Light</div>
+        <div class="tri-btn" data-val="dark" role="button" tabindex="0">Dark</div>
       </div>
       <p class="helper">Auto follows your Windows setting. The toggle in the header previews the effect immediately.</p>
     </section>
@@ -849,6 +940,9 @@ table.dict input[type="text"]:focus{
     for (var i = 0; i < btns.length; i++) {
       btns[i].addEventListener("click", function () {
         onPick(this.dataset.val);
+      });
+      btns[i].addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); this.click(); }
       });
     }
   }
@@ -1146,6 +1240,271 @@ table.dict input[type="text"]:focus{
   } else {
     init();
   }
+})();
+</script>
+
+<script>
+/* =============================================================================
+   ORBITAL DRIFT — ambient background
+   Self-contained, independent of the app IIFE above: never touches
+   window.__TAURI__, invoke(), listen(), or app state. Purely decorative.
+   A few faint elliptical "orbital" rings (Xenon's orbital-X mark, echoed)
+   slowly rotate behind the header, with a small field of soft motes
+   drifting across the whole window, a couple riding the rings like
+   electrons. Single rAF loop, DPR-aware, paused off-screen, and reduced
+   to one static frame under prefers-reduced-motion.
+   ============================================================================= */
+(function () {
+  var canvas = document.getElementById("bgCanvas");
+  if (!canvas || !canvas.getContext) return;
+  var ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var darkMQ = window.matchMedia("(prefers-color-scheme: dark)");
+
+  var W = 0, H = 0, dpr = 1;
+  var rafId = null;
+  var resizeRaf = null;
+  var visible = !document.hidden;
+  var startedAt = null;
+
+  var palette = { ring: "58,44,32", moteA: "58,44,32", moteB: "122,31,43" };
+  var sprites = {};
+
+  var MOTE_MIN = 14, MOTE_MAX = 24;
+
+  var RING_DEFS = [
+    { rx: 0.30,  ry: 0.115, tilt: 28,  period: 100000, dir: 1 },
+    { rx: 0.255, ry: 0.095, tilt: -38, period: 145000, dir: -1 },
+    { rx: 0.34,  ry: 0.13,  tilt: 4,   period: 190000, dir: 1 }
+  ];
+
+  var motes = [];
+  var riders = [];
+
+  function hexToRgb(hex) {
+    hex = (hex || "").trim().replace("#", "");
+    if (hex.length === 3) hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+    var n = parseInt(hex, 16);
+    if (isNaN(n) || hex.length !== 6) return "58,44,32";
+    return [(n >> 16) & 255, (n >> 8) & 255, n & 255].join(",");
+  }
+
+  function readPalette() {
+    var cs = getComputedStyle(document.documentElement);
+    var ink = cs.getPropertyValue("--ink") || "#3a2c20";
+    var accent = cs.getPropertyValue("--accent") || "#7a1f2b";
+    palette.ring = hexToRgb(ink);
+    palette.moteA = hexToRgb(ink);
+    palette.moteB = hexToRgb(accent);
+    buildSprites();
+    if (reduceMQ.matches) drawStatic();
+  }
+
+  function buildSprite(rgb) {
+    var size = 28;
+    var s = document.createElement("canvas");
+    s.width = size; s.height = size;
+    var sc = s.getContext("2d");
+    var r = size / 2;
+    var g = sc.createRadialGradient(r, r, 0, r, r, r);
+    g.addColorStop(0, "rgba(" + rgb + ",0.85)");
+    g.addColorStop(0.5, "rgba(" + rgb + ",0.32)");
+    g.addColorStop(1, "rgba(" + rgb + ",0)");
+    sc.fillStyle = g;
+    sc.beginPath();
+    sc.arc(r, r, r, 0, Math.PI * 2);
+    sc.fill();
+    return s;
+  }
+
+  function buildSprites() {
+    sprites.a = buildSprite(palette.moteA);
+    sprites.b = buildSprite(palette.moteB);
+  }
+
+  function particleCount() {
+    var n = Math.round((W * H) / 85000);
+    if (n < MOTE_MIN) n = MOTE_MIN;
+    if (n > MOTE_MAX) n = MOTE_MAX;
+    return n;
+  }
+
+  function makeMote(i) {
+    return {
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.032,
+      vy: (Math.random() - 0.5) * 0.032,
+      r: 1 + Math.random() * 1.4,
+      baseAlpha: 0.08 + Math.random() * 0.16,
+      sprite: (i % 5 === 0) ? "b" : "a",
+      wobble: Math.random() * Math.PI * 2,
+      wobbleSpeed: 0.00015 + Math.random() * 0.00025,
+      wobbleAmp: 3 + Math.random() * 5
+    };
+  }
+
+  function makeRider(i) {
+    return {
+      ring: i % RING_DEFS.length,
+      angle: Math.random() * Math.PI * 2,
+      speed: (0.00006 + Math.random() * 0.00004) * (Math.random() < 0.5 ? 1 : -1),
+      r: 1.4 + Math.random() * 1.1,
+      sprite: "b"
+    };
+  }
+
+  function seedParticles() {
+    var n = particleCount();
+    motes = [];
+    for (var i = 0; i < n; i++) motes.push(makeMote(i));
+    riders = [];
+    var riderCount = Math.min(3, RING_DEFS.length);
+    for (var j = 0; j < riderCount; j++) riders.push(makeRider(j));
+  }
+
+  function resize() {
+    dpr = Math.max(1, Math.min(window.devicePixelRatio || 1, 2));
+    W = window.innerWidth;
+    H = window.innerHeight;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    seedParticles();
+    if (reduceMQ.matches) drawStatic();
+  }
+
+  function ringCenter() {
+    return { x: W * 0.26, y: H * 0.20 };
+  }
+
+  function ringGeom(def, t) {
+    var c = ringCenter();
+    var base = Math.min(W, H);
+    return {
+      cx: c.x, cy: c.y,
+      rx: def.rx * base * 1.6,
+      ry: def.ry * base * 1.6,
+      tilt: (def.tilt * Math.PI / 180) + (t / def.period) * Math.PI * 2 * def.dir
+    };
+  }
+
+  function ringPoint(def, angle, t) {
+    var g = ringGeom(def, t);
+    var ex = g.rx * Math.cos(angle);
+    var ey = g.ry * Math.sin(angle);
+    var cos = Math.cos(g.tilt), sin = Math.sin(g.tilt);
+    return { x: g.cx + ex * cos - ey * sin, y: g.cy + ex * sin + ey * cos };
+  }
+
+  function drawRings(t) {
+    ctx.lineWidth = 1;
+    RING_DEFS.forEach(function (def) {
+      var g = ringGeom(def, t);
+      ctx.strokeStyle = "rgba(" + palette.ring + ",0.07)";
+      ctx.save();
+      ctx.translate(g.cx, g.cy);
+      ctx.rotate(g.tilt);
+      ctx.beginPath();
+      ctx.ellipse(0, 0, g.rx, g.ry, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    });
+  }
+
+  function drawMotes(t) {
+    motes.forEach(function (m) {
+      m.x += m.vx * 16;
+      m.y += m.vy * 16;
+      if (m.x < -20) m.x = W + 20;
+      if (m.x > W + 20) m.x = -20;
+      if (m.y < -20) m.y = H + 20;
+      if (m.y > H + 20) m.y = -20;
+
+      var sprite = sprites[m.sprite];
+      if (!sprite) return;
+      var drawX = m.x + Math.sin(t * m.wobbleSpeed + m.wobble) * m.wobbleAmp;
+      var drawY = m.y + Math.cos(t * m.wobbleSpeed * 0.8 + m.wobble) * m.wobbleAmp * 0.6;
+      var size = m.r * 9;
+      ctx.globalAlpha = m.baseAlpha;
+      ctx.drawImage(sprite, drawX - size / 2, drawY - size / 2, size, size);
+    });
+    ctx.globalAlpha = 1;
+
+    riders.forEach(function (rd) {
+      rd.angle += rd.speed * 16;
+      var def = RING_DEFS[rd.ring];
+      var p = ringPoint(def, rd.angle, t);
+      var sprite = sprites[rd.sprite];
+      if (!sprite) return;
+      var size = rd.r * 10;
+      ctx.globalAlpha = 0.28;
+      ctx.drawImage(sprite, p.x - size / 2, p.y - size / 2, size, size);
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  function frame(now) {
+    if (!visible || reduceMQ.matches) { rafId = null; return; }
+    if (startedAt === null) startedAt = now;
+    var t = now - startedAt;
+    ctx.clearRect(0, 0, W, H);
+    drawRings(t);
+    drawMotes(t);
+    rafId = requestAnimationFrame(frame);
+  }
+
+  function drawStatic() {
+    ctx.clearRect(0, 0, W, H);
+    drawRings(0);
+    motes.forEach(function (m) {
+      var sprite = sprites[m.sprite];
+      if (!sprite) return;
+      var size = m.r * 9;
+      ctx.globalAlpha = m.baseAlpha;
+      ctx.drawImage(sprite, m.x - size / 2, m.y - size / 2, size, size);
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  function start() {
+    if (rafId || reduceMQ.matches) return;
+    startedAt = null;
+    rafId = requestAnimationFrame(frame);
+  }
+
+  function stop() {
+    if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  }
+
+  document.addEventListener("visibilitychange", function () {
+    visible = !document.hidden;
+    if (visible) start(); else stop();
+  });
+
+  if (reduceMQ.addEventListener) {
+    reduceMQ.addEventListener("change", function () {
+      stop();
+      if (reduceMQ.matches) drawStatic(); else start();
+    });
+  }
+  if (darkMQ.addEventListener) {
+    darkMQ.addEventListener("change", readPalette);
+  }
+
+  var themeObserver = new MutationObserver(readPalette);
+  themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  window.addEventListener("resize", function () {
+    if (resizeRaf) cancelAnimationFrame(resizeRaf);
+    resizeRaf = requestAnimationFrame(function () { resizeRaf = null; resize(); });
+  });
+
+  readPalette();
+  resize();
+  if (!reduceMQ.matches) start();
 })();
 </script>
 </body>
