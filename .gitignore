@@ -5,3 +5,4 @@ bench/*.tar.bz2
 target/
 logs/
 dist/
+share/
