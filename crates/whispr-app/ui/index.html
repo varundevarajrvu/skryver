@@ -15,9 +15,9 @@
   --paper:            #f6efdd;
   --paper-raised:     #efe6cf;
   --paper-raised-2:   #f1e9d2;
-  --ink:              #3a2c20;
-  --ink-soft:         #6b5744;
-  --ink-faint:        #8c795f;
+  --ink:              #241a10;
+  --ink-soft:         #4a3a29;
+  --ink-faint:        #6b5842;
   --rule:             rgba(58,44,32,0.13);
   --rule-strong:      rgba(58,44,32,0.24);
   --accent:           #7a1f2b;
@@ -32,9 +32,8 @@
   --shadow-02:        0 8px 28px rgba(58,44,32,0.08);
   --shadow-deboss:    inset 0 1px 2px rgba(58,44,32,0.10), inset 0 -1px 0 rgba(255,255,255,0.35);
 
-  --serif-head: "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
-  --serif-body: Cambria, Georgia, "Times New Roman", serif;
-  --serif-label:"Constantia", Georgia, serif;
+  --font-display: "Sitka Display", "Sitka Heading", Constantia, Cambria, Georgia, serif;
+  --font-sans: "Segoe UI Variable Text", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
   --mono: Consolas, "Courier New", monospace;
 }
 
@@ -42,9 +41,9 @@
   --paper:            #241c14;
   --paper-raised:     #2f2417;
   --paper-raised-2:   #2b2115;
-  --ink:              #ead9b8;
-  --ink-soft:         #c3b393;
-  --ink-faint:        #a9967a;
+  --ink:              #f7ecd4;
+  --ink-soft:         #ddc9a2;
+  --ink-faint:        #c7b08a;
   --rule:             rgba(234,217,184,0.12);
   --rule-strong:      rgba(234,217,184,0.22);
   --accent:           #c96a5a;
@@ -65,9 +64,9 @@
     --paper:            #241c14;
     --paper-raised:     #2f2417;
     --paper-raised-2:   #2b2115;
-    --ink:              #ead9b8;
-    --ink-soft:         #c3b393;
-    --ink-faint:        #a9967a;
+    --ink:              #f7ecd4;
+    --ink-soft:         #ddc9a2;
+    --ink-faint:        #c7b08a;
     --rule:             rgba(234,217,184,0.12);
     --rule-strong:      rgba(234,217,184,0.22);
     --accent:           #c96a5a;
@@ -88,7 +87,9 @@
 html, body{ margin:0; padding:0; }
 
 body{
-  font-family: var(--serif-body);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 400;
   color: var(--ink);
   background-color: var(--paper);
   background-image:
@@ -98,8 +99,9 @@ body{
     radial-gradient(ellipse at 50% 120%, rgba(0,0,0,0.05), transparent 60%);
   background-attachment: fixed;
   min-height: 100vh;
-  line-height: 1.6;
+  line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
   transition: background-color .25s ease, color .25s ease;
 }
 
@@ -130,22 +132,23 @@ header.top{
 .mark{ width:38px; height:38px; flex:none; color: var(--accent); }
 
 .wordmark{
-  font-family: var(--serif-head);
+  font-family: var(--font-display);
   font-size: clamp(32px, 4vw, 46px);
   line-height: 0.95;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.005em;
   margin:0;
-  font-weight:400;
+  font-weight:500;
   color: var(--ink);
 }
 
 .tagline{
   margin:0;
-  font-family: var(--serif-label);
+  font-family: var(--font-sans);
   font-style: italic;
-  color: var(--ink-faint);
+  font-weight: 500;
+  color: var(--ink-soft);
   font-size: 0.95rem;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.1px;
 }
 
 .top-right{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
@@ -159,7 +162,7 @@ header.top{
   border-radius: 999px;
   background: var(--paper-raised);
   box-shadow: var(--shadow-01);
-  font-family: var(--serif-label);
+  font-family: var(--font-sans);
 }
 .status-dot{
   width:9px; height:9px; border-radius:50%;
@@ -174,7 +177,8 @@ header.top{
 
 .status-text{
   font-size: 0.82rem;
-  letter-spacing: 0.7px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
   color: var(--ink);
 }
@@ -192,11 +196,12 @@ header.top{
 .theme-seg button{
   border:none;
   background:transparent;
-  font-family: var(--serif-label);
+  font-family: var(--font-sans);
   font-size: 0.74rem;
-  letter-spacing: 0.6px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: var(--ink-faint);
+  color: var(--ink-soft);
   padding: 7px 12px;
   border-radius: 999px;
   cursor:pointer;
@@ -230,23 +235,25 @@ section.panel{ padding-top: 2px; }
   border-bottom: 1px solid var(--rule);
 }
 .section-head h2{
-  font-family: var(--serif-head);
-  font-weight:400;
+  font-family: var(--font-display);
+  font-weight:500;
   font-size: clamp(20px, 1.8vw, 25px);
-  letter-spacing: 0.01em;
+  letter-spacing: 0.005em;
   margin:0;
 }
 .section-index{
   font-family: var(--mono);
   font-size: 11.5px;
-  color: var(--ink-faint);
+  font-weight: 600;
+  color: var(--ink-soft);
   letter-spacing: 0.03em;
 }
 
 .helper{
-  font-size: 12.8px;
+  font-size: 13.2px;
   font-style: italic;
-  color: var(--ink-faint);
+  font-weight: 500;
+  color: var(--ink-soft);
   line-height: 1.6;
   margin: 12px 0 0;
   max-width: 62ch;
@@ -280,40 +287,44 @@ section.panel{ padding-top: 2px; }
   margin-bottom: 40px;
 }
 .hero-left h2{
-  font-family: var(--serif-head);
-  font-weight:400;
+  font-family: var(--font-display);
+  font-weight:500;
   font-size: clamp(21px, 2.4vw, 28px);
   margin: 0 0 6px;
 }
 .hero-left p{
   margin:0;
   color: var(--ink-soft);
-  font-size: 0.94rem;
+  font-size: 0.96rem;
+  font-weight: 500;
   max-width: 48ch;
 }
 .hero-left .micro{ display:block; margin-bottom: 8px; }
 
 .micro{
-  font-family: var(--serif-label);
+  font-family: var(--font-sans);
   font-size: 0.72rem;
-  letter-spacing: 2px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
   text-transform: uppercase;
   color: var(--accent);
 }
 
 .big-toggle{ display:flex; align-items:center; gap:18px; flex:none; }
 .toggle-caption{
-  font-family: var(--serif-label);
-  letter-spacing: 1px;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
   font-size: 0.78rem;
-  color: var(--ink-faint);
+  color: var(--ink-soft);
   text-align: right;
 }
 .toggle-caption b{
   display:block;
-  font-family: var(--serif-head);
-  font-size: 1.15rem;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: 1.2rem;
   letter-spacing:0;
   text-transform:none;
   color: var(--ink);
@@ -368,17 +379,19 @@ section.panel{ padding-top: 2px; }
   box-shadow: 0 0 0 1px var(--accent) inset;
 }
 .choice-card .title{
-  font-family: var(--serif-head);
-  font-size: 1rem;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1.02rem;
   color: var(--ink);
   display:flex; align-items:center; justify-content:space-between; gap:10px;
 }
 .choice-card .sub{
-  font-family: var(--serif-label);
+  font-family: var(--font-sans);
   font-size: 0.72rem;
-  letter-spacing: 0.8px;
+  font-weight: 600;
+  letter-spacing: 0.7px;
   text-transform: uppercase;
-  color: var(--ink-faint);
+  color: var(--ink-soft);
   margin-top: 5px;
   display:block;
 }
@@ -426,7 +439,8 @@ section.panel{ padding-top: 2px; }
 
 .hold-caption{
   margin-top: 14px;
-  font-size: 0.88rem;
+  font-size: 0.9rem;
+  font-weight: 500;
   color: var(--ink-soft);
 }
 .hold-caption kbd{
@@ -455,9 +469,10 @@ section.panel{ padding-top: 2px; }
   text-align:center;
   padding: 9px 10px;
   border-radius: 999px;
-  font-family: var(--serif-label);
+  font-family: var(--font-sans);
   font-size: 0.8rem;
-  letter-spacing: 0.7px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   text-transform: uppercase;
   color: var(--ink-soft);
   cursor:pointer;
@@ -473,12 +488,12 @@ section.panel{ padding-top: 2px; }
 table.dict{ width:100%; border-collapse: collapse; font-size: 14px; }
 table.dict th{
   text-align:left;
-  font-family: var(--serif-label);
+  font-family: var(--font-sans);
   font-size: 0.7rem;
-  letter-spacing: 1.6px;
+  letter-spacing: 1.4px;
   text-transform: uppercase;
-  color: var(--ink-faint);
-  font-weight:400;
+  color: var(--ink-soft);
+  font-weight:600;
   padding: 0 10px 10px 0;
   border-bottom: 1px solid var(--rule-strong);
 }
@@ -492,8 +507,9 @@ table.dict input[type="text"]{
   width:100%;
   border: 1px solid transparent;
   background: transparent;
-  font-family: var(--serif-body);
+  font-family: var(--font-sans);
   font-size: 14px;
+  font-weight: 500;
   color: var(--ink);
   padding: 7px 8px;
   border-radius: 3px;
@@ -529,9 +545,10 @@ table.dict input[type="text"]:focus{
   background:none;
   border: 1px dashed var(--rule-strong);
   color: var(--accent);
-  font-family: var(--serif-label);
+  font-family: var(--font-sans);
   font-size: 0.8rem;
-  letter-spacing: 0.8px;
+  font-weight: 600;
+  letter-spacing: 0.6px;
   text-transform: uppercase;
   padding: 9px 16px;
   border-radius: 5px;
@@ -548,9 +565,10 @@ table.dict input[type="text"]:focus{
   flex-wrap: wrap;
 }
 .save-btn{
-  font-family: var(--serif-label);
+  font-family: var(--font-sans);
   font-size: 0.85rem;
-  letter-spacing: 1.2px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
   text-transform: uppercase;
   padding: 12px 28px;
   border-radius: 3px;
@@ -563,9 +581,10 @@ table.dict input[type="text"]:focus{
 .save-btn:active{ transform: translateY(1px); }
 .save-btn:disabled{ opacity: 0.5; cursor:default; }
 .save-note{
-  font-size: 12.5px;
+  font-size: 12.8px;
   font-style: italic;
-  color: var(--ink-faint);
+  font-weight: 500;
+  color: var(--ink-soft);
 }
 
 /* ---------------- History ---------------- */
@@ -583,12 +602,12 @@ table.dict input[type="text"]:focus{
   .history-item{ grid-template-columns: 1fr; gap:8px; }
 }
 .history-meta{ display:flex; flex-direction:column; gap:8px; }
-.history-time{ font-family: var(--mono); font-size: 11.5px; color: var(--ink-faint); }
+.history-time{ font-family: var(--mono); font-size: 11.5px; font-weight: 600; color: var(--ink-soft); }
 .badge{
   display:inline-flex; align-items:center; gap:5px;
-  font-family: var(--serif-label);
+  font-family: var(--font-sans);
   font-size: 10px;
-  letter-spacing: 1px;
+  letter-spacing: 0.9px;
   text-transform: uppercase;
   font-weight: 700;
   padding: 3px 9px;
@@ -598,12 +617,13 @@ table.dict input[type="text"]:focus{
 }
 .badge.fast{ color: var(--good); background: var(--good-soft); }
 .badge.ai{ color: var(--accent); background: var(--accent-soft); }
-.history-latency{ font-family: var(--mono); font-size: 11px; color: var(--ink-faint); }
-.history-text{ font-size: 15px; line-height: 1.65; color: var(--ink); white-space: pre-wrap; }
+.history-latency{ font-family: var(--mono); font-size: 11px; font-weight: 600; color: var(--ink-soft); }
+.history-text{ font-family: var(--font-sans); font-size: 15.5px; font-weight: 500; line-height: 1.65; color: var(--ink); white-space: pre-wrap; }
 .empty-note{
   font-size: 14px;
   font-style: italic;
-  color: var(--ink-faint);
+  font-weight: 500;
+  color: var(--ink-soft);
   text-align:center;
   padding: 20px 0;
 }
@@ -612,10 +632,11 @@ table.dict input[type="text"]:focus{
 .foot{
   text-align:center;
   margin-top: 56px;
-  color: var(--ink-faint);
-  font-family: var(--serif-label);
-  font-size: 0.76rem;
-  letter-spacing: 0.6px;
+  color: var(--ink-soft);
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.4px;
   font-style: italic;
 }
 

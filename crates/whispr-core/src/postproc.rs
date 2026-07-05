@@ -125,6 +125,32 @@ pub fn needs_rephrase(text: &str) -> bool {
         return true;
     }
 
+    // Self-corrections / false starts: the speaker retracts or changes what
+    // they just said. These need the LLM to drop the retracted words and the
+    // correction cue itself — the rule-based path can't do that safely.
+    const CORRECTION_PHRASES: &[&str] = &[
+        "sorry",
+        "i mean",
+        "i meant",
+        "no wait",
+        "wait no",
+        "scratch that",
+        "change that",
+        "let me rephrase",
+        "rephrase that",
+        "or rather",
+        "make that",
+        "correction",
+        "no not",
+        "no i said",
+    ];
+    if CORRECTION_PHRASES.iter().any(|p| lower.contains(p)) {
+        return true;
+    }
+    if words.iter().any(|w| *w == "actually") {
+        return true;
+    }
+
     false
 }
 
@@ -427,5 +453,18 @@ mod tests {
         assert!(!needs_rephrase("Send a message to the team that the demo is ready."));
         assert!(!needs_rephrase("Can you write me a funny joke?"));
         assert!(!needs_rephrase("The waiting list is long."));
+    }
+
+    #[test]
+    fn rephrase_on_self_corrections() {
+        assert!(needs_rephrase("Send it to John, sorry, send it to Jane."));
+        assert!(needs_rephrase("Let's meet Monday, actually make that Tuesday."));
+        assert!(needs_rephrase("No wait, scratch that."));
+        // A couple more self-correction cues from the task spec.
+        assert!(needs_rephrase("Send the report to John, no I mean Jane."));
+        assert!(needs_rephrase("Book the flight for Friday, or rather Saturday."));
+        // Clean sentences must stay on the fast path.
+        assert!(!needs_rephrase("The meeting starts at nine tomorrow morning."));
+        assert!(!needs_rephrase("Please send the invoice to accounting today."));
     }
 }

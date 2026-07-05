@@ -14,3 +14,14 @@ whispers => whispr
 wisper => whispr
 java script => JavaScript
 git hub => GitHub
+
+# Xenon app name
+zenon => Xenon
+zeno => Xenon
+xeno => Xenon
+zen on => Xenon
+xenon => Xenon
+xenion => Xenon
+zennon => Xenon
+xennon => Xenon
+xenor => Xenon
