@@ -6,3 +6,6 @@ target/
 logs/
 dist/
 share/
+
+# redundant zip of the extracted llama runtime DLLs
+tools/llama/*.zip
