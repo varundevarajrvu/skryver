@@ -1,0 +1,758 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Skryver — private, 100% offline voice dictation for Windows. Hold a key, speak, and it types cleaned-up text into any app. No cloud, no account, nothing leaves your machine.">
+<meta property="og:title" content="Skryver — private voice dictation">
+<meta property="og:description" content="Hold a key, speak, and Skryver types the cleaned-up version into any app. 100% on-device.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2048%2048'%3E%3Cellipse%20cx='24'%20cy='24'%20rx='21'%20ry='8'%20fill='none'%20stroke='%237a1f2b'%20stroke-width='3'%20transform='rotate(45%2024%2024)'/%3E%3Cellipse%20cx='24'%20cy='24'%20rx='21'%20ry='8'%20fill='none'%20stroke='%237a1f2b'%20stroke-width='3'%20transform='rotate(-45%2024%2024)'/%3E%3Ccircle%20cx='24'%20cy='24'%20r='4'%20fill='%237a1f2b'/%3E%3C/svg%3E">
+<title>Skryver — private voice dictation</title>
+<style>
+/* =============================================================================
+   SKRYVER — landing page
+   Built on the app's own "warm editorial paper + fountain-pen ink" identity.
+   ============================================================================= */
+
+:root{
+  --paper:            #f6efdd;
+  --paper-raised:     #efe6cf;
+  --paper-raised-2:   #f1e9d2;
+  --ink:              #241a10;
+  --ink-soft:         #4a3a29;
+  --ink-faint:        #6b5842;
+  --rule:             rgba(58,44,32,0.14);
+  --rule-strong:      rgba(58,44,32,0.26);
+  --accent:           #7a1f2b;
+  --accent-deep:      #591520;
+  --accent-soft:      rgba(122,31,43,0.10);
+  --accent-soft-2:    rgba(122,31,43,0.18);
+  --good:             #4c7a54;
+  --good-soft:        rgba(76,122,84,0.13);
+  --focus:            0 0 0 3px rgba(122,31,43,0.28);
+  --shadow-1:         0 1px 2px rgba(58,44,32,0.07);
+  --shadow-2:         0 14px 40px rgba(58,44,32,0.11);
+
+  --font-display: "Sitka Display", "Sitka Heading", Constantia, Cambria, Georgia, "Times New Roman", serif;
+  --font-sans: "Segoe UI Variable Text", "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --mono: Consolas, "SFMono-Regular", ui-monospace, "Courier New", monospace;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-color-scheme: dark){
+  :root{
+    --paper:            #131215;
+    --paper-raised:     #1b1a1e;
+    --paper-raised-2:   #201f23;
+    --ink:              #efeae2;
+    --ink-soft:         #c9c3ba;
+    --ink-faint:        #a29b90;
+    --rule:             rgba(239,234,226,0.11);
+    --rule-strong:      rgba(239,234,226,0.22);
+    --accent:           #ef7a5f;
+    --accent-deep:      #ff9478;
+    --accent-soft:      rgba(239,122,95,0.16);
+    --accent-soft-2:    rgba(239,122,95,0.28);
+    --good:             #86d19a;
+    --good-soft:        rgba(134,209,154,0.15);
+    --focus:            0 0 0 3px rgba(239,122,95,0.36);
+    --shadow-1:         0 1px 2px rgba(0,0,0,0.5);
+    --shadow-2:         0 18px 46px rgba(0,0,0,0.6);
+  }
+}
+
+/* Viewer's explicit toggle wins over the OS media query, both directions. */
+:root[data-theme="light"]{
+  --paper:#f6efdd; --paper-raised:#efe6cf; --paper-raised-2:#f1e9d2;
+  --ink:#241a10; --ink-soft:#4a3a29; --ink-faint:#6b5842;
+  --rule:rgba(58,44,32,0.14); --rule-strong:rgba(58,44,32,0.26);
+  --accent:#7a1f2b; --accent-deep:#591520;
+  --accent-soft:rgba(122,31,43,0.10); --accent-soft-2:rgba(122,31,43,0.18);
+  --good:#4c7a54; --good-soft:rgba(76,122,84,0.13);
+  --focus:0 0 0 3px rgba(122,31,43,0.28);
+  --shadow-1:0 1px 2px rgba(58,44,32,0.07); --shadow-2:0 14px 40px rgba(58,44,32,0.11);
+}
+:root[data-theme="dark"]{
+  --paper:#131215; --paper-raised:#1b1a1e; --paper-raised-2:#201f23;
+  --ink:#efeae2; --ink-soft:#c9c3ba; --ink-faint:#a29b90;
+  --rule:rgba(239,234,226,0.11); --rule-strong:rgba(239,234,226,0.22);
+  --accent:#ef7a5f; --accent-deep:#ff9478;
+  --accent-soft:rgba(239,122,95,0.16); --accent-soft-2:rgba(239,122,95,0.28);
+  --good:#86d19a; --good-soft:rgba(134,209,154,0.15);
+  --focus:0 0 0 3px rgba(239,122,95,0.36);
+  --shadow-1:0 1px 2px rgba(0,0,0,0.5); --shadow-2:0 18px 46px rgba(0,0,0,0.6);
+}
+
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+@media (prefers-reduced-motion: reduce){ html{ scroll-behavior:auto; } }
+
+body{
+  margin:0;
+  font-family:var(--font-sans);
+  font-size:17px;
+  line-height:1.65;
+  color:var(--ink);
+  background-color:var(--paper);
+  background-image:
+    repeating-linear-gradient(to bottom, transparent 0, transparent 33px, rgba(122,95,45,0.045) 34px),
+    radial-gradient(ellipse at 12% -8%, rgba(255,252,240,0.55), transparent 55%),
+    radial-gradient(ellipse at 100% 0%, rgba(122,31,43,0.05), transparent 45%),
+    radial-gradient(ellipse at 50% 128%, rgba(0,0,0,0.05), transparent 60%);
+  background-attachment:fixed;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  overflow-x:hidden;
+}
+:root[data-theme="dark"] body,
+body:where([data-theme="dark"]){ }
+@media (prefers-color-scheme: dark){
+  body{
+    background-image:
+      repeating-linear-gradient(to bottom, transparent 0, transparent 33px, rgba(255,255,255,0.02) 34px),
+      radial-gradient(ellipse at 12% -8%, rgba(255,246,238,0.05), transparent 55%),
+      radial-gradient(ellipse at 100% 0%, rgba(239,122,95,0.08), transparent 45%),
+      radial-gradient(ellipse at 50% 128%, rgba(0,0,0,0.4), transparent 60%);
+  }
+}
+:root[data-theme="dark"] body{
+  background-image:
+    repeating-linear-gradient(to bottom, transparent 0, transparent 33px, rgba(255,255,255,0.02) 34px),
+    radial-gradient(ellipse at 12% -8%, rgba(255,246,238,0.05), transparent 55%),
+    radial-gradient(ellipse at 100% 0%, rgba(239,122,95,0.08), transparent 45%),
+    radial-gradient(ellipse at 50% 128%, rgba(0,0,0,0.4), transparent 60%);
+}
+:root[data-theme="light"] body{
+  background-image:
+    repeating-linear-gradient(to bottom, transparent 0, transparent 33px, rgba(122,95,45,0.045) 34px),
+    radial-gradient(ellipse at 12% -8%, rgba(255,252,240,0.55), transparent 55%),
+    radial-gradient(ellipse at 100% 0%, rgba(122,31,43,0.05), transparent 45%),
+    radial-gradient(ellipse at 50% 128%, rgba(0,0,0,0.05), transparent 60%);
+}
+
+::selection{ background:var(--accent-soft-2); color:var(--ink); }
+a{ color:inherit; }
+
+.wrap{ max-width:1120px; margin:0 auto; padding:0 clamp(20px,4vw,52px); }
+
+/* ---------------- Top bar ---------------- */
+.topbar{
+  display:flex; align-items:center; justify-content:space-between; gap:20px;
+  padding:22px 0 20px;
+  position:sticky; top:0; z-index:50;
+  backdrop-filter:blur(8px);
+  background:linear-gradient(to bottom, var(--paper) 40%, transparent);
+}
+.brand{ display:flex; align-items:center; gap:11px; text-decoration:none; }
+.mark{ width:30px; height:30px; flex:none; color:var(--accent); }
+.brand b{
+  font-family:var(--font-display); font-weight:600; font-size:1.32rem;
+  letter-spacing:.01em; color:var(--ink);
+}
+.nav{ display:flex; align-items:center; gap:8px; }
+.nav a.link{
+  font-size:.86rem; font-weight:600; letter-spacing:.02em;
+  color:var(--ink-soft); text-decoration:none; padding:9px 12px; border-radius:8px;
+  transition:color .18s var(--ease), background-color .18s var(--ease);
+}
+.nav a.link:hover{ color:var(--ink); background:var(--paper-raised); }
+.nav a.link.hide-sm{ }
+@media (max-width:680px){ .nav a.link.hide-sm{ display:none; } }
+
+.btn{
+  display:inline-flex; align-items:center; gap:9px;
+  font-family:var(--font-sans); font-size:.9rem; font-weight:700; letter-spacing:.02em;
+  text-decoration:none; cursor:pointer; border-radius:10px;
+  padding:11px 20px; border:1.5px solid var(--accent);
+  transition:transform .06s var(--ease), box-shadow .2s var(--ease), background-color .2s var(--ease), color .2s var(--ease);
+}
+.btn svg{ width:17px; height:17px; }
+.btn-primary{ background:var(--accent); color:#fbf3e6; box-shadow:var(--shadow-1); }
+:root[data-theme="dark"] .btn-primary{ color:#241a10; }
+@media (prefers-color-scheme: dark){ .btn-primary{ color:#241a10; } }
+:root[data-theme="light"] .btn-primary{ color:#fbf3e6; }
+.btn-primary:hover{ box-shadow:var(--shadow-2); }
+.btn-primary:active{ transform:translateY(1px); }
+.btn-ghost{ background:transparent; color:var(--ink); border-color:var(--rule-strong); }
+.btn-ghost:hover{ border-color:var(--accent); color:var(--accent); }
+.btn:focus-visible{ outline:none; box-shadow:var(--focus); }
+
+/* ---------------- Hero ---------------- */
+.hero{
+  display:grid; grid-template-columns:1.05fr 1fr; gap:clamp(28px,4vw,60px);
+  align-items:center; padding:clamp(36px,6vw,84px) 0 clamp(30px,5vw,56px);
+}
+@media (max-width:900px){ .hero{ grid-template-columns:1fr; gap:34px; } }
+
+.eyebrow{
+  display:inline-flex; align-items:center; gap:9px;
+  font-family:var(--font-sans); font-size:.72rem; font-weight:700;
+  letter-spacing:.16em; text-transform:uppercase; color:var(--accent);
+  padding:7px 13px; border:1px solid var(--accent-soft-2); border-radius:999px;
+  background:var(--accent-soft);
+}
+.eyebrow .dot{ width:7px; height:7px; border-radius:50%; background:var(--good); box-shadow:0 0 0 3px var(--good-soft); }
+
+h1.headline{
+  font-family:var(--font-display); font-weight:600;
+  font-size:clamp(2.6rem,6.2vw,4.3rem); line-height:1.02; letter-spacing:-.005em;
+  margin:22px 0 0; text-wrap:balance; color:var(--ink);
+}
+h1.headline em{ font-style:italic; color:var(--accent); }
+.sub{
+  margin:22px 0 0; max-width:34ch;
+  font-size:1.14rem; line-height:1.6; color:var(--ink-soft); font-weight:450;
+}
+.hero-cta{ display:flex; flex-wrap:wrap; gap:14px; margin-top:32px; }
+.hero-meta{
+  margin-top:22px; display:flex; flex-wrap:wrap; gap:8px 20px;
+  font-family:var(--mono); font-size:.8rem; color:var(--ink-faint); letter-spacing:.01em;
+}
+.hero-meta span{ display:inline-flex; align-items:center; gap:7px; }
+.hero-meta .tick{ color:var(--good); font-weight:700; }
+
+/* ---- Hero demo card ---- */
+.demo{
+  position:relative;
+  border:1px solid var(--rule-strong); border-radius:16px;
+  background:var(--paper-raised);
+  box-shadow:var(--shadow-2);
+  padding:0; overflow:hidden;
+}
+.demo::before{
+  content:""; position:absolute; inset:7px; border-radius:11px;
+  border:1px solid var(--accent-soft); pointer-events:none;
+}
+.demo-head{
+  display:flex; align-items:center; justify-content:space-between; gap:14px;
+  padding:15px 18px; border-bottom:1px solid var(--rule);
+}
+.pill{
+  display:inline-flex; align-items:center; gap:9px;
+  font-family:var(--font-sans); font-size:.72rem; font-weight:700;
+  letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft);
+  padding:7px 13px 7px 11px; border:1px solid var(--rule-strong);
+  border-radius:999px; background:var(--paper);
+}
+.pill .sdot{ width:9px; height:9px; border-radius:50%; background:var(--ink-faint); transition:background .2s; }
+.pill.is-rec .sdot{ background:var(--accent); animation:pulse 1.2s ease-in-out infinite; }
+.pill.is-polish .sdot{ background:var(--accent-deep); animation:pulse .9s ease-in-out infinite; }
+.pill.is-done .sdot{ background:var(--good); box-shadow:0 0 0 3px var(--good-soft); }
+@keyframes pulse{ 0%,100%{opacity:1;} 50%{opacity:.35;} }
+
+.keycap{
+  font-family:var(--mono); font-size:.82rem; font-weight:700; color:var(--ink-soft);
+  display:inline-flex; align-items:center; gap:8px;
+}
+.kbd{
+  font-family:var(--mono); font-size:.78rem; font-weight:700;
+  min-width:34px; text-align:center; color:var(--accent);
+  background:var(--paper); border:1px solid var(--rule-strong);
+  border-bottom-width:3px; border-radius:6px; padding:3px 8px;
+  transition:transform .1s var(--ease), border-bottom-width .1s var(--ease), background-color .15s;
+}
+.kbd.held{ transform:translateY(2px); border-bottom-width:1px; background:var(--accent-soft); }
+
+.demo-body{ padding:20px 20px 8px; min-height:150px; }
+.stream-label{
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-faint); margin-bottom:7px;
+}
+.raw{
+  font-family:var(--font-sans); font-size:1.02rem; line-height:1.55; color:var(--ink-soft);
+  min-height:2.6em; font-weight:450;
+}
+.raw .cursor{
+  display:inline-block; width:2px; height:1.05em; vertical-align:-0.16em;
+  background:var(--accent); margin-left:2px; animation:blink 1s steps(2) infinite;
+}
+@keyframes blink{ 50%{ opacity:0; } }
+.arrow-row{
+  display:flex; align-items:center; gap:12px; margin:14px 0 10px; color:var(--ink-faint);
+  font-family:var(--mono); font-size:.68rem; letter-spacing:.14em; text-transform:uppercase;
+}
+.arrow-row .ln{ flex:1; height:1px; background:var(--rule); }
+.clean{
+  font-family:var(--font-display); font-size:1.28rem; line-height:1.5; color:var(--ink);
+  min-height:1.5em; font-weight:500;
+  opacity:0; transform:translateY(6px); transition:opacity .5s var(--ease), transform .5s var(--ease);
+}
+.clean.show{ opacity:1; transform:none; }
+.demo-foot{
+  display:flex; align-items:center; justify-content:space-between; gap:12px;
+  padding:12px 20px 16px; border-top:1px solid var(--rule); margin-top:8px;
+}
+.badge{
+  font-family:var(--font-sans); font-size:.64rem; font-weight:800; letter-spacing:.1em;
+  text-transform:uppercase; padding:4px 10px; border-radius:999px;
+  color:var(--accent); background:var(--accent-soft); border:1px solid var(--accent-soft-2);
+}
+.latency{ font-family:var(--mono); font-size:.74rem; color:var(--ink-faint); font-variant-numeric:tabular-nums; }
+
+/* ---------------- Section scaffolding ---------------- */
+section{ padding:clamp(48px,7vw,88px) 0; }
+.sec-rule{ border-top:1px solid var(--rule); }
+.sec-eyebrow{
+  font-family:var(--font-sans); font-size:.72rem; font-weight:700;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--accent);
+}
+h2.sec-title{
+  font-family:var(--font-display); font-weight:600;
+  font-size:clamp(1.9rem,3.6vw,2.7rem); line-height:1.1; letter-spacing:-.005em;
+  margin:12px 0 0; text-wrap:balance; max-width:20ch;
+}
+.sec-lead{ margin:16px 0 0; max-width:56ch; color:var(--ink-soft); font-size:1.06rem; }
+
+/* ---- Privacy manifesto ---- */
+.manifesto{
+  border:1px solid var(--rule-strong); border-radius:18px;
+  background:
+    radial-gradient(ellipse at 85% -20%, var(--good-soft), transparent 60%),
+    var(--paper-raised);
+  box-shadow:var(--shadow-1);
+  padding:clamp(30px,4.5vw,56px);
+  display:grid; grid-template-columns:1.3fr 1fr; gap:clamp(26px,4vw,52px); align-items:center;
+}
+@media (max-width:820px){ .manifesto{ grid-template-columns:1fr; gap:28px; } }
+.manifesto .big{
+  font-family:var(--font-display); font-weight:500; font-style:italic;
+  font-size:clamp(1.5rem,2.7vw,2.05rem); line-height:1.32; letter-spacing:-.005em;
+  text-wrap:balance;
+}
+.manifesto .big u{ text-decoration:none; color:var(--good); border-bottom:2px solid var(--good); padding-bottom:1px; }
+.privacy-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:14px; }
+.privacy-list li{ display:flex; gap:12px; align-items:flex-start; font-size:.98rem; color:var(--ink-soft); }
+.privacy-list .ck{
+  flex:none; width:22px; height:22px; border-radius:6px; margin-top:1px;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--good-soft); color:var(--good);
+}
+.privacy-list .ck svg{ width:13px; height:13px; }
+.privacy-list b{ color:var(--ink); font-weight:650; }
+
+/* ---- Steps ---- */
+.steps{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(16px,2.4vw,26px); margin-top:40px; }
+@media (max-width:760px){ .steps{ grid-template-columns:1fr; } }
+.step{
+  border:1px solid var(--rule); border-radius:14px; background:var(--paper-raised-2);
+  padding:26px 24px; position:relative; box-shadow:var(--shadow-1);
+}
+.step .num{
+  font-family:var(--mono); font-size:.78rem; font-weight:700; color:var(--accent);
+  letter-spacing:.06em;
+}
+.step h3{ font-family:var(--font-display); font-weight:600; font-size:1.24rem; margin:14px 0 8px; }
+.step p{ margin:0; color:var(--ink-soft); font-size:.96rem; }
+.step .k{ font-family:var(--mono); color:var(--accent); background:var(--accent-soft); padding:1px 7px; border-radius:5px; font-size:.85em; }
+
+/* ---- Feature grid ---- */
+.features{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(16px,2.4vw,24px); margin-top:40px; }
+@media (max-width:860px){ .features{ grid-template-columns:repeat(2,1fr); } }
+@media (max-width:560px){ .features{ grid-template-columns:1fr; } }
+.feature{
+  border:1px solid var(--rule); border-radius:14px; padding:24px 22px;
+  background:var(--paper-raised); box-shadow:var(--shadow-1);
+  transition:border-color .2s var(--ease), transform .2s var(--ease), box-shadow .2s var(--ease);
+}
+.feature:hover{ border-color:var(--accent); transform:translateY(-3px); box-shadow:var(--shadow-2); }
+.feature .ic{ width:34px; height:34px; color:var(--accent); margin-bottom:14px; }
+.feature h3{ font-family:var(--font-display); font-weight:600; font-size:1.18rem; margin:0 0 7px; }
+.feature p{ margin:0; color:var(--ink-soft); font-size:.95rem; }
+.feature .example{
+  margin-top:12px; padding-top:12px; border-top:1px solid var(--rule);
+  font-family:var(--mono); font-size:.78rem; color:var(--ink-faint); line-height:1.5;
+}
+.feature .example .a{ color:var(--accent); }
+
+/* ---- Under the hood ---- */
+.hood{
+  border:1px solid var(--rule-strong); border-radius:18px; overflow:hidden;
+  background:var(--paper-raised); box-shadow:var(--shadow-1);
+  display:grid; grid-template-columns:repeat(3,1fr);
+}
+@media (max-width:760px){ .hood{ grid-template-columns:1fr; } }
+.hood .cell{ padding:26px 24px; border-right:1px solid var(--rule); }
+.hood .cell:last-child{ border-right:none; }
+@media (max-width:760px){ .hood .cell{ border-right:none; border-bottom:1px solid var(--rule); } .hood .cell:last-child{ border-bottom:none; } }
+.hood .cell .t{ font-family:var(--mono); font-size:.68rem; letter-spacing:.14em; text-transform:uppercase; color:var(--ink-faint); }
+.hood .cell .v{ font-family:var(--font-display); font-weight:600; font-size:1.16rem; margin:9px 0 6px; }
+.hood .cell p{ margin:0; font-size:.9rem; color:var(--ink-soft); }
+
+.reqs{
+  margin-top:22px; display:flex; flex-wrap:wrap; gap:10px 12px;
+  font-family:var(--mono); font-size:.82rem; color:var(--ink-soft);
+}
+.reqs .chip{ border:1px solid var(--rule-strong); border-radius:999px; padding:7px 14px; background:var(--paper-raised-2); }
+
+/* ---- CTA band ---- */
+.cta-band{
+  text-align:center; border:1px solid var(--rule-strong); border-radius:20px;
+  padding:clamp(38px,6vw,72px) clamp(24px,4vw,48px);
+  background:
+    radial-gradient(ellipse at 50% -30%, var(--accent-soft), transparent 62%),
+    var(--paper-raised);
+  box-shadow:var(--shadow-1);
+}
+.cta-band h2{
+  font-family:var(--font-display); font-weight:600; font-size:clamp(2rem,4.4vw,3.1rem);
+  line-height:1.08; margin:0; text-wrap:balance; letter-spacing:-.01em;
+}
+.cta-band p{ margin:16px auto 0; max-width:44ch; color:var(--ink-soft); font-size:1.08rem; }
+.cta-band .hero-cta{ justify-content:center; }
+.cta-note{ margin-top:18px; font-family:var(--mono); font-size:.78rem; color:var(--ink-faint); }
+
+/* ---- Footer ---- */
+footer{ border-top:1px solid var(--rule); padding:34px 0 56px; }
+.foot-in{ display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap; }
+.foot-in .brand b{ font-size:1.1rem; }
+.foot-links{ display:flex; gap:20px; flex-wrap:wrap; }
+.foot-links a{ color:var(--ink-soft); text-decoration:none; font-size:.9rem; font-weight:600; }
+.foot-links a:hover{ color:var(--accent); }
+.foot-fine{ margin-top:20px; font-size:.82rem; color:var(--ink-faint); font-style:italic; }
+
+/* reveal on scroll */
+.reveal{ opacity:0; transform:translateY(16px); transition:opacity .6s var(--ease), transform .6s var(--ease); }
+.reveal.in{ opacity:1; transform:none; }
+
+@media (prefers-reduced-motion: reduce){
+  *, *::before, *::after{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+  .reveal{ opacity:1; transform:none; }
+  .clean{ opacity:1; transform:none; }
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:20px;width:100%;padding-top:0;padding-bottom:0;">
+    <a class="brand" href="#top">
+      <svg class="mark" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+        <ellipse cx="24" cy="24" rx="21" ry="8" stroke="currentColor" stroke-width="2" transform="rotate(45 24 24)"/>
+        <ellipse cx="24" cy="24" rx="21" ry="8" stroke="currentColor" stroke-width="2" transform="rotate(-45 24 24)"/>
+        <circle cx="24" cy="24" r="3.6" fill="currentColor"/>
+      </svg>
+      <b>Skryver</b>
+    </a>
+    <nav class="nav">
+      <a class="link hide-sm" href="#how">How it works</a>
+      <a class="link hide-sm" href="#features">Features</a>
+      <a class="link hide-sm" href="#privacy">Privacy</a>
+      <a class="btn btn-ghost" href="https://github.com/varundevarajrvu/skryver" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.46-1.19-1.11-1.5-1.11-1.5-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.36 9.36 0 0 1 5 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.480-.01 2.81 0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"/></svg>
+        GitHub
+      </a>
+    </nav>
+  </div>
+</header>
+
+<a id="top"></a>
+
+<main class="wrap">
+
+  <!-- HERO -->
+  <section class="hero" style="padding-top:clamp(24px,4vw,56px);">
+    <div class="hero-copy">
+      <span class="eyebrow"><span class="dot"></span> 100% on-device</span>
+      <h1 class="headline">Speak.<br>It types the <em>clean</em> version.</h1>
+      <p class="sub">Hold a key anywhere on your PC, talk, and Skryver writes it into whatever app you're in — grammar and filler cleaned up automatically. No cloud, no account, nothing ever leaves your machine.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="https://github.com/varundevarajrvu/skryver" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.46-1.19-1.11-1.5-1.11-1.5-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.36 9.36 0 0 1 5 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.81 0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"/></svg>
+          Get it on GitHub
+        </a>
+        <a class="btn btn-ghost" href="#how">See how it works</a>
+      </div>
+      <div class="hero-meta">
+        <span><span class="tick">✓</span> Windows 10 / 11</span>
+        <span><span class="tick">✓</span> Runs on your CPU</span>
+        <span><span class="tick">✓</span> MIT&nbsp;·&nbsp;open source</span>
+      </div>
+    </div>
+
+    <!-- Live demo card -->
+    <div class="demo" role="img" aria-label="Demonstration of Skryver turning messy dictation into a clean, corrected sentence.">
+      <div class="demo-head">
+        <span class="pill" id="pill"><span class="sdot"></span><span id="pillText">ready</span></span>
+        <span class="keycap">hold <span class="kbd" id="kbd">F9</span></span>
+      </div>
+      <div class="demo-body">
+        <div class="stream-label">You say</div>
+        <div class="raw" id="raw"><span class="cursor" id="cursor"></span></div>
+        <div class="arrow-row"><span>cleaned on-device</span><span class="ln"></span></div>
+        <div class="stream-label">Skryver types</div>
+        <div class="clean" id="clean"></div>
+      </div>
+      <div class="demo-foot">
+        <span class="badge" id="badge">ai cleanup</span>
+        <span class="latency" id="latency">—</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRIVACY MANIFESTO -->
+  <section id="privacy" class="sec-rule">
+    <div class="manifesto reveal">
+      <div>
+        <div class="sec-eyebrow" style="color:var(--good)">The whole point</div>
+        <p class="big">Your voice is the most personal data you have. So Skryver keeps it <u>on your machine</u> — the speech model and the language model both run locally, and not one byte is sent anywhere.</p>
+      </div>
+      <ul class="privacy-list">
+        <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span><b>No network calls.</b> Dictation works fully offline — unplug the Wi‑Fi and it's identical.</span></li>
+        <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span><b>No account, no telemetry.</b> Nothing to sign up for, nothing tracked.</span></li>
+        <li><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></span><span><b>Open source.</b> Read every line — it's MIT‑licensed on GitHub.</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="how" class="sec-rule">
+    <div class="sec-eyebrow">The whole interaction</div>
+    <h2 class="sec-title">Three things, and none of them is “open an app”.</h2>
+    <p class="sec-lead">Skryver lives in your system tray and listens for one key. Dictation is the same everywhere — a browser, an email, a chat box, your code editor.</p>
+    <div class="steps">
+      <div class="step reveal">
+        <div class="num">01</div>
+        <h3>Hold the key</h3>
+        <p>Click into any text field, then press and hold <span class="k">F9</span> (or whatever hotkey you pick).</p>
+      </div>
+      <div class="step reveal" style="transition-delay:.08s">
+        <div class="num">02</div>
+        <h3>Just talk</h3>
+        <p>Speak naturally — stumble, restate, correct yourself mid‑sentence. Skryver is listening on‑device.</p>
+      </div>
+      <div class="step reveal" style="transition-delay:.16s">
+        <div class="num">03</div>
+        <h3>Release</h3>
+        <p>Let go, and clean text appears right where your cursor is — punctuated, de‑filler‑ed, ready.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section id="features" class="sec-rule">
+    <div class="sec-eyebrow">What's inside</div>
+    <h2 class="sec-title">Small, quiet, and genuinely useful.</h2>
+    <div class="features">
+      <div class="feature reveal">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10a7 7 0 0 1-14 0"/><path d="M12 17v4"/></svg>
+        <h3>Push‑to‑talk anywhere</h3>
+        <p>One global hotkey works in every app. No window to switch to, no button to click.</p>
+      </div>
+      <div class="feature reveal" style="transition-delay:.06s">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2M12 19v2M5 12H3M21 12h-2M6.3 6.3 4.9 4.9M19.1 19.1l-1.4-1.4M17.7 6.3l1.4-1.4M4.9 19.1l1.4-1.4"/><circle cx="12" cy="12" r="4"/></svg>
+        <h3>On‑device AI cleanup</h3>
+        <p>A local language model fixes grammar, punctuation and filler as you dictate.</p>
+        <div class="example">“send it to john, <span class="a">sorry i mean</span> jane”<br>→ “Send it to Jane.”</div>
+      </div>
+      <div class="feature reveal" style="transition-delay:.12s">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="m13 2-3 7h5l-3 7"/><path d="M4 14h3M17 14h3M4 18h4M16 18h4"/></svg>
+        <h3>Fast or accurate</h3>
+        <p>Pick <b>Parakeet</b> for correctness on names and jargon, or <b>Moonshine</b> for near‑instant results.</p>
+      </div>
+      <div class="feature reveal">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+        <h3>Personal dictionary</h3>
+        <p>Teach it the names and terms it keeps mishearing — matched case‑insensitively, whole‑word.</p>
+      </div>
+      <div class="feature reveal" style="transition-delay:.06s">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8M12 18v3"/></svg>
+        <h3>Lives in the tray</h3>
+        <p>No window in your face. A tray icon, a warm settings screen when you want it, and that's it.</p>
+      </div>
+      <div class="feature reveal" style="transition-delay:.12s">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/></svg>
+        <h3>Yours, offline</h3>
+        <p>No subscription, no sign‑in, no server. It just runs on your computer, forever.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- UNDER THE HOOD -->
+  <section class="sec-rule">
+    <div class="sec-eyebrow">Under the hood</div>
+    <h2 class="sec-title">Real models, running on your CPU.</h2>
+    <p class="sec-lead">No GPU required. Skryver bundles the speech and language models it needs and resolves them next to the app.</p>
+    <div class="hood reveal" style="margin-top:34px;">
+      <div class="cell">
+        <div class="t">Speech → text</div>
+        <div class="v">sherpa‑onnx</div>
+        <p>Parakeet &amp; Moonshine ONNX models handle transcription locally.</p>
+      </div>
+      <div class="cell">
+        <div class="t">Cleanup</div>
+        <div class="v">llama.cpp</div>
+        <p>A quantized Qwen2.5‑1.5B instruct model polishes each take.</p>
+      </div>
+      <div class="cell">
+        <div class="t">Built with</div>
+        <div class="v">Rust + Tauri</div>
+        <p>A tiny native tray app — fast to start, light on memory.</p>
+      </div>
+    </div>
+    <div class="reqs">
+      <span class="chip">Windows 10 / 11 · 64‑bit</span>
+      <span class="chip">A microphone</span>
+      <span class="chip">~2 GB disk</span>
+      <span class="chip">No internet needed</span>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="sec-rule">
+    <div class="cta-band reveal">
+      <h2>Dictate like it's private. Because it is.</h2>
+      <p>Skryver is an early, honest build — clone it, run it, and tell me what broke. It's all on GitHub under the MIT license.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="https://github.com/varundevarajrvu/skryver" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.46-1.19-1.11-1.5-1.11-1.5-.91-.64.07-.62.07-.62 1 .07 1.53 1.06 1.53 1.06.89 1.56 2.34 1.11 2.91.85.09-.66.35-1.11.63-1.37-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.28 2.75 1.05a9.36 9.36 0 0 1 5 0c1.91-1.33 2.75-1.05 2.75-1.05.55 1.41.2 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.81-4.57 5.06.36.32.68.94.68 1.9 0 1.37-.01 2.48-.01 2.81 0 .27.18.6.69.49A10.02 10.02 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"/></svg>
+          View the source
+        </a>
+        <a class="btn btn-ghost" href="https://github.com/varundevarajrvu/skryver#building-from-source" target="_blank" rel="noopener">Build instructions</a>
+      </div>
+      <div class="cta-note">git clone · cargo build --release · run</div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-in">
+      <a class="brand" href="#top">
+        <svg class="mark" viewBox="0 0 48 48" fill="none" aria-hidden="true" style="width:26px;height:26px;">
+          <ellipse cx="24" cy="24" rx="21" ry="8" stroke="currentColor" stroke-width="2" transform="rotate(45 24 24)"/>
+          <ellipse cx="24" cy="24" rx="21" ry="8" stroke="currentColor" stroke-width="2" transform="rotate(-45 24 24)"/>
+          <circle cx="24" cy="24" r="3.6" fill="currentColor"/>
+        </svg>
+        <b>Skryver</b>
+      </a>
+      <div class="foot-links">
+        <a href="#how">How it works</a>
+        <a href="#features">Features</a>
+        <a href="#privacy">Privacy</a>
+        <a href="https://github.com/varundevarajrvu/skryver" target="_blank" rel="noopener">GitHub</a>
+      </div>
+    </div>
+    <p class="foot-fine">Runs entirely offline · no audio or text ever leaves your machine · MIT © 2026 Varun Devaraj</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---- Scroll reveal ---- */
+  var revs = document.querySelectorAll(".reveal");
+  if (reduce || !("IntersectionObserver" in window)) {
+    revs.forEach(function(el){ el.classList.add("in"); });
+  } else {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+    }, { threshold:.16 });
+    revs.forEach(function(el){ io.observe(el); });
+  }
+
+  /* ---- Hero dictation demo ---- */
+  var pill = document.getElementById("pill"),
+      pillText = document.getElementById("pillText"),
+      kbd = document.getElementById("kbd"),
+      raw = document.getElementById("raw"),
+      cursor = document.getElementById("cursor"),
+      clean = document.getElementById("clean"),
+      badge = document.getElementById("badge"),
+      latency = document.getElementById("latency");
+
+  var TAKES = [
+    { raw:"so um send the report to john, sorry i mean jane, by friday",
+      clean:"Send the report to Jane by Friday.", path:"ai", ms:1180 },
+    { raw:"lets meet uh tuesday no wednesday at like 3pm ish",
+      clean:"Let's meet Wednesday at around 3 PM.", path:"ai", ms:1240 },
+    { raw:"add two cartons of oat milk to the grocery list",
+      clean:"Add two cartons of oat milk to the grocery list.", path:"fast", ms:410 }
+  ];
+
+  function setPill(state, text){
+    pill.className = "pill " + state;
+    pillText.textContent = text;
+  }
+
+  function type(el, text, speed){
+    return new Promise(function(resolve){
+      var i = 0;
+      el.insertBefore(document.createTextNode(""), cursor);
+      var node = el.firstChild;
+      (function tick(){
+        if (i <= text.length){
+          node.textContent = text.slice(0, i);
+          i++;
+          setTimeout(tick, speed);
+        } else { resolve(); }
+      })();
+    });
+  }
+  function wait(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+
+  function renderStatic(){
+    var t = TAKES[0];
+    raw.textContent = t.raw;
+    clean.textContent = t.clean;
+    clean.classList.add("show");
+    setPill("is-done", "done");
+    kbd.classList.remove("held");
+    badge.textContent = "ai cleanup";
+    latency.textContent = t.ms + " ms";
+  }
+
+  async function run(){
+    var idx = 0;
+    /* eslint-disable no-constant-condition */
+    while (true){
+      var t = TAKES[idx % TAKES.length];
+
+      // reset
+      clean.classList.remove("show");
+      clean.textContent = "";
+      raw.textContent = "";
+      raw.appendChild(cursor);
+      badge.textContent = t.path === "ai" ? "ai cleanup" : "fast";
+      latency.textContent = "—";
+
+      // hold key + record
+      kbd.classList.add("held");
+      setPill("is-rec", "recording");
+      await wait(500);
+
+      // speech comes in
+      await type(raw, t.raw, 34);
+      await wait(350);
+
+      // release
+      kbd.classList.remove("held");
+
+      if (t.path === "ai"){
+        setPill("is-polish", "polishing");
+        await wait(Math.max(600, t.ms - 300));
+      } else {
+        setPill("is-polish", "writing");
+        await wait(350);
+      }
+
+      // clean output
+      clean.textContent = t.clean;
+      clean.classList.add("show");
+      setPill("is-done", "typed");
+      latency.textContent = t.ms + " ms";
+
+      await wait(2600);
+      idx++;
+    }
+  }
+
+  cursor.parentNode || raw.appendChild(cursor);
+  if (reduce){ renderStatic(); } else { run(); }
+})();
+</script>
+</body>
+</html>
