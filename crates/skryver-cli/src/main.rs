@@ -1,4 +1,4 @@
-//! whispr M1 headless CLI: hold F9, speak, release — text is pasted into the
+//! skryver M1 headless CLI: hold F9, speak, release — text is pasted into the
 //! focused app. `--wav <file>` transcribes a file instead (no mic; smoke test).
 //!
 //! ASR + paste run on a worker thread so the hotkey stays responsive while a
@@ -10,7 +10,7 @@ use std::sync::mpsc;
 use std::time::Instant;
 
 use anyhow::{Context, Result};
-use whispr_core::{asr, audio, hotkey, inject, llm, postproc};
+use skryver_core::{asr, audio, hotkey, inject, llm, postproc};
 
 fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().skip(1).collect();
@@ -35,7 +35,7 @@ fn main() -> Result<()> {
             "--llm" => use_llm = true,
             "--help" | "-h" => {
                 println!(
-                    "whispr-cli [--engine moonshine|parakeet] [--models DIR] [--threads N] \
+                    "skryver-cli [--engine moonshine|parakeet] [--models DIR] [--threads N] \
                      [--dict FILE] [--save-takes DIR] [--llm] [--wav FILE]"
                 );
                 return Ok(());
@@ -44,11 +44,11 @@ fn main() -> Result<()> {
         }
     }
 
-    // Dictionary: --dict, else whispr.dict.txt next to cwd if present.
+    // Dictionary: --dict, else skryver.dict.txt next to cwd if present.
     let dict = match &dict_path {
         Some(p) => postproc::Dictionary::load(p)?,
         None => {
-            let default = PathBuf::from("whispr.dict.txt");
+            let default = PathBuf::from("skryver.dict.txt");
             if default.exists() {
                 postproc::Dictionary::load(&default)?
             } else {
@@ -129,7 +129,7 @@ fn main() -> Result<()> {
     });
 
     println!(
-        "whispr ready ({engine_kind:?}) — hold F9 to dictate{}. Ctrl+C to quit.",
+        "skryver ready ({engine_kind:?}) — hold F9 to dictate{}. Ctrl+C to quit.",
         if has_llm { " (auto AI cleanup on messy takes)" } else { "" }
     );
     loop {

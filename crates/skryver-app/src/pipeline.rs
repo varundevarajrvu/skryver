@@ -1,5 +1,5 @@
 //! The dictation pipeline thread: hotkey → capture → ASR → route → paste.
-//! Mirrors whispr-cli but settings-aware and reloadable: hotkey/dict changes
+//! Mirrors skryver-cli but settings-aware and reloadable: hotkey/dict changes
 //! apply instantly; engine/LLM-mode changes arrive as a reload signal.
 
 use std::sync::atomic::Ordering;
@@ -7,7 +7,7 @@ use std::sync::{mpsc, Arc};
 use std::time::{Duration, Instant, SystemTime, UNIX_EPOCH};
 
 use tauri::{AppHandle, Emitter};
-use whispr_core::{asr, audio, hotkey, inject, llm, postproc};
+use skryver_core::{asr, audio, hotkey, inject, llm, postproc};
 
 use crate::{HistoryEntry, Shared};
 

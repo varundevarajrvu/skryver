@@ -3353,6 +3353,40 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8ee5873ec9cce0195efcb7a4e9507a04cd49aec9c83d0389df45b1ef7ba2e649"
 
 [[package]]
+name = "skryver-app"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "serde",
+ "serde_json",
+ "skryver-core",
+ "tauri",
+ "tauri-build",
+]
+
+[[package]]
+name = "skryver-cli"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "hound",
+ "skryver-core",
+]
+
+[[package]]
+name = "skryver-core"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "arboard",
+ "cpal",
+ "serde_json",
+ "sherpa-rs",
+ "ureq",
+ "winapi",
+]
+
+[[package]]
 name = "slab"
 version = "0.4.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4601,40 +4635,6 @@ dependencies = [
  "home",
  "once_cell",
  "rustix 0.38.44",
-]
-
-[[package]]
-name = "whispr-app"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "whispr-core",
-]
-
-[[package]]
-name = "whispr-cli"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "hound",
- "whispr-core",
-]
-
-[[package]]
-name = "whispr-core"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "arboard",
- "cpal",
- "serde_json",
- "sherpa-rs",
- "ureq",
- "winapi",
 ]
 
 [[package]]

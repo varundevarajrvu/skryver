@@ -1,0 +1,20 @@
+# skryver personal dictionary
+# Format: misheard => correction   (case-insensitive whole-word match)
+# Add a line whenever skryver repeatedly misspells a word you use.
+
+varum => Varun
+varoon => Varun
+baro => Varun
+barun => Varun
+java script => JavaScript
+git hub => GitHub
+
+# Skryver app name
+scriver => Skryver
+scriber => Skryver
+scrivener => Skryver
+screever => Skryver
+skriver => Skryver
+scryver => Skryver
+scry ver => Skryver
+sky ver => Skryver

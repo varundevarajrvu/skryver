@@ -101,7 +101,7 @@ fn model_file(dir: &Path, name: &str) -> Result<String> {
 
 /// The directory containing the running executable, if determinable. Used to
 /// resolve the packaged (portable) layout, where models/DLLs/llama-server
-/// live next to whispr-app.exe / whispr-cli.exe instead of inside the dev repo.
+/// live next to skryver.exe / skryver-cli.exe instead of inside the dev repo.
 pub fn exe_dir() -> Option<PathBuf> {
     std::env::current_exe()
         .ok()
@@ -109,11 +109,11 @@ pub fn exe_dir() -> Option<PathBuf> {
 }
 
 /// Locate the models root, checked in order:
-/// 1. `WHISPR_MODELS` env var, if set.
+/// 1. `SKRYVER_MODELS` env var, if set.
 /// 2. `<exe_dir>/models` (PACKAGED layout — a portable install next to the exe).
 /// 3. Walk up from the current dir looking for `bench/models` (DEV layout).
 pub fn default_models_root() -> Result<PathBuf> {
-    if let Ok(d) = std::env::var("WHISPR_MODELS") {
+    if let Ok(d) = std::env::var("SKRYVER_MODELS") {
         return Ok(PathBuf::from(d));
     }
     if let Some(dir) = exe_dir() {
@@ -129,7 +129,7 @@ pub fn default_models_root() -> Result<PathBuf> {
             return Ok(candidate);
         }
         if !dir.pop() {
-            bail!("models root not found; set WHISPR_MODELS or run from the repo");
+            bail!("models root not found; set SKRYVER_MODELS or run from the repo");
         }
     }
 }

@@ -1,6 +1,6 @@
 //! Text injection. M1 strategy: clipboard paste with snapshot/restore.
 //! Snapshot clipboard text -> set transcript -> synthesize Ctrl+V -> restore.
-//! Known limits (documented, by design): elevated targets need whispr elevated
+//! Known limits (documented, by design): elevated targets need skryver elevated
 //! too; terminals may prefer Shift+Insert (M4 adds per-target fallbacks).
 
 use anyhow::{Context, Result};

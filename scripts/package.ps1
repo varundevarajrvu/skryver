@@ -1,17 +1,17 @@
 <#
 .SYNOPSIS
-    Assemble a portable, shareable Xenon (whispr) build in dist/Xenon.
+    Assemble a portable, shareable Skryver build in dist/Skryver.
 
 .DESCRIPTION
     Packages the already-built release binaries + the AI models/runtime they
     need into a self-contained folder that runs outside the dev repo:
 
-        dist/Xenon/whispr-app.exe
-        dist/Xenon/*.dll                  (sherpa + onnx runtime)
-        dist/Xenon/models/                (ASR + LLM models)
-        dist/Xenon/llama/llama-server.exe (+ its dlls)
+        dist/Skryver/skryver.exe
+        dist/Skryver/*.dll                  (sherpa + onnx runtime)
+        dist/Skryver/models/                (ASR + LLM models)
+        dist/Skryver/llama/llama-server.exe (+ its dlls)
 
-    This matches the PACKAGED layout resolved by whispr-core's
+    This matches the PACKAGED layout resolved by skryver-core's
     default_models_root() / llm::find_server_exe() at runtime.
 
     Assumes `cargo build --release` has already been run.
@@ -35,10 +35,10 @@ $Release   = Join-Path $RepoRoot 'target\release'
 $BenchDir  = Join-Path $RepoRoot 'bench\models'
 $LlamaDir  = Join-Path $RepoRoot 'tools\llama'
 $DistRoot  = Join-Path $RepoRoot 'dist'
-$Dist      = Join-Path $DistRoot 'Xenon'
+$Dist      = Join-Path $DistRoot 'Skryver'
 
 $Sources = @(
-    @{ Label = 'whispr-app.exe';                  Path = Join-Path $Release 'whispr-app.exe' },
+    @{ Label = 'skryver.exe';                     Path = Join-Path $Release 'skryver.exe' },
     @{ Label = 'release DLLs (target\release\*.dll)'; Path = (Join-Path $Release '*.dll') },
     @{ Label = 'parakeet model dir';               Path = Join-Path $BenchDir 'sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8' },
     @{ Label = 'moonshine model dir';              Path = Join-Path $BenchDir 'sherpa-onnx-moonshine-base-en-int8' },
@@ -73,8 +73,8 @@ New-Item -ItemType Directory -Force -Path $Dist | Out-Null
 New-Item -ItemType Directory -Force -Path (Join-Path $Dist 'models') | Out-Null
 New-Item -ItemType Directory -Force -Path (Join-Path $Dist 'llama') | Out-Null
 
-Write-Host "== Copying whispr-app.exe ==" -ForegroundColor Cyan
-Copy-Item -Path (Join-Path $Release 'whispr-app.exe') -Destination $Dist -Force
+Write-Host "== Copying skryver.exe ==" -ForegroundColor Cyan
+Copy-Item -Path (Join-Path $Release 'skryver.exe') -Destination $Dist -Force
 
 Write-Host "== Copying runtime DLLs (sherpa/onnx) ==" -ForegroundColor Cyan
 Copy-Item -Path (Join-Path $Release '*.dll') -Destination $Dist -Force
@@ -95,4 +95,4 @@ $sizeGB = [math]::Round($sizeBytes / 1GB, 2)
 
 Write-Host "`n== Done ==" -ForegroundColor Green
 Write-Host ("Total size: {0} GB" -f $sizeGB)
-Write-Host "Folder ready at $Dist — run whispr-app.exe" -ForegroundColor Green
+Write-Host "Folder ready at $Dist — run skryver.exe" -ForegroundColor Green

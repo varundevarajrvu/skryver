@@ -1,6 +1,6 @@
 //! Post-processing: the personal dictionary — deterministic, user-controlled
 //! corrections applied after ASR. This is how proper nouns (names, product
-//! names, jargon) get fixed; no acoustic model can spell "whispr" from audio.
+//! names, jargon) get fixed; no acoustic model can spell "skryver" from audio.
 //!
 //! Dictionary file format, one rule per line:
 //! ```text

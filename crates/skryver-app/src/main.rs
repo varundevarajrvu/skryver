@@ -1,4 +1,4 @@
-//! whispr tray app (M2): system tray + paperback settings UI over whispr-core.
+//! skryver tray app (M2): system tray + paperback settings UI over skryver-core.
 
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
@@ -67,12 +67,12 @@ fn load_settings(app: &AppHandle) -> Settings {
             return s;
         }
     }
-    // First run: seed the dictionary from the repo's whispr.dict.txt if present.
+    // First run: seed the dictionary from the repo's skryver.dict.txt if present.
     let mut s = Settings::default();
-    if let Ok(root) = whispr_core::asr::default_models_root() {
-        let seed = root.join("../../whispr.dict.txt");
+    if let Ok(root) = skryver_core::asr::default_models_root() {
+        let seed = root.join("../../skryver.dict.txt");
         if let Ok(text) = std::fs::read_to_string(seed) {
-            s.dict = whispr_core::postproc::parse_dict_str(&text);
+            s.dict = skryver_core::postproc::parse_dict_str(&text);
         }
     }
     s
@@ -162,7 +162,7 @@ fn main() {
             let menu = Menu::with_items(app, &[&toggle, &settings_item, &quit])?;
             let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/32x32.png"))?;
             let shared_for_menu = shared.clone();
-            TrayIconBuilder::with_id("whispr-tray")
+            TrayIconBuilder::with_id("skryver-tray")
                 .icon(icon)
                 .tooltip("Skryver — hold your hotkey to dictate")
                 .menu(&menu)
@@ -202,7 +202,7 @@ fn main() {
             set_settings
         ])
         .build(tauri::generate_context!())
-        .expect("error building whispr")
+        .expect("error building skryver")
         .run(|_app, event| {
             // Keep running in the tray when the settings window closes.
             if let tauri::RunEvent::ExitRequested { api, code, .. } = event {

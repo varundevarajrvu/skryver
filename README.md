@@ -6,9 +6,6 @@ Hold a hotkey, speak, and Skryver types cleaned-up text into whatever app you're
 in. Speech recognition and grammar cleanup both run on your own CPU — no
 internet, no account, no audio or text ever leaves your machine.
 
-> Skryver is the product name; the crates and workspace still use the original
-> internal codename **whispr** (`whispr-core`, `whispr-cli`, `whispr-app`).
-
 ---
 
 ## Features
@@ -29,9 +26,9 @@ Skryver is a Rust workspace with three crates:
 
 | Crate | Role |
 | --- | --- |
-| `whispr-core` | The engine: audio capture, ASR, hotkey, text injection, LLM post-processing, dictionary. |
-| `whispr-cli` | A headless command-line dictation tool over `whispr-core`. |
-| `whispr-app` | The [Tauri](https://tauri.app) tray app + settings UI (the shipping product). |
+| `skryver-core` | The engine: audio capture, ASR, hotkey, text injection, LLM post-processing, dictionary. |
+| `skryver-cli` | A headless command-line dictation tool over `skryver-core`. |
+| `skryver-app` | The [Tauri](https://tauri.app) tray app + settings UI (the shipping product). |
 
 Under the hood:
 
@@ -63,10 +60,10 @@ gitignored). You'll need to supply them locally under `bench/models/` and
 `tools/llama/` — see `scripts/package.ps1` for the exact layout the app expects.
 
 ```sh
-cargo build --release -p whispr-app
+cargo build --release -p skryver-app
 ```
 
-The binary is emitted at `target/release/whispr-app.exe`. To assemble a portable,
+The binary is emitted at `target/release/skryver.exe`. To assemble a portable,
 self-contained folder (exe + DLLs + models + llama runtime):
 
 ```powershell

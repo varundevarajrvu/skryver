@@ -1,6 +1,6 @@
 {
   "identifier": "default",
-  "description": "whispr settings window",
+  "description": "skryver settings window",
   "windows": ["main"],
   "permissions": ["core:default"]
 }

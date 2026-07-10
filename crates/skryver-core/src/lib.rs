@@ -1,4 +1,4 @@
-//! whispr-core — platform-portable dictation pipeline.
+//! skryver-core — platform-portable dictation pipeline.
 //!
 //! Windows-first; platform-specific pieces (hotkey polling, paste injection)
 //! live behind `cfg(windows)` and will grow trait seams when the macOS port lands.

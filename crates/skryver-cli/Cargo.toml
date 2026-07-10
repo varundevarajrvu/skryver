@@ -1,10 +1,10 @@
 [package]
-name = "whispr-cli"
+name = "skryver-cli"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 
 [dependencies]
-whispr-core = { path = "../whispr-core" }
+skryver-core = { path = "../skryver-core" }
 anyhow = "1"
 hound = "3"
