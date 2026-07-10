@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Xenon",
+  "productName": "Skryver",
   "version": "0.1.0",
   "identifier": "dev.varun.xenon",
   "build": {

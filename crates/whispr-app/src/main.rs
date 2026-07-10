@@ -99,6 +99,11 @@ fn get_history(shared: tauri::State<Arc<Shared>>) -> Vec<HistoryEntry> {
 }
 
 #[tauri::command]
+fn clear_history(shared: tauri::State<Arc<Shared>>) {
+    shared.history.lock().unwrap().clear();
+}
+
+#[tauri::command]
 fn set_enabled(enabled: bool, shared: tauri::State<Arc<Shared>>) {
     shared.enabled.store(enabled, Ordering::Relaxed);
 }
@@ -128,7 +133,7 @@ fn open_settings_window(app: &AppHandle) {
         return;
     }
     let _ = WebviewWindowBuilder::new(app, "main", WebviewUrl::App("index.html".into()))
-        .title("Xenon")
+        .title("Skryver")
         .inner_size(1120.0, 780.0)
         .min_inner_size(640.0, 480.0)
         .resizable(true)
@@ -153,13 +158,13 @@ fn main() {
             // Tray
             let toggle = MenuItem::with_id(app, "toggle", "Pause dictation", true, None::<&str>)?;
             let settings_item = MenuItem::with_id(app, "settings", "Settings…", true, None::<&str>)?;
-            let quit = MenuItem::with_id(app, "quit", "Quit Xenon", true, None::<&str>)?;
+            let quit = MenuItem::with_id(app, "quit", "Quit Skryver", true, None::<&str>)?;
             let menu = Menu::with_items(app, &[&toggle, &settings_item, &quit])?;
             let icon = tauri::image::Image::from_bytes(include_bytes!("../icons/32x32.png"))?;
             let shared_for_menu = shared.clone();
             TrayIconBuilder::with_id("whispr-tray")
                 .icon(icon)
-                .tooltip("Xenon — hold your hotkey to dictate")
+                .tooltip("Skryver — hold your hotkey to dictate")
                 .menu(&menu)
                 .show_menu_on_left_click(true)
                 .on_menu_event(move |app, event| match event.id.as_ref() {
@@ -192,6 +197,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             get_state,
             get_history,
+            clear_history,
             set_enabled,
             set_settings
         ])

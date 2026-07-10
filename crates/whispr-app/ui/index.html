@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Xenon</title>
+<title>Skryver</title>
 <style>
 /* =============================================================================
-   XENON — fused "warm editorial" design
+   SKRYVER — fused "warm editorial" design
    Sotto's airy magazine grid + restrained typographic structure,
    rendered on Quill's warm paper skin with fountain-pen-ink accents.
    ============================================================================= */
@@ -234,6 +234,26 @@ section.panel{ padding-top: 2px; }
   color: var(--ink-soft);
   letter-spacing: 0.03em;
 }
+
+/* section-head action button (e.g. Clear history) */
+.clear-btn{
+  border: 1px solid var(--rule-strong);
+  background: var(--paper-raised);
+  color: var(--ink-soft);
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 7px 15px;
+  border-radius: 999px;
+  cursor: pointer;
+  flex: none;
+  transition: color .18s ease, border-color .18s ease, background-color .18s ease;
+}
+.clear-btn:hover{ color: var(--danger); border-color: var(--danger); background: var(--paper); }
+.clear-btn:disabled{ opacity: 0.4; cursor: default; color: var(--ink-soft); border-color: var(--rule-strong); background: var(--paper-raised); }
+.clear-btn:focus-visible{ outline: none; box-shadow: var(--focus-ring); }
 
 .helper{
   font-size: 13.2px;
@@ -733,7 +753,7 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
           <ellipse cx="24" cy="24" rx="21" ry="8" stroke="currentColor" stroke-width="1.5" transform="rotate(-45 24 24)"/>
           <circle cx="24" cy="24" r="3.4" fill="currentColor"/>
         </svg>
-        <h1 class="wordmark">Xenon</h1>
+        <h1 class="wordmark">Skryver</h1>
       </div>
       <p class="tagline">a quiet dictation companion &mdash; fully on your machine</p>
     </div>
@@ -753,7 +773,7 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
   <div class="hairline-box hero">
     <div class="hero-left">
       <span class="micro">Dictation</span>
-      <h2>Enable Xenon to listen for your hotkey</h2>
+      <h2>Enable Skryver to listen for your hotkey</h2>
       <p id="heroSub">When enabled, hold your chosen key anywhere on your machine to dictate. Nothing leaves this device.</p>
     </div>
     <div class="big-toggle">
@@ -770,7 +790,6 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
     <section class="panel col-6">
       <div class="section-head">
         <h2>Engine</h2>
-        <span class="section-index">01</span>
       </div>
       <div class="choice-row" id="enginePicker">
         <div class="choice-card" data-engine="parakeet" tabindex="0">
@@ -793,7 +812,6 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
     <section class="panel col-6">
       <div class="section-head">
         <h2>Hotkey</h2>
-        <span class="section-index">02</span>
       </div>
       <div class="hotkey-grid" id="hotkeyGrid"></div>
       <p class="hold-caption">Hold <kbd id="hotkeyLabel">F9</kbd> anywhere to dictate.</p>
@@ -803,7 +821,6 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
     <section class="panel col-6">
       <div class="section-head">
         <h2>AI cleanup</h2>
-        <span class="section-index">03</span>
       </div>
       <div class="tri-toggle" id="cleanupToggle">
         <div class="tri-btn" data-val="off" role="button" tabindex="0">Off</div>
@@ -815,35 +832,21 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
       </p>
     </section>
 
-    <!-- Appearance -->
-    <section class="panel col-6">
-      <div class="section-head">
-        <h2>Appearance</h2>
-        <span class="section-index">04</span>
-      </div>
-      <div class="tri-toggle" id="themeToggleCard">
-        <div class="tri-btn" data-val="light" role="button" tabindex="0">Light</div>
-        <div class="tri-btn" data-val="dark" role="button" tabindex="0">Dark</div>
-      </div>
-      <p class="helper">Light is a warm cream paper; Dark is a true low-light theme. The toggle in the header previews the effect immediately.</p>
-    </section>
-
     <!-- Dictionary -->
     <section class="panel col-12">
       <div class="section-head">
         <h2>Personal dictionary</h2>
-        <span class="section-index">05</span>
       </div>
       <div class="hairline-box">
         <table class="dict">
           <thead>
-            <tr><th style="width:44%">Xenon hears&hellip;</th><th></th><th style="width:44%">&hellip;and writes</th><th></th></tr>
+            <tr><th style="width:44%">Skryver hears&hellip;</th><th></th><th style="width:44%">&hellip;and writes</th><th></th></tr>
           </thead>
           <tbody id="dictBody"></tbody>
         </table>
         <button class="add-rule" id="addRowBtn" type="button">+ &nbsp;Add a rule</button>
         <p class="helper">
-          Add a rule when Xenon repeatedly misspells a word you use (e.g. a name). Matching is
+          Add a rule when Skryver repeatedly misspells a word you use (e.g. a name). Matching is
           case-insensitive and whole-word.
         </p>
       </div>
@@ -858,7 +861,7 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
     <section class="panel col-12">
       <div class="section-head">
         <h2>Recent takes</h2>
-        <span class="section-index">06</span>
+        <button class="clear-btn" id="clearHistoryBtn" type="button" disabled>Clear history</button>
       </div>
       <div class="history-list" id="historyList">
         <div class="empty-note">Nothing dictated yet.</div>
@@ -867,7 +870,7 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
 
   </div>
 
-  <p class="foot">Xenon runs entirely offline &middot; no audio or text ever leaves this machine</p>
+  <p class="foot">Skryver runs entirely offline &middot; no audio or text ever leaves this machine</p>
 </div>
 
 <script>
@@ -912,7 +915,7 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
   }
 
   function syncThemeControls() {
-    [els.themeSegHeader, els.themeToggleCard].forEach(function (group) {
+    [els.themeSegHeader].forEach(function (group) {
       if (!group) return;
       var btns = group.querySelectorAll("[data-val]");
       for (var i = 0; i < btns.length; i++) {
@@ -1102,6 +1105,10 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
     return div;
   }
 
+  function updateClearBtn(hasItems) {
+    if (els.clearHistoryBtn) els.clearHistoryBtn.disabled = !hasItems;
+  }
+
   function renderHistory(entries) {
     els.historyList.innerHTML = "";
     if (!entries || entries.length === 0) {
@@ -1109,17 +1116,20 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
       empty.className = "empty-note";
       empty.textContent = "Nothing dictated yet.";
       els.historyList.appendChild(empty);
+      updateClearBtn(false);
       return;
     }
     entries.forEach(function (entry) {
       els.historyList.appendChild(historyItemNode(entry));
     });
+    updateClearBtn(true);
   }
 
   function prependHistory(entry) {
     var empty = els.historyList.querySelector(".empty-note");
     if (empty) empty.remove();
     els.historyList.insertBefore(historyItemNode(entry), els.historyList.firstChild);
+    updateClearBtn(true);
   }
 
   function waitForTauri(cb) {
@@ -1131,7 +1141,7 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
       }
       tries++;
       if (tries > 200) {
-        els.statusText.textContent = "Xenon backend unavailable";
+        els.statusText.textContent = "Skryver backend unavailable";
         return;
       }
       setTimeout(poll, 25);
@@ -1142,7 +1152,6 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
     els.statusDot = q("statusDot");
     els.statusText = q("statusText");
     els.themeSegHeader = q("themeSegHeader");
-    els.themeToggleCard = q("themeToggleCard");
     els.mainSwitch = q("mainSwitch");
     els.toggleStateLabel = q("toggleStateLabel");
     els.enginePicker = q("enginePicker");
@@ -1154,6 +1163,7 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
     els.saveBtn = q("saveBtn");
     els.saveNote = q("saveNote");
     els.historyList = q("historyList");
+    els.clearHistoryBtn = q("clearHistoryBtn");
 
     els.mainSwitch.addEventListener("click", function () {
       state.enabled = !state.enabled;
@@ -1205,7 +1215,6 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
     });
 
     wireThemeGroup(els.themeSegHeader);
-    wireThemeGroup(els.themeToggleCard);
 
     els.addRowBtn.addEventListener("click", function () {
       state.settings.dict.push(["", ""]);
@@ -1237,6 +1246,13 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
           els.saveBtn.disabled = false;
           setTimeout(function () { els.saveNote.textContent = ""; }, 6000);
         });
+    });
+
+    els.clearHistoryBtn.addEventListener("click", function () {
+      els.clearHistoryBtn.disabled = true;
+      invoke("clear_history")
+        .then(function () { renderHistory([]); })
+        .catch(function () { renderHistory([]); });
     });
 
     waitForTauri(function () {
@@ -1286,7 +1302,7 @@ table.dict input[type="text"]{ transition: border-color .18s var(--ease), backgr
    ORBITAL DRIFT — ambient background
    Self-contained, independent of the app IIFE above: never touches
    window.__TAURI__, invoke(), listen(), or app state. Purely decorative.
-   A few faint elliptical "orbital" rings (Xenon's orbital-X mark, echoed)
+   A few faint elliptical "orbital" rings (echoing the wordmark's orbital mark)
    slowly rotate behind the header, with a small field of soft motes
    drifting across the whole window, a couple riding the rings like
    electrons. Single rAF loop, DPR-aware, paused off-screen, and reduced
